@@ -4,8 +4,25 @@ const PROJECTS = [
     title: "贪吃蛇",
     desc: "经典贪吃蛇的赛博重制版。支持难度选择、穿墙模式、音效，手机和电脑都能玩。",
     tags: ["游戏", "JavaScript", "Canvas"],
-    link: "/snake-game/",
+    link: "/snake-game/snake/",
     live: true,
+  },
+  {
+    icon: "🐱",
+    title: "Idle Companion",
+    desc: "浏览器空闲时，透明抠图动物全屏挡在页面上陪你。Cat Gatekeeper 风格，支持猫咪 / 蓝鲸 / 狐狸。",
+    tags: ["Chrome 扩展", "WebM Alpha", "MV3"],
+    link: "/snake-game/idle-companion/",
+    live: true,
+  },
+  {
+    icon: "🗺️",
+    title: "扣门地图",
+    desc: "微信小程序 — 分享与发现「扣门」地点。",
+    tags: ["微信小程序"],
+    link: "https://github.com/shuaianchen-glitch/snake-game/tree/main/koumen-map",
+    live: true,
+    external: true,
   },
   {
     icon: "🤖",
@@ -44,7 +61,8 @@ function renderProjects() {
       .join("");
 
     if (p.live) {
-      return `<a href="${p.link}" class="${cls}">
+      const ext = p.external ? ' target="_blank" rel="noopener"' : "";
+      return `<a href="${p.link}" class="${cls}"${ext}>
         <div class="project-icon">${p.icon}</div>
         <h3 class="project-title">${p.title}</h3>
         <p class="project-desc">${p.desc}</p>
