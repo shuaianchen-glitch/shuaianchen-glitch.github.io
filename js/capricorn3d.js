@@ -88,7 +88,8 @@ window.Capricorn3D = (() => {
 
   function init() {
     container = document.getElementById("capricorn-3d");
-    if (!container || typeof THREE === "undefined") return;
+    if (!container) return;
+    if (typeof THREE === "undefined") return;
 
     const w = container.clientWidth || 280;
     const h = container.clientHeight || 280;
