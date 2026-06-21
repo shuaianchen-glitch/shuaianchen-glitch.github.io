@@ -16,6 +16,9 @@ window.Painting = (() => {
   let pulseT = 0;
   let starMap = {};
   let chart = { x: 0, y: 0, w: 0, h: 0 };
+  let pointerX = 0;
+  let pointerY = 0;
+  let lastHoverIdx = -2;
 
   const EASE = (t) => 1 - Math.pow(1 - t, 3);
 
@@ -46,8 +49,10 @@ window.Painting = (() => {
         nebA: "rgba(180, 140, 200, 0.35)", nebB: "rgba(120, 180, 210, 0.28)",
         line: "rgba(30, 80, 120, 0.35)", lineActive: "rgba(14, 116, 144, 0.75)",
         star: "#1e3a5f", starLive: "#0c4a6e", starGlow: "rgba(14, 116, 144, 0.4)",
-        hub: "#b45309", tech: "rgba(14, 116, 144, 0.2)", dust: "rgba(30, 60, 90, 0.15)",
-        text: "rgba(15, 40, 70, 0.5)",
+        hub: "#b45309", tech: "rgba(14, 116, 144, 0.25)", techBright: "rgba(14, 116, 144, 0.65)",
+        dust: "rgba(30, 60, 90, 0.15)",
+        text: "rgba(15, 40, 70, 0.55)", textBright: "rgba(15, 50, 80, 0.95)",
+        labelBg: "rgba(255, 255, 255, 0.82)", labelBorder: "rgba(14, 116, 144, 0.35)",
       };
     }
     return {
@@ -55,8 +60,10 @@ window.Painting = (() => {
       nebA: "rgba(88, 40, 160, 0.55)", nebB: "rgba(30, 80, 160, 0.4)",
       line: "rgba(160, 210, 255, 0.22)", lineActive: "rgba(120, 220, 255, 0.72)",
       star: "#e8f0ff", starLive: "#fff8ec", starGlow: "rgba(180, 220, 255, 0.55)",
-      hub: "#f0d890", tech: "rgba(0, 220, 255, 0.12)", dust: "rgba(200, 220, 255, 0.08)",
-      text: "rgba(180, 210, 255, 0.35)",
+      hub: "#f0d890", tech: "rgba(0, 220, 255, 0.18)", techBright: "rgba(0, 220, 255, 0.55)",
+      dust: "rgba(200, 220, 255, 0.08)",
+      text: "rgba(180, 210, 255, 0.42)", textBright: "rgba(200, 235, 255, 0.92)",
+      labelBg: "rgba(8, 12, 28, 0.72)", labelBorder: "rgba(126, 200, 255, 0.35)",
     };
   }
 
@@ -128,6 +135,122 @@ window.Painting = (() => {
     }
   }
 
+  function drawTechFrame(p, t) {
+    const c = chartRect();
+    const pad = 12 * dpr;
+    const x = c.x - pad;
+    const y = c.y - pad;
+    const fw = c.w + pad * 2;
+    const fh = c.h + pad * 2;
+
+    ctx.strokeStyle = p.tech;
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x, y, fw, fh);
+
+    const corner = 22 * dpr;
+    ctx.strokeStyle = p.techBright;
+    ctx.lineWidth = 1.5;
+    [[x, y, 1, 1], [x + fw, y, -1, 1], [x, y + fh, 1, -1], [x + fw, y + fh, -1, -1]].forEach(([cx, cy, sx, sy]) => {
+      ctx.beginPath();
+      ctx.moveTo(cx, cy + sy * corner);
+      ctx.lineTo(cx, cy);
+      ctx.lineTo(cx + sx * corner, cy);
+      ctx.stroke();
+    });
+
+    ctx.strokeStyle = p.tech.replace(/[\d.]+\)$/, "0.06)");
+    ctx.lineWidth = 0.5;
+    const step = fw / 12;
+    for (let i = 1; i < 12; i += 1) {
+      const lx = x + step * i;
+      ctx.beginPath();
+      ctx.moveTo(lx, y);
+      ctx.lineTo(lx, y + fh);
+      ctx.stroke();
+    }
+    const vstep = fh / 10;
+    for (let j = 1; j < 10; j += 1) {
+      const ly = y + vstep * j;
+      ctx.beginPath();
+      ctx.moveTo(x, ly);
+      ctx.lineTo(x + fw, ly);
+      ctx.stroke();
+    }
+
+    const tick = Math.floor(t * 4) % 10000;
+    ctx.font = `${9 * dpr}px SF Mono, Menlo, monospace`;
+    ctx.fillStyle = p.text;
+    ctx.textAlign = "left";
+    ctx.fillText(`SECTOR-♑ · ${String(tick).padStart(4, "0")}`, x + 8 * dpr, y - 6 * dpr);
+    ctx.textAlign = "right";
+    ctx.fillText("J2000.0", x + fw - 8 * dpr, y + fh + 14 * dpr);
+  }
+
+  function drawCrosshair(p) {
+    if (locked || hoverIdx < 0) return;
+    ctx.save();
+    ctx.strokeStyle = p.techBright.replace(/[\d.]+\)$/, "0.25)");
+    ctx.lineWidth = 0.5;
+    ctx.setLineDash([4 * dpr, 6 * dpr]);
+    ctx.beginPath();
+    ctx.moveTo(pointerX, 0);
+    ctx.lineTo(pointerX, h);
+    ctx.moveTo(0, pointerY);
+    ctx.lineTo(w, pointerY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+  }
+
+  function drawLabelBox(x, y, lines, p, active) {
+    const fs = 9 * dpr;
+    const lh = 13 * dpr;
+    const padX = 8 * dpr;
+    const padY = 6 * dpr;
+    ctx.font = `500 ${fs}px SF Mono, Menlo, monospace`;
+    const maxW = Math.max(...lines.map((l) => ctx.measureText(l).width));
+    const bw = maxW + padX * 2;
+    const bh = lines.length * lh + padY * 2;
+    let bx = x + 14 * dpr;
+    let by = y - bh / 2;
+    if (bx + bw > w - 20 * dpr) bx = x - bw - 14 * dpr;
+    if (by < 20 * dpr) by = 20 * dpr;
+    if (by + bh > h - 20 * dpr) by = h - bh - 20 * dpr;
+
+    ctx.fillStyle = active ? p.labelBg : p.labelBg.replace(/[\d.]+\)$/, "0.45)");
+    ctx.strokeStyle = active ? p.labelBorder : p.labelBorder.replace(/[\d.]+\)$/, "0.18)");
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.roundRect(bx, by, bw, bh, 4 * dpr);
+    ctx.fill();
+    ctx.stroke();
+
+    if (active) {
+      ctx.strokeStyle = p.techBright;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(bx + (bx > x ? 0 : bw), by + bh / 2);
+      ctx.stroke();
+    }
+
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
+    lines.forEach((line, i) => {
+      ctx.fillStyle = i === 0 ? (active ? p.textBright : p.text) : p.text;
+      if (i === 0 && active) ctx.font = `600 ${fs}px SF Mono, Menlo, monospace`;
+      else ctx.font = `500 ${fs}px SF Mono, Menlo, monospace`;
+      ctx.fillText(line, bx + padX, by + padY + i * lh);
+    });
+    ctx.textBaseline = "alphabetic";
+  }
+
+  function drawFaintLabel(x, y, text, p, offsetY) {
+    ctx.font = `500 ${8 * dpr}px SF Mono, Menlo, monospace`;
+    ctx.fillStyle = p.text;
+    ctx.textAlign = "center";
+    ctx.fillText(text, x, y + offsetY);
+  }
+
   function drawTechRing(p, t) {
     const c = chartRect();
     const cx = c.x + c.w * 0.52;
@@ -148,6 +271,16 @@ window.Painting = (() => {
     ctx.beginPath();
     ctx.ellipse(0, 0, r * 0.82, r * 0.58, 0.3, 0, Math.PI * 2);
     ctx.stroke();
+
+    ctx.setLineDash([]);
+    ctx.strokeStyle = p.techBright.replace(/[\d.]+\)$/, "0.15)");
+    for (let i = 0; i < 12; i += 1) {
+      const a = (i / 12) * Math.PI * 2 + t * 0.02;
+      ctx.beginPath();
+      ctx.moveTo(Math.cos(a) * r * 0.88, Math.sin(a) * r * 0.62);
+      ctx.lineTo(Math.cos(a) * r * 0.95, Math.sin(a) * r * 0.67);
+      ctx.stroke();
+    }
     ctx.restore();
 
     const scan = (t * 0.08) % (Math.PI * 2);
@@ -245,6 +378,7 @@ window.Painting = (() => {
       const tw = 0.5 + 0.5 * Math.sin(t * 1.2 + i * 2);
       ctx.globalAlpha = fade * 0.7;
       drawStarPoint(pos.x, pos.y, Math.max(1, 2.8 - s.mag * 0.35), p.star, null, tw, false);
+      drawFaintLabel(pos.x, pos.y, `${s.bayer} · ${s.cn}`, p, 18 * dpr);
       ctx.globalAlpha = 1;
     });
   }
@@ -264,10 +398,13 @@ window.Painting = (() => {
     ctx.arc(pos.x, pos.y, 14 + Math.sin(t) * 2, 0, Math.PI * 2);
     ctx.stroke();
 
-    ctx.font = "500 10px SF Mono, Menlo, monospace";
-    ctx.fillStyle = p.text;
+    ctx.font = `500 ${9 * dpr}px SF Mono, Menlo, monospace`;
+    ctx.fillStyle = p.textBright.replace(/[\d.]+\)$/, "0.7)");
     ctx.textAlign = "center";
-    ctx.fillText(`${h.bayer} · ${h.cn}`, pos.x, pos.y + 24);
+    ctx.fillText(`${h.bayer} · ${h.cn}`, pos.x, pos.y + 26 * dpr);
+    ctx.font = `500 ${8 * dpr}px SF Mono, Menlo, monospace`;
+    ctx.fillStyle = p.text;
+    ctx.fillText(`${h.name} · mag ${h.mag}`, pos.x, pos.y + 38 * dpr);
     ctx.globalAlpha = 1;
   }
 
@@ -288,13 +425,24 @@ window.Painting = (() => {
         : `rgba(160, 180, 210, 0.3)`;
 
       ctx.globalAlpha = fade * (proj.live ? 1 : 0.65);
-      drawStarPoint(pos.x, pos.y, r, color, glow, tw, s.mag < 3.7 || isFocus);
+      drawStarPoint(pos.x, pos.y, r, color, glow, tw, s.mag < 3.7 || isFocus || isHover);
 
+      const labelY = 20 * dpr;
       if (isHover || isFocus) {
-        ctx.font = "500 10px SF Mono, Menlo, monospace";
-        ctx.fillStyle = isFocus ? p.lineActive : p.text;
-        ctx.textAlign = "center";
-        ctx.fillText(`${s.bayer} · ${s.cn}`, pos.x, pos.y + 22);
+        const status = proj.live ? "LIVE" : "CLIMB";
+        drawLabelBox(pos.x, pos.y, [
+          `${s.bayer} · ${s.cn}`,
+          `${proj.title} · ${status}`,
+          `${s.name} · mag ${s.mag}`,
+        ], p, true);
+      } else {
+        drawFaintLabel(pos.x, pos.y, `${s.bayer} · ${s.cn}`, p, labelY);
+        if (proj.live) {
+          ctx.font = `600 ${7 * dpr}px SF Mono, Menlo, monospace`;
+          ctx.fillStyle = p.techBright.replace(/[\d.]+\)$/, "0.35)");
+          ctx.textAlign = "center";
+          ctx.fillText("●", pos.x, pos.y + labelY + 10 * dpr);
+        }
       }
       ctx.globalAlpha = 1;
     });
@@ -338,10 +486,12 @@ window.Painting = (() => {
     drawNebula(p);
     drawDust(p, time);
     drawTechRing(p, time);
+    drawTechFrame(p, time);
     drawConstellation(p, time, EASE(introT));
     drawDecorStars(p, time, EASE(introT));
     drawHub(p, time, EASE(introT));
     drawProjectStars(p, time, EASE(introT));
+    drawCrosshair(p);
     drawFocusVignette();
     drawPulse(p);
 
@@ -384,15 +534,31 @@ window.Painting = (() => {
     });
   }
 
+  function emitHover(idx) {
+    if (idx === lastHoverIdx) return;
+    lastHoverIdx = idx;
+    window.dispatchEvent(new CustomEvent("starhover", {
+      detail: idx >= 0 ? { idx, project: window.SITE.projects[idx] } : { idx: -1 },
+    }));
+  }
+
   function onMove(e) {
     if (locked) return;
     const rect = canvas.getBoundingClientRect();
     const sx = (e.clientX - rect.left) * dpr;
     const sy = (e.clientY - rect.top) * dpr;
+    pointerX = sx;
+    pointerY = sy;
     mx = e.clientX / window.innerWidth;
     my = e.clientY / window.innerHeight;
     hoverIdx = hitTest(sx, sy);
     canvas.style.cursor = hoverIdx >= 0 ? "pointer" : "crosshair";
+    emitHover(hoverIdx);
+  }
+
+  function onLeave() {
+    hoverIdx = -1;
+    emitHover(-1);
   }
 
   function onClick(e) {
@@ -422,6 +588,7 @@ window.Painting = (() => {
     buildMap();
     resize();
     canvas.addEventListener("pointermove", onMove);
+    canvas.addEventListener("pointerleave", onLeave);
     canvas.addEventListener("click", onClick);
     window.addEventListener("resize", resize);
     window.addEventListener("themechange", () => {

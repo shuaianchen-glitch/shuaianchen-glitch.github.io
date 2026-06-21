@@ -7,8 +7,8 @@
   <meta name="theme-color" content="#07050f">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <title>ShuaiAn Studio · Capricornus</title>
-  <link rel="stylesheet" href="css/themes.css?v=20250622-v9">
-  <link rel="stylesheet" href="css/style.css?v=20250622-v9">
+  <link rel="stylesheet" href="css/themes.css?v=20250622-v10">
+  <link rel="stylesheet" href="css/style.css?v=20250622-v10">
 </head>
 <body>
   <div id="intro" class="intro" aria-live="polite">
@@ -48,17 +48,67 @@
       <section id="stage" class="stage">
         <div class="painting-frame">
           <canvas id="painting" aria-label="摩羯座星图交互画作"></canvas>
-          <div class="painting-caption">
+
+          <div class="hud-frame" aria-hidden="true">
+            <span class="hud-corner hud-tl"></span>
+            <span class="hud-corner hud-tr"></span>
+            <span class="hud-corner hud-bl"></span>
+            <span class="hud-corner hud-br"></span>
+            <div class="hud-grid"></div>
+          </div>
+
+          <aside class="caption-panel glass-hud">
+            <div class="hud-bar">
+              <span class="hud-dot"></span>
+              <span class="hud-bar-label">STAR CHART · LIVE</span>
+            </div>
             <p class="caption-tag" id="stage-tag">CAPRICORNUS · 摩羯星图</p>
             <h2 class="caption-title" id="stage-headline"></h2>
+            <p class="caption-desc" id="stage-desc"></p>
+            <blockquote class="caption-quote" id="stage-quote"></blockquote>
+            <div class="caption-stats">
+              <div class="stat-chip">
+                <strong id="project-count">0</strong>
+                <span id="stat-live-label">已点亮</span>
+              </div>
+              <div class="stat-chip">
+                <strong id="climbing-count">0</strong>
+                <span id="stat-climb-label">攀登中</span>
+              </div>
+            </div>
             <p class="caption-hint" id="stage-hint">
               <span class="hint-pulse"></span>
-              触碰星点 · 细节自然展开
+              悬停读星历 · 点击展开细节
             </p>
+          </aside>
+
+          <aside class="star-readout glass-hud" id="star-readout" aria-live="polite" hidden>
+            <div class="readout-header">
+              <span class="readout-icon" id="readout-icon"></span>
+              <div>
+                <p class="readout-bayer" id="readout-bayer"></p>
+                <h3 class="readout-title" id="readout-title"></h3>
+              </div>
+              <span class="readout-status" id="readout-status"></span>
+            </div>
+            <p class="readout-latin" id="readout-latin"></p>
+            <p class="readout-desc" id="readout-desc"></p>
+            <div class="readout-meta">
+              <span id="readout-mag"></span>
+              <span id="readout-tags"></span>
+            </div>
+          </aside>
+
+          <div class="hud-telemetry glass-hud" aria-hidden="true">
+            <p><span>SYS</span> CAPRICORNUS NAV</p>
+            <p><span>RA</span> 20h 14m · <span>DEC</span> −14° 47′</p>
+            <p><span>MAG</span> <em id="telemetry-mag">—</em> · <span>SIG</span> <em id="telemetry-sig">STANDBY</em></p>
+            <p class="telemetry-scan">SCAN <span id="telemetry-scan">0000</span></p>
           </div>
-          <div class="painting-meta" aria-hidden="true">
-            <span>IAU J2000</span>
-            <span>RA 20h · Dec −20°</span>
+
+          <div class="painting-meta glass-hud" aria-hidden="true">
+            <span>IAU J2000 · HD CATALOG</span>
+            <span>ShuaiAn Studio · ♑</span>
           </div>
         </div>
       </section>
@@ -133,10 +183,10 @@
     <p class="transition-title" id="transition-title"></p>
   </div>
 
-  <script defer src="content/site.js?v=20250622-v9"></script>
-  <script defer src="js/theme.js?v=20250622-v9"></script>
-  <script defer src="js/painting.js?v=20250622-v9"></script>
-  <script defer src="js/detail.js?v=20250622-v9"></script>
-  <script defer src="js/main.js?v=20250622-v9"></script>
+  <script defer src="content/site.js?v=20250622-v10"></script>
+  <script defer src="js/theme.js?v=20250622-v10"></script>
+  <script defer src="js/painting.js?v=20250622-v10"></script>
+  <script defer src="js/detail.js?v=20250622-v10"></script>
+  <script defer src="js/main.js?v=20250622-v10"></script>
 </body>
 </html>

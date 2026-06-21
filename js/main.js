@@ -46,8 +46,8 @@ function initIntro() {
   }
 
   $("#intro-enter")?.addEventListener("click", go);
-  $("#intro")?.addEventListener("click", (e) => {
-    if (e.target.closest("#intro-enter") || !$("#intro").classList.contains("is-leaving")) go();
+  $("#intro")?.addEventListener("click", () => {
+    if (!$("#intro").classList.contains("is-leaving")) go();
   });
   document.addEventListener("keydown", (e) => {
     if (e.key === "Enter" && !$("#intro")?.classList.contains("is-leaving")) go();
@@ -152,9 +152,52 @@ function applyCopy() {
   const s = window.SITE.stage;
   $("#stage-tag").textContent = s.tag;
   $("#stage-headline").innerHTML = `${s.headline[0]}<br><span class="accent">${s.headline[1]}</span>`;
+  $("#stage-desc").textContent = s.desc;
+  $("#stage-quote").textContent = s.quote;
   $("#stage-hint").innerHTML = `<span class="hint-pulse"></span> ${s.hint}`;
+  $("#stat-live-label").textContent = s.stats.live;
+  $("#stat-climb-label").textContent = s.stats.climbing;
   $("#showcase-desc").textContent = window.SITE.showcase.desc;
   $("#manifesto-text").textContent = window.SITE.about.manifesto;
+}
+
+function initStarReadout() {
+  const panel = $("#star-readout");
+  if (!panel) return;
+
+  window.addEventListener("starhover", (e) => {
+    const { idx, project: p } = e.detail;
+    if (idx < 0 || !p) {
+      panel.classList.remove("is-visible");
+      panel.hidden = true;
+      $("#telemetry-mag").textContent = "—";
+      $("#telemetry-sig").textContent = "STANDBY";
+      return;
+    }
+
+    const s = p.star;
+    panel.hidden = false;
+    requestAnimationFrame(() => panel.classList.add("is-visible"));
+    $("#readout-icon").textContent = p.icon;
+    $("#readout-bayer").textContent = `${s.bayer} · ${s.cn}`;
+    $("#readout-title").textContent = p.title;
+    $("#readout-latin").textContent = `${s.name} · 视星等 ${s.mag}`;
+    $("#readout-desc").textContent = p.desc;
+    $("#readout-mag").textContent = `mag ${s.mag}`;
+    $("#readout-tags").textContent = (p.tags || []).join(" · ");
+    const status = $("#readout-status");
+    status.textContent = p.live ? "LIVE" : "CLIMB";
+    status.className = `readout-status ${p.live ? "is-live" : "is-climb"}`;
+    $("#telemetry-mag").textContent = s.mag.toFixed(2);
+    $("#telemetry-sig").textContent = p.live ? "LOCKED" : "EVOLVING";
+  });
+
+  let scan = 0;
+  setInterval(() => {
+    scan = (scan + 1) % 10000;
+    const el = $("#telemetry-scan");
+    if (el) el.textContent = String(scan).padStart(4, "0");
+  }, 120);
 }
 
 function typeText() {
@@ -185,7 +228,10 @@ function init() {
   Theme.init();
   applyCopy();
   $("#year").textContent = new Date().getFullYear();
+  $("#project-count").textContent = projects().filter((p) => p.live).length;
+  $("#climbing-count").textContent = projects().filter((p) => !p.live).length;
   initIntro();
+  initStarReadout();
   Painting.init();
   Detail.init();
   renderShowcase();

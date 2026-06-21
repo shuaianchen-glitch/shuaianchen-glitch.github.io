@@ -11,7 +11,9 @@ window.SITE = {
   stage: {
     tag: "CAPRICORNUS · 摩羯星图",
     headline: ["点一颗星，", "读一段旅程"],
-    hint: "触碰星点 · 细节自然展开",
+    desc: "项目钉在 IAU 摩羯连线上——背景是深空，星轨是导航。悬停读星历，点击展开造物细节。",
+    quote: "推石上山不是惩罚，是把重复雕成形状。",
+    hint: "悬停读星历 · 点击展开细节",
     stats: { live: "已点亮", climbing: "攀登中" },
   },
 
