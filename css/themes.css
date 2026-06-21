@@ -1,4 +1,4 @@
-/* Realistic astro × tech collision themes */
+/* NASA photographic backgrounds × tech HUD overlay */
 
 html[data-theme="night"] {
   color-scheme: dark;
@@ -14,18 +14,19 @@ html[data-theme="night"] {
   --peach: #c9a66b;
   --gold: #e8dcc8;
   --text: #e8ecf2;
-  --muted: #7a8799;
+  --muted: #9aa8b8;
   --border: rgba(94, 196, 232, 0.14);
   --glow-cyan: rgba(94, 196, 232, 0.45);
   --glow-magenta: rgba(180, 160, 140, 0.25);
-  --star-line: rgba(94, 196, 232, 0.38);
+  --star-line: rgba(120, 200, 240, 0.42);
   --star-core-live: #f4f7fb;
   --star-core-evolve: #a8b8cc;
-  --nav-bg: rgba(1, 3, 8, 0.82);
-  --scanline-opacity: 0.12;
+  --nav-bg: rgba(1, 3, 8, 0.78);
+  --scanline-opacity: 0.1;
   --theme-meta: #010308;
-  --tech-grid: rgba(94, 196, 232, 0.045);
-  --hud-border: rgba(94, 196, 232, 0.35);
+  --tech-grid: rgba(94, 196, 232, 0.04);
+  --hud-border: rgba(94, 196, 232, 0.38);
+  --sky-photo: url("../assets/bg/night-milkyway-photo.jpg");
 }
 
 html[data-theme="day"] {
@@ -50,30 +51,39 @@ html[data-theme="day"] {
   --star-core-live: #0c4a6e;
   --star-core-evolve: #475569;
   --nav-bg: rgba(220, 228, 236, 0.88);
-  --scanline-opacity: 0.06;
+  --scanline-opacity: 0.05;
   --theme-meta: #eef2f6;
-  --tech-grid: rgba(14, 116, 144, 0.08);
+  --tech-grid: rgba(14, 116, 144, 0.07);
   --hud-border: rgba(14, 116, 144, 0.4);
+  --sky-photo: url("../assets/bg/day-atmosphere.jpg");
 }
 
-html[data-theme="night"] .sky-layer {
-  background:
-    /* Milky Way dust lane — realistic warm/brown */
-    radial-gradient(ellipse 95% 28% at 52% 44%, rgba(140, 110, 85, 0.14), transparent 72%),
-    radial-gradient(ellipse 80% 18% at 48% 40%, rgba(210, 215, 225, 0.1), transparent 68%),
-    radial-gradient(ellipse 55% 35% at 78% 22%, rgba(60, 90, 130, 0.08), transparent 60%),
-    radial-gradient(ellipse 45% 30% at 12% 68%, rgba(40, 70, 100, 0.07), transparent 55%),
-    /* horizon glow — atmospheric */
-    radial-gradient(ellipse 120% 40% at 50% 105%, rgba(20, 40, 60, 0.35), transparent 55%),
-    linear-gradient(180deg, #010308 0%, #040810 28%, #081018 52%, #0a1520 78%, #061018 100%);
+.sky-layer {
+  background-color: var(--bg-deep);
+  background-image: var(--sky-photo);
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
-html[data-theme="day"] .sky-layer {
+.sky-layer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+html[data-theme="night"] .sky-layer::after {
   background:
-    radial-gradient(ellipse 100% 55% at 50% -5%, rgba(255, 255, 255, 0.85), transparent 58%),
-    radial-gradient(ellipse 70% 40% at 85% 75%, rgba(255, 248, 235, 0.35), transparent 50%),
-    radial-gradient(ellipse 50% 35% at 15% 60%, rgba(180, 200, 220, 0.25), transparent 45%),
-    linear-gradient(180deg, #7a94aa 0%, #a8bcc8 38%, #c8d4e0 62%, #d8dee6 100%);
+    linear-gradient(180deg, rgba(1, 3, 8, 0.72) 0%, rgba(1, 3, 8, 0.18) 38%, rgba(1, 3, 8, 0.35) 68%, rgba(1, 3, 8, 0.78) 100%),
+    radial-gradient(ellipse 90% 60% at 50% 40%, transparent 30%, rgba(1, 3, 8, 0.35) 100%);
+}
+
+html[data-theme="day"] .sky-layer::after {
+  background:
+    linear-gradient(180deg, rgba(220, 228, 236, 0.55) 0%, rgba(200, 212, 224, 0.2) 45%, rgba(180, 195, 210, 0.45) 100%),
+    radial-gradient(ellipse 80% 50% at 50% 20%, rgba(255, 255, 255, 0.35), transparent 60%);
 }
 
 html[data-theme="night"] .tech-overlay {
@@ -81,7 +91,7 @@ html[data-theme="night"] .tech-overlay {
 }
 
 html[data-theme="day"] .tech-overlay {
-  opacity: 0.55;
+  opacity: 0.5;
 }
 
 html[data-theme="day"] .scanlines {
@@ -89,7 +99,7 @@ html[data-theme="day"] .scanlines {
 }
 
 html[data-theme="night"] .constellation-wrap {
-  filter: drop-shadow(0 0 60px rgba(94, 196, 232, 0.06));
+  filter: drop-shadow(0 0 80px rgba(0, 0, 0, 0.45));
 }
 
 html[data-theme="day"] .capricorn-3d.is-visible {
@@ -101,4 +111,25 @@ html[data-theme="night"] .capricorn-bubble {
   opacity: 0 !important;
   visibility: hidden !important;
   pointer-events: none !important;
+}
+
+html[data-theme="night"] .intro {
+  background: transparent;
+}
+
+html[data-theme="night"] .intro::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--sky-photo) center/cover no-repeat fixed;
+  filter: brightness(0.45) saturate(1.1);
+  z-index: -2;
+}
+
+html[data-theme="night"] .intro::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(1, 3, 8, 0.55);
+  z-index: -1;
 }
