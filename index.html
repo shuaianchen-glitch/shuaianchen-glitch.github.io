@@ -8,8 +8,8 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <title>ShuaiAn Studio · Capricornus</title>
-  <link rel="stylesheet" href="css/themes.css?v=20250622-access">
-  <link rel="stylesheet" href="css/style.css?v=20250622-access">
+  <link rel="stylesheet" href="css/themes.css?v=20250622-v3">
+  <link rel="stylesheet" href="css/style.css?v=20250622-v3">
 </head>
 <body>
   <canvas id="bg-canvas" aria-hidden="true"></canvas>
@@ -60,18 +60,22 @@
 
     <main>
       <section id="stage" class="stage">
+        <div id="capricorn-3d" class="capricorn-3d" aria-hidden="true"></div>
+        <div id="capricorn-bubble" class="capricorn-bubble" aria-live="polite"></div>
+
         <div class="stage-copy">
-          <p class="stage-tag">CAPRICORNUS · 摩羯星轨</p>
-          <h2 class="stage-headline">点击星点<br><span class="gradient-text">进入每个世界</span></h2>
-          <p class="stage-desc">这些星真实存在于摩羯座。已点亮的会回应你的触摸；还在攀登的，仍在闪烁。</p>
+          <p class="stage-tag" id="stage-tag">CAPRICORNUS · 摩羯星轨</p>
+          <h2 class="stage-headline" id="stage-headline">星辰不语，<br><span class="gradient-text">却回答每一次攀登</span></h2>
+          <p class="stage-desc" id="stage-desc">有些路线在诞生之前就已悬于夜空。你点亮的，是被触碰的意义；仍在闪烁的，是尚未靠岸的可能。</p>
+          <p class="stage-quote" id="stage-quote">推石上山不是惩罚，是把重复雕成形状。</p>
           <div class="stage-stats">
             <div class="stat-chip">
               <strong id="project-count">0</strong>
-              <span>已点亮</span>
+              <span id="stat-live-label">已点亮</span>
             </div>
             <div class="stat-chip">
               <strong id="climbing-count">0</strong>
-              <span>攀登中</span>
+              <span id="stat-climb-label">攀登中</span>
             </div>
           </div>
         </div>
@@ -80,9 +84,8 @@
           <div id="constellation-wrap" class="constellation-wrap">
             <svg id="constellation-svg" class="constellation-svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
             <div id="star-nodes" class="star-nodes"></div>
-            <div id="capricorn-3d" class="capricorn-3d" aria-hidden="true"></div>
           </div>
-          <p class="orbit-hint">
+          <p class="orbit-hint" id="stage-hint">
             <span class="pulse-dot"></span>
             悬停读星名 · 点击星点
           </p>
@@ -156,12 +159,12 @@
     </div>
   </div>
 
-  <script defer src="content/site.js?v=20250622-access"></script>
-  <script defer src="js/theme.js?v=20250622-access"></script>
-  <script defer src="js/vendor/three.min.js?v=20250622-access"></script>
-  <script defer src="js/stars.js?v=20250622-access"></script>
-  <script defer src="js/constellation.js?v=20250622-access"></script>
-  <script defer src="js/capricorn3d.js?v=20250622-access"></script>
-  <script defer src="js/main.js?v=20250622-access"></script>
+  <script defer src="content/site.js?v=20250622-v3"></script>
+  <script defer src="js/theme.js?v=20250622-v3"></script>
+  <script defer src="js/vendor/three.min.js?v=20250622-v3"></script>
+  <script defer src="js/stars.js?v=20250622-v3"></script>
+  <script defer src="js/constellation.js?v=20250622-v3"></script>
+  <script defer src="js/capricorn3d.js?v=20250622-v3"></script>
+  <script defer src="js/main.js?v=20250622-v3"></script>
 </body>
 </html>

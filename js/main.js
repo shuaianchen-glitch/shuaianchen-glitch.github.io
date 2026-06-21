@@ -191,14 +191,20 @@ function fillProjectList() {
     .join("  ·  ");
 }
 
-function initThemeBridge() {
-  window.addEventListener("themechange", (e) => {
-    Capricorn3D.setVisible(e.detail.theme === "day");
-  });
+function applyCopy() {
+  const s = window.SITE.stage;
+  $("#stage-tag").textContent = s.tag;
+  $("#stage-headline").innerHTML = `${s.headline[0]}<br><span class="gradient-text">${s.headline[1]}</span>`;
+  $("#stage-desc").textContent = s.desc;
+  $("#stage-quote").textContent = s.quote;
+  $("#stage-hint").innerHTML = `<span class="pulse-dot"></span> ${s.hint}`;
+  $("#stat-live-label").textContent = s.stats.live;
+  $("#stat-climb-label").textContent = s.stats.climbing;
 }
 
 function init() {
   Theme.init();
+  applyCopy();
   $("#year").textContent = new Date().getFullYear();
   $("#project-count").textContent = liveProjects().length;
   $("#climbing-count").textContent = climbingProjects().length;
@@ -211,7 +217,6 @@ function init() {
   );
   Capricorn3D.init();
   Capricorn3D.setVisible(Theme.current() === "day");
-  initThemeBridge();
 
   renderShowcase();
   initNav();
@@ -227,6 +232,14 @@ function init() {
       "content",
       e.detail.theme === "day" ? "#eef4fb" : "#030510"
     );
+    const hint = window.SITE.stage.hint;
+    const capHint = window.SITE.capricorn?.hint;
+    $("#stage-hint").innerHTML =
+      e.detail.theme === "day" && capHint
+        ? `<span class="pulse-dot"></span> ${capHint} · ${hint}`
+        : `<span class="pulse-dot"></span> ${hint}`;
+    Capricorn3D.setVisible(e.detail.theme === "day");
+    if (window.Starfield?.resize) Starfield.resize();
   });
 }
 
