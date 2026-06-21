@@ -108,7 +108,7 @@ html[data-theme="day"] .tech-overlay::before {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg);
+  background: transparent;
   transition: opacity 0.9s var(--ease-out), visibility 0.9s;
 }
 
