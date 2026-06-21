@@ -8,12 +8,17 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <title>ShuaiAn Studio · Capricornus</title>
-  <link rel="preload" as="image" href="assets/bg/night-milkyway-photo.jpg">
-  <link rel="stylesheet" href="css/themes.css?v=20250622-v5">
-  <link rel="stylesheet" href="css/style.css?v=20250622-v5">
+  <link rel="preload" as="image" href="assets/bg/night-pillars.jpg">
+  <link rel="stylesheet" href="css/themes.css?v=20250622-v6">
+  <link rel="stylesheet" href="css/style.css?v=20250622-v6">
 </head>
 <body>
-  <div class="sky-layer" aria-hidden="true"></div>
+  <div id="depth-sky" class="depth-sky" aria-hidden="true">
+    <div class="depth-layer depth-far" data-depth="0.022" data-z="-180"></div>
+    <div class="depth-layer depth-mid" data-depth="0.07" data-z="-60"></div>
+    <div class="depth-layer depth-near" data-depth="0.16" data-z="40"></div>
+  </div>
+  <div class="sky-vignette" aria-hidden="true"></div>
   <div class="tech-overlay" aria-hidden="true"></div>
   <canvas id="bg-canvas" aria-hidden="true"></canvas>
   <div class="scanlines" aria-hidden="true"></div>
@@ -161,12 +166,13 @@
     </div>
   </div>
 
-  <script defer src="content/site.js?v=20250622-v5"></script>
-  <script defer src="js/theme.js?v=20250622-v5"></script>
-  <script defer src="js/vendor/three.min.js?v=20250622-v5"></script>
-  <script defer src="js/stars.js?v=20250622-v5"></script>
-  <script defer src="js/constellation.js?v=20250622-v5"></script>
-  <script defer src="js/capricorn3d.js?v=20250622-v5"></script>
-  <script defer src="js/main.js?v=20250622-v5"></script>
+  <script defer src="content/site.js?v=20250622-v6"></script>
+  <script defer src="js/theme.js?v=20250622-v6"></script>
+  <script defer src="js/vendor/three.min.js?v=20250622-v6"></script>
+  <script defer src="js/depth-sky.js?v=20250622-v6"></script>
+  <script defer src="js/stars.js?v=20250622-v6"></script>
+  <script defer src="js/constellation.js?v=20250622-v6"></script>
+  <script defer src="js/capricorn3d.js?v=20250622-v6"></script>
+  <script defer src="js/main.js?v=20250622-v6"></script>
 </body>
 </html>

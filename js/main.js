@@ -210,6 +210,7 @@ function init() {
   $("#climbing-count").textContent = climbingProjects().length;
 
   initIntro();
+  DepthSky.init();
   Starfield.init();
   Constellation.init(
     (p) => navigateWithTransition(p, p.link, p.external),
