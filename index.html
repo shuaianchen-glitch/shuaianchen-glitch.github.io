@@ -9,8 +9,8 @@
   <meta http-equiv="Pragma" content="no-cache">
   <title>ShuaiAn Studio · Capricornus</title>
   <link rel="preload" as="image" href="assets/bg/night-milkyway-photo.jpg">
-  <link rel="stylesheet" href="css/themes.css?v=20250622-v7">
-  <link rel="stylesheet" href="css/style.css?v=20250622-v7">
+  <link rel="stylesheet" href="css/themes.css?v=20250622-v8">
+  <link rel="stylesheet" href="css/style.css?v=20250622-v8">
 </head>
 <body>
   <div id="depth-sky" class="depth-sky" aria-hidden="true">
@@ -18,7 +18,7 @@
     <div class="depth-layer depth-mid" data-depth="0.055" data-z="-30"></div>
   </div>
   <div class="sky-vignette" aria-hidden="true"></div>
-  <div class="tech-overlay" aria-hidden="true"></div>
+  <div class="sky-chart-mask" aria-hidden="true"></div>
   <canvas id="bg-canvas" aria-hidden="true"></canvas>
   <div class="scanlines" aria-hidden="true"></div>
 
@@ -87,8 +87,12 @@
         </div>
 
         <div class="constellation-panel">
-          <p class="chart-title" aria-hidden="true">CAPRICORNUS · 摩羯座星图</p>
+          <p class="chart-title" aria-hidden="true">CAPRICORNUS · 摩羯座星图 · IAU J2000</p>
           <div id="constellation-wrap" class="constellation-wrap">
+            <div class="chart-field" aria-hidden="true">
+              <span class="chart-coord chart-coord-ra">RA 20h · Dec −20°</span>
+              <span class="chart-coord chart-coord-dec">♑ Capricornus</span>
+            </div>
             <svg id="constellation-svg" class="constellation-svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
             <div id="star-nodes" class="star-nodes"></div>
           </div>
@@ -166,13 +170,13 @@
     </div>
   </div>
 
-  <script defer src="content/site.js?v=20250622-v7"></script>
-  <script defer src="js/theme.js?v=20250622-v7"></script>
-  <script defer src="js/vendor/three.min.js?v=20250622-v7"></script>
-  <script defer src="js/depth-sky.js?v=20250622-v7"></script>
-  <script defer src="js/stars.js?v=20250622-v7"></script>
-  <script defer src="js/constellation.js?v=20250622-v7"></script>
-  <script defer src="js/capricorn3d.js?v=20250622-v7"></script>
-  <script defer src="js/main.js?v=20250622-v7"></script>
+  <script defer src="content/site.js?v=20250622-v8"></script>
+  <script defer src="js/theme.js?v=20250622-v8"></script>
+  <script defer src="js/vendor/three.min.js?v=20250622-v8"></script>
+  <script defer src="js/depth-sky.js?v=20250622-v8"></script>
+  <script defer src="js/stars.js?v=20250622-v8"></script>
+  <script defer src="js/constellation.js?v=20250622-v8"></script>
+  <script defer src="js/capricorn3d.js?v=20250622-v8"></script>
+  <script defer src="js/main.js?v=20250622-v8"></script>
 </body>
 </html>

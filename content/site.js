@@ -12,7 +12,7 @@ window.SITE = {
     tag: "CAPRICORNUS · 摩羯星轨",
     headline: ["星辰不语，", "却回答每一次攀登"],
     headlineAccent: 1,
-    desc: "项目钉在摩羯座 IAU 星图上——背景是 NASA 银河，星轨是导航。悬停读星名，点击已点亮的星。",
+    desc: "背景是深空银河，前景是 IAU 摩羯星图投影——项目即星，星轨即导航。悬停点亮连线，点击已亮之星。",
     quote: "推石上山不是惩罚，是把重复雕成形状。",
     hint: "悬停星名 · 点击星点进入项目",
     stats: { live: "已点亮", climbing: "攀登中" },
@@ -54,14 +54,21 @@ window.SITE = {
 
   defaultTheme: "night",
 
+  chart: {
+    insetTop: 0.1,
+    insetRight: 0.06,
+    insetBottom: 0.12,
+    insetLeft: 0.06,
+  },
+
   hub: {
     bayer: "δ Cap",
     name: "Deneb Algedi",
     cn: "垒壁阵四",
     mag: 2.87,
     dist: "39 光年",
-    x: 0.56,
-    y: 0.66,
+    x: 0.58,
+    y: 0.58,
     note: "摩羯座最亮星 · 海山羊之心",
   },
 
@@ -73,7 +80,7 @@ window.SITE = {
       tags: ["游戏", "Canvas"],
       link: "/snake-game/snake/",
       live: true,
-      star: { bayer: "β Cap", name: "Dabih", cn: "牛宿二", mag: 3.05, x: 0.34, y: 0.22 },
+      star: { bayer: "β Cap", name: "Dabih", cn: "牛宿二", mag: 3.05, x: 0.35, y: 0.25 },
       glow: "linear-gradient(135deg, rgba(74,222,128,0.14), transparent)",
     },
     {
@@ -83,7 +90,7 @@ window.SITE = {
       tags: ["扩展", "WebM"],
       link: "/snake-game/idle-companion/",
       live: true,
-      star: { bayer: "α Cap", name: "Algedi", cn: "牛宿一", mag: 3.58, x: 0.2, y: 0.38, binary: true },
+      star: { bayer: "α Cap", name: "Algedi", cn: "牛宿一", mag: 3.58, x: 0.28, y: 0.38, binary: true },
       glow: "linear-gradient(135deg, rgba(255,46,166,0.14), transparent)",
     },
     {
@@ -94,7 +101,7 @@ window.SITE = {
       link: "https://github.com/shuaianchen-glitch/snake-game/tree/main/koumen-map",
       live: true,
       external: true,
-      star: { bayer: "γ Cap", name: "Nashira", cn: "垒壁阵一", mag: 3.69, x: 0.46, y: 0.44 },
+      star: { bayer: "γ Cap", name: "Nashira", cn: "垒壁阵一", mag: 3.69, x: 0.58, y: 0.28 },
       glow: "linear-gradient(135deg, rgba(167,139,250,0.14), transparent)",
     },
     {
@@ -103,7 +110,7 @@ window.SITE = {
       desc: "AI 与交互结合的实验，DNA 正在重组。",
       tags: ["AI"],
       live: false,
-      star: { bayer: "ζ Cap", name: "Maraca", cn: "垒壁阵七", mag: 3.74, x: 0.28, y: 0.58 },
+      star: { bayer: "ζ Cap", name: "Maraca", cn: "垒壁阵七", mag: 3.74, x: 0.38, y: 0.48 },
       glow: "linear-gradient(135deg, rgba(0,240,255,0.08), transparent)",
     },
     {
@@ -112,7 +119,7 @@ window.SITE = {
       desc: "开发效率小工具集合，仍在攀峰打磨中。",
       tags: ["工具"],
       live: false,
-      star: { bayer: "θ Cap", name: "θ Capricorni", cn: "垒壁阵二", mag: 4.08, x: 0.16, y: 0.54 },
+      star: { bayer: "θ Cap", name: "θ Capricorni", cn: "垒壁阵二", mag: 4.08, x: 0.22, y: 0.55 },
     },
     {
       icon: "🎨",
@@ -120,13 +127,13 @@ window.SITE = {
       desc: "Shader 与生成艺术 playground，光在酝酿。",
       tags: ["视觉"],
       live: false,
-      star: { bayer: "ι Cap", name: "Armus", cn: "垒壁阵三", mag: 4.13, x: 0.72, y: 0.32 },
+      star: { bayer: "ι Cap", name: "Armus", cn: "垒壁阵三", mag: 4.13, x: 0.82, y: 0.42 },
     },
   ],
 
   decorStars: [
-    { bayer: "ξ Cap", cn: "垒壁阵五", mag: 4.34, x: 0.4, y: 0.18 },
-    { bayer: "ν Cap", cn: "垒壁阵六", mag: 4.77, x: 0.64, y: 0.52 },
+    { bayer: "ξ Cap", cn: "垒壁阵五", mag: 4.34, x: 0.48, y: 0.18 },
+    { bayer: "ν Cap", cn: "垒壁阵六", mag: 4.77, x: 0.65, y: 0.68 },
   ],
 
   lines: [
