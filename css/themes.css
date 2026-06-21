@@ -1,182 +1,29 @@
-/* Capricornus sky — Milky Way depth aligned with constellation chart */
-
 html[data-theme="night"] {
   color-scheme: dark;
-  --bg: #010308;
-  --bg-deep: #010308;
-  --bg-card: rgba(6, 10, 18, 0.88);
-  --glass: rgba(8, 14, 24, 0.72);
-  --cyan: #7ec8e8;
-  --magenta: #8899aa;
-  --peach: #c9a66b;
-  --gold: #f0e6d0;
-  --text: #e8ecf2;
-  --muted: #8fa0b4;
-  --border: rgba(126, 200, 232, 0.16);
-  --glow-cyan: rgba(126, 200, 232, 0.5);
-  --star-line: rgba(126, 200, 232, 0.62);
-  --star-line-dim: rgba(126, 200, 232, 0.18);
-  --star-core-live: #f8fbff;
-  --star-core-evolve: #9eb0c4;
-  --nav-bg: rgba(1, 3, 8, 0.8);
-  --scanline-opacity: 0.04;
-  --theme-meta: #010308;
-  --tech-grid: rgba(126, 200, 232, 0.045);
-  --hud-border: rgba(126, 200, 232, 0.35);
-  --chart-inset-top: 10%;
-  --chart-inset-right: 6%;
-  --chart-inset-bottom: 12%;
-  --chart-inset-left: 6%;
-  --layer-far: url("../assets/bg/night-stars-far.jpg");
-  --layer-mid: url("../assets/bg/night-milkyway-photo.jpg");
+  --bg: #050310;
+  --bg-card: rgba(12, 8, 28, 0.92);
+  --text: #e8ecf4;
+  --muted: #8a9bb5;
+  --accent: #7ec8ff;
+  --accent-dim: rgba(126, 200, 255, 0.35);
+  --gold: #f0d890;
+  --border: rgba(126, 200, 255, 0.14);
+  --nav-bg: rgba(5, 3, 16, 0.82);
+  --glow: rgba(126, 200, 255, 0.25);
+  --meta: #07050f;
 }
 
 html[data-theme="day"] {
   color-scheme: light;
-  --bg: #c8d4e0;
-  --bg-deep: #b8c8d8;
-  --bg-card: rgba(255, 255, 255, 0.92);
-  --glass: rgba(255, 255, 255, 0.72);
-  --cyan: #0e7490;
+  --bg: #e4eaf2;
+  --bg-card: rgba(255, 255, 255, 0.94);
   --text: #0f172a;
   --muted: #475569;
-  --border: rgba(15, 23, 42, 0.14);
-  --glow-cyan: rgba(14, 116, 144, 0.28);
-  --star-line: rgba(14, 116, 144, 0.45);
-  --star-line-dim: rgba(14, 116, 144, 0.16);
-  --star-core-live: #0c4a6e;
-  --star-core-evolve: #64748b;
-  --nav-bg: rgba(220, 228, 236, 0.88);
-  --scanline-opacity: 0.03;
-  --theme-meta: #eef2f6;
-  --tech-grid: rgba(14, 116, 144, 0.07);
-  --hud-border: rgba(14, 116, 144, 0.4);
-  --chart-inset-top: 10%;
-  --chart-inset-right: 6%;
-  --chart-inset-bottom: 12%;
-  --chart-inset-left: 6%;
-  --layer-far: url("../assets/bg/day-atmosphere.jpg");
-  --layer-mid: url("../assets/bg/day-atmosphere.jpg");
+  --accent: #0e7490;
+  --accent-dim: rgba(14, 116, 144, 0.3);
+  --gold: #b45309;
+  --border: rgba(15, 23, 42, 0.12);
+  --nav-bg: rgba(228, 234, 242, 0.88);
+  --glow: rgba(14, 116, 144, 0.18);
+  --meta: #e4eaf2;
 }
-
-.depth-sky {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
-  perspective: 900px;
-  background: var(--bg-deep);
-}
-
-.depth-layer {
-  position: absolute;
-  inset: -12%;
-  background-size: cover;
-  background-repeat: no-repeat;
-  will-change: transform;
-}
-
-html[data-theme="night"] .depth-far {
-  background-image: var(--layer-far);
-  background-position: 52% 38%;
-  filter: brightness(0.38) saturate(0.85) blur(0.5px);
-  opacity: 0.95;
-}
-
-html[data-theme="night"] .depth-mid {
-  background-image: var(--layer-mid);
-  background-position: 50% 40%;
-  filter: brightness(0.55) saturate(1.08);
-  opacity: 0.92;
-  mask-image: radial-gradient(
-    ellipse 72% 68% at 52% 46%,
-    black 18%,
-    rgba(0, 0, 0, 0.55) 55%,
-    transparent 88%
-  );
-  -webkit-mask-image: radial-gradient(
-    ellipse 72% 68% at 52% 46%,
-    black 18%,
-    rgba(0, 0, 0, 0.55) 55%,
-    transparent 88%
-  );
-}
-
-html[data-theme="day"] .depth-far,
-html[data-theme="day"] .depth-mid {
-  background-image: var(--layer-far);
-  background-position: center 40%;
-  filter: brightness(1.02);
-}
-
-html[data-theme="day"] .depth-mid {
-  opacity: 0.75;
-  mask-image: radial-gradient(ellipse 70% 65% at 50% 45%, black 25%, transparent 85%);
-  -webkit-mask-image: radial-gradient(ellipse 70% 65% at 50% 45%, black 25%, transparent 85%);
-}
-
-.sky-vignette {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: radial-gradient(ellipse 82% 72% at 50% 46%, transparent 12%, rgba(1, 3, 8, 0.72) 100%);
-}
-
-html[data-theme="day"] .sky-vignette {
-  background: radial-gradient(ellipse 85% 70% at 50% 40%, transparent 20%, rgba(200, 212, 224, 0.5) 100%);
-}
-
-.sky-chart-mask {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: radial-gradient(
-    ellipse 58% 52% at 52% 46%,
-    rgba(126, 200, 232, 0.06) 0%,
-    rgba(1, 3, 8, 0.15) 55%,
-    transparent 78%
-  );
-  mix-blend-mode: screen;
-}
-
-html[data-theme="day"] .sky-chart-mask {
-  background: radial-gradient(
-    ellipse 58% 52% at 50% 45%,
-    rgba(14, 116, 144, 0.08) 0%,
-    transparent 72%
-  );
-  mix-blend-mode: normal;
-}
-
-html[data-theme="night"] .intro::before {
-  content: "";
-  position: absolute;
-  inset: -8%;
-  background: var(--layer-mid) 50% 40% / cover no-repeat;
-  filter: brightness(0.42);
-  z-index: -2;
-}
-
-html[data-theme="night"] .intro::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(1, 3, 8, 0.65);
-  z-index: -1;
-}
-
-html[data-theme="night"] .intro { background: transparent; }
-
-html[data-theme="night"] .capricorn-3d,
-html[data-theme="night"] .capricorn-bubble {
-  opacity: 0 !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
-}
-
-html[data-theme="day"] .capricorn-3d.is-visible { opacity: 1; }
-
-html[data-theme="night"] .sky-chart-mask { opacity: 0.9; }
-html[data-theme="day"] .sky-chart-mask { opacity: 0.6; }

@@ -3,62 +3,42 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="description" content="ShuaiAn Studio — 摩羯座星轨上的温柔攀岩与数字创造">
-  <meta name="theme-color" content="#010308">
+  <meta name="description" content="ShuaiAn Studio — 摩羯座星图 · 温柔攀岩与数字创造">
+  <meta name="theme-color" content="#07050f">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
   <title>ShuaiAn Studio · Capricornus</title>
-  <link rel="preload" as="image" href="assets/bg/night-milkyway-photo.jpg">
-  <link rel="stylesheet" href="css/themes.css?v=20250622-v8">
-  <link rel="stylesheet" href="css/style.css?v=20250622-v8">
+  <link rel="stylesheet" href="css/themes.css?v=20250622-v9">
+  <link rel="stylesheet" href="css/style.css?v=20250622-v9">
 </head>
 <body>
-  <div id="depth-sky" class="depth-sky" aria-hidden="true">
-    <div class="depth-layer depth-far" data-depth="0.018" data-z="-100"></div>
-    <div class="depth-layer depth-mid" data-depth="0.055" data-z="-30"></div>
-  </div>
-  <div class="sky-vignette" aria-hidden="true"></div>
-  <div class="sky-chart-mask" aria-hidden="true"></div>
-  <canvas id="bg-canvas" aria-hidden="true"></canvas>
-  <div class="scanlines" aria-hidden="true"></div>
-
   <div id="intro" class="intro" aria-live="polite">
-    <div class="intro-bloom"></div>
+    <div class="intro-glow"></div>
     <div class="intro-inner">
-      <div class="intro-logo-ring">
-        <span class="intro-logo">♑</span>
-      </div>
-      <p class="intro-eyebrow">ShuaiAn · Capricornus</p>
-      <h1 class="intro-title">
-        <span class="intro-line">在星途上，</span>
-        <span class="intro-line accent">把想法推上山</span>
-      </h1>
-      <p class="intro-sub">每一次迭代，都是一颗更亮的星</p>
-      <div class="intro-loader" aria-hidden="true">
-        <div class="intro-loader-bar"></div>
-      </div>
+      <span class="intro-sigil">♑</span>
+      <p class="intro-eyebrow" id="intro-eyebrow">ShuaiAn · Capricornus</p>
+      <h1 class="intro-title" id="intro-title"></h1>
+      <p class="intro-sub" id="intro-sub"></p>
       <button type="button" id="intro-enter" class="intro-btn">
-        <span>进入星轨</span>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <span id="intro-btn-label">展开星图</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>
       </button>
-      <p class="intro-skip">按 Enter 或点击任意处</p>
     </div>
   </div>
 
   <div id="app" class="app is-hidden">
     <nav class="nav">
-      <a class="nav-logo" href="#" data-scroll="stage">SA<span class="blink">·</span>Capricorn</a>
+      <a class="nav-logo" href="#" data-scroll="stage">SA<span class="sigil-dot">·</span>Capricorn</a>
       <div class="nav-actions">
         <div class="nav-pills">
-          <button type="button" class="pill active" data-scroll="stage">星轨</button>
+          <button type="button" class="pill active" data-scroll="stage">星图</button>
           <button type="button" class="pill" data-scroll="showcase">造物</button>
           <button type="button" class="pill" data-scroll="about">关于</button>
           <a class="pill pill-link" href="https://github.com/shuaianchen-glitch" target="_blank" rel="noopener">GitHub</a>
         </div>
         <button type="button" id="theme-toggle" class="theme-toggle" aria-label="切换主题">
-          <span class="theme-icon" aria-hidden="true">☀️</span>
+          <span class="theme-icon">☀️</span>
           <span class="theme-label">白昼</span>
         </button>
       </div>
@@ -66,82 +46,55 @@
 
     <main>
       <section id="stage" class="stage">
-        <div id="capricorn-3d" class="capricorn-3d" aria-hidden="true"></div>
-        <div id="capricorn-bubble" class="capricorn-bubble" aria-live="polite"></div>
-
-        <div class="stage-copy">
-          <p class="stage-tag" id="stage-tag">CAPRICORNUS · 摩羯星轨</p>
-          <h2 class="stage-headline" id="stage-headline">星辰不语，<br><span class="gradient-text">却回答每一次攀登</span></h2>
-          <p class="stage-desc" id="stage-desc">有些路线在诞生之前就已悬于夜空。你点亮的，是被触碰的意义；仍在闪烁的，是尚未靠岸的可能。</p>
-          <p class="stage-quote" id="stage-quote">推石上山不是惩罚，是把重复雕成形状。</p>
-          <div class="stage-stats">
-            <div class="stat-chip">
-              <strong id="project-count">0</strong>
-              <span id="stat-live-label">已点亮</span>
-            </div>
-            <div class="stat-chip">
-              <strong id="climbing-count">0</strong>
-              <span id="stat-climb-label">攀登中</span>
-            </div>
+        <div class="painting-frame">
+          <canvas id="painting" aria-label="摩羯座星图交互画作"></canvas>
+          <div class="painting-caption">
+            <p class="caption-tag" id="stage-tag">CAPRICORNUS · 摩羯星图</p>
+            <h2 class="caption-title" id="stage-headline"></h2>
+            <p class="caption-hint" id="stage-hint">
+              <span class="hint-pulse"></span>
+              触碰星点 · 细节自然展开
+            </p>
           </div>
-        </div>
-
-        <div class="constellation-panel">
-          <p class="chart-title" aria-hidden="true">CAPRICORNUS · 摩羯座星图 · IAU J2000</p>
-          <div id="constellation-wrap" class="constellation-wrap">
-            <div class="chart-field" aria-hidden="true">
-              <span class="chart-coord chart-coord-ra">RA 20h · Dec −20°</span>
-              <span class="chart-coord chart-coord-dec">♑ Capricornus</span>
-            </div>
-            <svg id="constellation-svg" class="constellation-svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
-            <div id="star-nodes" class="star-nodes"></div>
+          <div class="painting-meta" aria-hidden="true">
+            <span>IAU J2000</span>
+            <span>RA 20h · Dec −20°</span>
           </div>
-          <p class="orbit-hint" id="stage-hint">
-            <span class="pulse-dot"></span>
-            悬停读星名 · 点击星点
-          </p>
         </div>
       </section>
 
       <section id="showcase" class="showcase">
-        <div class="showcase-header">
-          <h2><span class="section-prefix">01</span> 造物清单</h2>
-          <p>左右滑动浏览；每一样，都是攀山路上的一个脚印</p>
-        </div>
+        <header class="section-head">
+          <h2><span class="section-num">01</span>造物清单</h2>
+          <p id="showcase-desc">每一样，都是攀山路上的一个脚印</p>
+        </header>
         <div class="showcase-track" id="showcase-track"></div>
         <div class="showcase-dots" id="showcase-dots"></div>
       </section>
 
       <section id="about" class="about">
         <div class="about-grid">
-          <div class="about-visual">
-            <div class="glass-card">
-              <div class="glass-shine"></div>
-              <p class="glass-label">CREATOR · ♑</p>
-              <h3>ShuaiAn Chen</h3>
-              <p class="glass-sub">温柔攀岩者 / 数字造物者</p>
-              <p class="glass-story">Pan 跃入河流，化身海山羊；我推石上星轨，把重复雕成创造。</p>
-              <div class="glass-tags">
-                <span>交互</span><span>前端</span><span>小游戏</span><span>AI</span>
-              </div>
+          <article class="about-card">
+            <p class="about-label">CREATOR · ♑</p>
+            <h3>ShuaiAn Chen</h3>
+            <p class="about-role">温柔攀岩者 / 数字造物者</p>
+            <p class="about-story">Pan 跃入河流，化身海山羊；我推石上星轨，把重复雕成创造。</p>
+            <div class="about-tags">
+              <span>交互</span><span>前端</span><span>小游戏</span><span>AI</span>
             </div>
-          </div>
+          </article>
           <div class="about-terminal">
-            <div class="terminal">
-              <div class="terminal-bar">
-                <span class="dot red"></span>
-                <span class="dot yellow"></span>
-                <span class="dot green"></span>
-                <span class="terminal-title">climb.sh</span>
-              </div>
-              <div class="terminal-body">
-                <p><span class="prompt">$</span> cat manifesto.txt</p>
-                <p class="output">重复不是惩罚，是雕刻。</p>
-                <p><span class="prompt">$</span> echo $VIBE</p>
-                <p class="output typing" id="typing-text"></p>
-                <p><span class="prompt">$</span> ls ./projects</p>
-                <p class="output" id="project-list"></p>
-              </div>
+            <div class="terminal-bar">
+              <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+              <span class="terminal-title">climb.sh</span>
+            </div>
+            <div class="terminal-body">
+              <p><span class="prompt">$</span> cat manifesto.txt</p>
+              <p class="output" id="manifesto-text"></p>
+              <p><span class="prompt">$</span> echo $VIBE</p>
+              <p class="output typing" id="typing-text"></p>
+              <p><span class="prompt">$</span> ls ./projects</p>
+              <p class="output" id="project-list"></p>
             </div>
           </div>
         </div>
@@ -150,33 +103,40 @@
 
     <footer class="footer">
       <p>© <span id="year"></span> ShuaiAn Chen · 摩羯座星轨</p>
-      <p class="footer-link"><a href="https://github.com/shuaianchen-glitch">github.com/shuaianchen-glitch</a></p>
+      <a href="https://github.com/shuaianchen-glitch">github.com/shuaianchen-glitch</a>
     </footer>
   </div>
 
+  <div id="detail-layer" class="detail-layer" aria-hidden="true">
+    <div class="detail-backdrop" id="detail-backdrop"></div>
+    <div class="detail-ripple" id="detail-ripple"></div>
+    <article class="detail-card" id="detail-card" role="dialog" aria-modal="true" aria-labelledby="detail-title" tabindex="-1">
+      <button type="button" class="detail-close" id="detail-close" aria-label="关闭">×</button>
+      <div class="detail-header">
+        <span class="detail-icon" id="detail-icon"></span>
+        <div>
+          <p class="detail-star" id="detail-star"></p>
+          <h3 class="detail-title" id="detail-title"></h3>
+        </div>
+      </div>
+      <p class="detail-desc" id="detail-desc"></p>
+      <div class="detail-tags" id="detail-tags"></div>
+      <div class="detail-actions">
+        <button type="button" class="detail-cta" id="detail-cta"></button>
+      </div>
+      <p class="detail-whisper" id="detail-whisper"></p>
+    </article>
+  </div>
+
   <div id="transition" class="transition" aria-hidden="true">
-    <div class="transition-inner">
-      <span id="transition-icon" class="transition-icon"></span>
-      <p id="transition-title" class="transition-title"></p>
-      <p id="transition-whisper" class="transition-whisper"></p>
-    </div>
+    <span class="transition-icon" id="transition-icon"></span>
+    <p class="transition-title" id="transition-title"></p>
   </div>
 
-  <div id="toast" class="toast" role="status" aria-live="polite">
-    <span id="toast-icon" class="toast-icon"></span>
-    <div class="toast-body">
-      <strong id="toast-title"></strong>
-      <span id="toast-msg"></span>
-    </div>
-  </div>
-
-  <script defer src="content/site.js?v=20250622-v8"></script>
-  <script defer src="js/theme.js?v=20250622-v8"></script>
-  <script defer src="js/vendor/three.min.js?v=20250622-v8"></script>
-  <script defer src="js/depth-sky.js?v=20250622-v8"></script>
-  <script defer src="js/stars.js?v=20250622-v8"></script>
-  <script defer src="js/constellation.js?v=20250622-v8"></script>
-  <script defer src="js/capricorn3d.js?v=20250622-v8"></script>
-  <script defer src="js/main.js?v=20250622-v8"></script>
+  <script defer src="content/site.js?v=20250622-v9"></script>
+  <script defer src="js/theme.js?v=20250622-v9"></script>
+  <script defer src="js/painting.js?v=20250622-v9"></script>
+  <script defer src="js/detail.js?v=20250622-v9"></script>
+  <script defer src="js/main.js?v=20250622-v9"></script>
 </body>
 </html>

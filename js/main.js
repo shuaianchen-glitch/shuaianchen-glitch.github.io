@@ -1,16 +1,8 @@
-const INTRO_KEY = "sa-studio-intro-seen";
+const INTRO_KEY = "sa-studio-intro-v2";
 const $ = (sel) => document.querySelector(sel);
 
 function projects() {
   return window.SITE.projects;
-}
-
-function liveProjects() {
-  return projects().filter((p) => p.live);
-}
-
-function climbingProjects() {
-  return projects().filter((p) => !p.live);
 }
 
 function enterSite(skipIntro = false) {
@@ -22,7 +14,7 @@ function enterSite(skipIntro = false) {
       intro.style.display = "none";
       app.classList.remove("is-hidden");
       app.classList.add("is-visible");
-    }, 700);
+    }, 800);
   } else {
     if (intro) intro.style.display = "none";
     app.classList.remove("is-hidden");
@@ -32,20 +24,33 @@ function enterSite(skipIntro = false) {
 }
 
 function initIntro() {
-  const intro = $("#intro");
-  const go = () => enterSite(false);
+  const intro = window.SITE.intro;
+  const titleEl = $("#intro-title");
+  if (titleEl) {
+    titleEl.innerHTML = intro.title
+      .map((line, i) =>
+        i === intro.accentLine
+          ? `<span class="accent">${line}</span>`
+          : `<span>${line}</span>`
+      )
+      .join("<br>");
+  }
+  $("#intro-eyebrow").textContent = intro.eyebrow;
+  $("#intro-sub").textContent = intro.sub;
+  $("#intro-btn-label").textContent = intro.btn;
 
+  const go = () => enterSite(false);
   if (sessionStorage.getItem(INTRO_KEY) === "1") {
     enterSite(true);
     return;
   }
 
   $("#intro-enter")?.addEventListener("click", go);
-  intro?.addEventListener("click", () => {
-    if (!intro.classList.contains("is-leaving")) go();
+  $("#intro")?.addEventListener("click", (e) => {
+    if (e.target.closest("#intro-enter") || !$("#intro").classList.contains("is-leaving")) go();
   });
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && !intro.classList.contains("is-leaving")) go();
+    if (e.key === "Enter" && !$("#intro")?.classList.contains("is-leaving")) go();
   });
 }
 
@@ -54,33 +59,20 @@ function randomWhisper() {
   return list[Math.floor(Math.random() * list.length)];
 }
 
-function navigateWithTransition(project, href, external) {
+function navigateWithTransition(project) {
   const overlay = $("#transition");
   $("#transition-icon").textContent = project.icon;
   $("#transition-title").textContent = window.SITE.transition.entering(project.title);
-  $("#transition-whisper").textContent = randomWhisper();
   overlay.classList.add("is-active");
 
   setTimeout(() => {
-    if (external) {
-      window.open(href, "_blank", "noopener");
+    if (project.external) {
+      window.open(project.link, "_blank", "noopener");
       overlay.classList.remove("is-active");
     } else {
-      window.location.href = href;
+      window.location.href = project.link;
     }
-  }, 650);
-}
-
-let toastTimer;
-function showSoonToast(project) {
-  const toast = $("#toast");
-  const soon = window.SITE.soon;
-  $("#toast-icon").textContent = project.icon;
-  $("#toast-title").textContent = soon.title;
-  $("#toast-msg").textContent = `${project.title} · ${soon.message}`;
-  toast.classList.add("is-visible");
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toast.classList.remove("is-visible"), 3200);
+  }, 600);
 }
 
 function renderShowcase() {
@@ -91,65 +83,54 @@ function renderShowcase() {
 
   track.innerHTML = projects()
     .map((p) => {
-      const cls = p.live ? "showcase-card" : "showcase-card evolving";
-      const style = p.glow ? `style="--card-glow:${p.glow}"` : "";
+      const cls = "showcase-card";
       const starLine = `<span class="showcase-star">${p.star.bayer} · ${p.star.cn}</span>`;
       const cta = p.live ? copy.ctaLive : copy.ctaSoon;
-      const tag = p.live ? "" : ' data-soon="1"';
 
       if (p.live) {
         const ext = p.external ? ' target="_blank" rel="noopener"' : "";
-        return `<a href="${p.link}" class="${cls}" ${style}${ext}${tag}>
-          <div class="showcase-card-inner">
-            ${starLine}
-            <div class="showcase-icon">${p.icon}</div>
-            <h3 class="showcase-title">${p.title}</h3>
-            <p class="showcase-desc">${p.desc}</p>
-            <span class="showcase-cta">${cta}</span>
-          </div>
-        </a>`;
-      }
-
-      return `<button type="button" class="${cls}" ${style}${tag}>
-        <div class="showcase-card-inner">
+        return `<a href="${p.link}" class="${cls}" data-i="${projects().indexOf(p)}"${ext}>
           ${starLine}
           <div class="showcase-icon">${p.icon}</div>
           <h3 class="showcase-title">${p.title}</h3>
           <p class="showcase-desc">${p.desc}</p>
           <span class="showcase-cta">${cta}</span>
-        </div>
+        </a>`;
+      }
+      return `<button type="button" class="${cls}" data-i="${projects().indexOf(p)}">
+        ${starLine}
+        <div class="showcase-icon">${p.icon}</div>
+        <h3 class="showcase-title">${p.title}</h3>
+        <p class="showcase-desc">${p.desc}</p>
+        <span class="showcase-cta">${cta}</span>
       </button>`;
     })
     .join("");
 
-  track.querySelectorAll("a.showcase-card").forEach((el, i) => {
+  track.querySelectorAll("a.showcase-card").forEach((el) => {
     el.addEventListener("click", (e) => {
-      const p = projects()[i];
+      const p = projects()[Number(el.dataset.i)];
       if (p.external) return;
       e.preventDefault();
-      navigateWithTransition(p, p.link, false);
+      navigateWithTransition(p);
     });
   });
 
-  track.querySelectorAll("button.showcase-card").forEach((el, i) => {
+  track.querySelectorAll("button.showcase-card").forEach((el) => {
     el.addEventListener("click", () => {
-      const p = projects()[i];
-      showSoonToast(p);
+      Painting.openProject(Number(el.dataset.i));
+      document.getElementById("stage")?.scrollIntoView({ behavior: "smooth" });
     });
   });
 
   if (dots) {
-    const count = projects().length;
-    dots.innerHTML = Array.from({ length: count }, (_, i) =>
-      `<span data-i="${i}"${i === 0 ? ' class="active"' : ""}></span>`
-    ).join("");
-
+    dots.innerHTML = projects()
+      .map((_, i) => `<span data-i="${i}"${i === 0 ? ' class="active"' : ""}></span>`)
+      .join("");
     track.addEventListener("scroll", () => {
-      const w = track.querySelector(".showcase-card")?.offsetWidth || 300;
-      const idx = Math.round(track.scrollLeft / (w + 20));
-      dots.querySelectorAll("span").forEach((d, j) => {
-        d.classList.toggle("active", j === idx);
-      });
+      const card = track.querySelector(".showcase-card");
+      const idx = Math.round(track.scrollLeft / ((card?.offsetWidth || 300) + 16));
+      dots.querySelectorAll("span").forEach((d, j) => d.classList.toggle("active", j === idx));
     });
   }
 }
@@ -167,6 +148,15 @@ function initNav() {
   });
 }
 
+function applyCopy() {
+  const s = window.SITE.stage;
+  $("#stage-tag").textContent = s.tag;
+  $("#stage-headline").innerHTML = `${s.headline[0]}<br><span class="accent">${s.headline[1]}</span>`;
+  $("#stage-hint").innerHTML = `<span class="hint-pulse"></span> ${s.hint}`;
+  $("#showcase-desc").textContent = window.SITE.showcase.desc;
+  $("#manifesto-text").textContent = window.SITE.about.manifesto;
+}
+
 function typeText() {
   const el = $("#typing-text");
   if (!el) return;
@@ -174,9 +164,9 @@ function typeText() {
   let i = 0;
   const timer = setInterval(() => {
     el.textContent = text.slice(0, i);
-    i++;
+    i += 1;
     if (i > text.length) clearInterval(timer);
-  }, 55);
+  }, 50);
 }
 
 function fillProjectList() {
@@ -185,40 +175,19 @@ function fillProjectList() {
   el.textContent = projects()
     .map((p) =>
       p.live
-        ? `${p.icon} ${p.title} [${p.star.bayer}]`
-        : `${p.icon} ${p.title} [${p.star.bayer}] · ${window.SITE.about.climbingLabel}`
+        ? `${p.icon} ${p.title}`
+        : `${p.icon} ${p.title} · ${window.SITE.about.climbingLabel}`
     )
     .join("  ·  ");
-}
-
-function applyCopy() {
-  const s = window.SITE.stage;
-  $("#stage-tag").textContent = s.tag;
-  $("#stage-headline").innerHTML = `${s.headline[0]}<br><span class="gradient-text">${s.headline[1]}</span>`;
-  $("#stage-desc").textContent = s.desc;
-  $("#stage-quote").textContent = s.quote;
-  $("#stage-hint").innerHTML = `<span class="pulse-dot"></span> ${s.hint}`;
-  $("#stat-live-label").textContent = s.stats.live;
-  $("#stat-climb-label").textContent = s.stats.climbing;
 }
 
 function init() {
   Theme.init();
   applyCopy();
   $("#year").textContent = new Date().getFullYear();
-  $("#project-count").textContent = liveProjects().length;
-  $("#climbing-count").textContent = climbingProjects().length;
-
   initIntro();
-  DepthSky.init();
-  Starfield.init();
-  Constellation.init(
-    (p) => navigateWithTransition(p, p.link, p.external),
-    (p) => showSoonToast(p)
-  );
-  Capricorn3D.init();
-  Capricorn3D.setVisible(Theme.current() === "day");
-
+  Painting.init();
+  Detail.init();
   renderShowcase();
   initNav();
   typeText();
@@ -226,22 +195,16 @@ function init() {
 
   document.querySelector('meta[name="theme-color"]')?.setAttribute(
     "content",
-    Theme.current() === "day" ? "#c8d4e0" : "#010308"
+    Theme.current() === "day" ? "#e4eaf2" : "#07050f"
   );
+
   window.addEventListener("themechange", (e) => {
     document.querySelector('meta[name="theme-color"]')?.setAttribute(
       "content",
-      e.detail.theme === "day" ? "#c8d4e0" : "#010308"
+      e.detail.theme === "day" ? "#e4eaf2" : "#07050f"
     );
-    const hint = window.SITE.stage.hint;
-    const capHint = window.SITE.capricorn?.hint;
-    $("#stage-hint").innerHTML =
-      e.detail.theme === "day" && capHint
-        ? `<span class="pulse-dot"></span> ${capHint} · ${hint}`
-        : `<span class="pulse-dot"></span> ${hint}`;
-    Capricorn3D.setVisible(e.detail.theme === "day");
-    if (window.Starfield?.resize) Starfield.resize();
   });
 }
 
+window.Main = { navigate: navigateWithTransition };
 init();
