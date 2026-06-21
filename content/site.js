@@ -42,6 +42,13 @@ window.SITE = {
 
   defaultTheme: "night",
 
+  capricornus: {
+    en: "CAPRICORNUS",
+    cn: "摩羯座",
+    myth: "海山羊 · Pan 遁入尼罗",
+    subtitle: "The Sea-Goat",
+  },
+
   hub: {
     bayer: "δ Cap",
     name: "Deneb Algedi",

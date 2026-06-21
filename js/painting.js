@@ -19,6 +19,10 @@ window.Painting = (() => {
   let pointerX = 0;
   let pointerY = 0;
   let lastHoverIdx = -2;
+  let lastFigureHover = false;
+  let figureHover = false;
+  let figureDrawT = 0;
+  let badgeEl = null;
 
   const EASE = (t) => 1 - Math.pow(1 - t, 3);
 
@@ -53,6 +57,8 @@ window.Painting = (() => {
         dust: "rgba(30, 60, 90, 0.15)",
         text: "rgba(15, 40, 70, 0.55)", textBright: "rgba(15, 50, 80, 0.95)",
         labelBg: "rgba(255, 255, 255, 0.82)", labelBorder: "rgba(14, 116, 144, 0.35)",
+        figureFill: "rgba(14, 116, 144, 0.08)", figureStroke: "rgba(14, 116, 144, 0.28)",
+        figureGlow: "rgba(14, 116, 144, 0.45)",
       };
     }
     return {
@@ -64,6 +70,8 @@ window.Painting = (() => {
       dust: "rgba(200, 220, 255, 0.08)",
       text: "rgba(180, 210, 255, 0.42)", textBright: "rgba(200, 235, 255, 0.92)",
       labelBg: "rgba(8, 12, 28, 0.72)", labelBorder: "rgba(126, 200, 255, 0.35)",
+      figureFill: "rgba(100, 180, 255, 0.12)", figureStroke: "rgba(160, 220, 255, 0.38)",
+      figureGlow: "rgba(120, 220, 255, 0.55)",
     };
   }
 
@@ -133,6 +141,147 @@ window.Painting = (() => {
       ctx.fillStyle = p.dust.replace("0.08", String(0.04 + tw * 0.06));
       ctx.fill();
     }
+  }
+
+  function figurePoints() {
+    const keys = ["beta", "xi", "gamma", "alpha", "zeta", "theta", "delta", "iota", "nu"];
+    const pts = {};
+    keys.forEach((key) => {
+      if (starMap[key]) pts[key] = toScreen(starMap[key].x, starMap[key].y);
+    });
+    return pts;
+  }
+
+  function traceCapricornPath(pts, expand) {
+    const ex = expand ? 18 * dpr : 0;
+    if (!pts.beta || !pts.xi || !pts.gamma) return false;
+
+    ctx.beginPath();
+    ctx.moveTo(pts.beta.x, pts.beta.y);
+    ctx.quadraticCurveTo(pts.beta.x - ex * 1.2, pts.beta.y - ex * 2.2, pts.xi.x, pts.xi.y - ex * 0.3);
+    ctx.quadraticCurveTo(pts.gamma.x + ex * 0.8, pts.gamma.y - ex * 1.8, pts.gamma.x, pts.gamma.y);
+
+    if (pts.delta) {
+      ctx.quadraticCurveTo(pts.gamma.x + ex * 0.4, pts.delta.y - ex * 0.5, pts.delta.x, pts.delta.y);
+    }
+    if (pts.iota) {
+      ctx.quadraticCurveTo(
+        pts.iota.x - ex * 0.2,
+        pts.iota.y - ex * 0.8,
+        pts.iota.x + ex * 0.6,
+        pts.iota.y + ex * 0.2
+      );
+      ctx.quadraticCurveTo(pts.iota.x, pts.iota.y + ex * 1.2, pts.iota.x - ex * 1.5, pts.iota.y);
+    }
+    if (pts.nu && pts.theta) {
+      ctx.quadraticCurveTo(pts.nu.x, pts.nu.y, pts.theta.x - ex * 0.3, pts.theta.y);
+      ctx.lineTo(pts.alpha?.x ?? pts.theta.x, pts.alpha?.y ?? pts.theta.y);
+      ctx.quadraticCurveTo(pts.alpha?.x ?? pts.beta.x, (pts.alpha?.y ?? pts.beta.y) + ex, pts.beta.x, pts.beta.y);
+    } else {
+      ctx.lineTo(pts.beta.x, pts.beta.y);
+    }
+    ctx.closePath();
+    return true;
+  }
+
+  function drawCapricornHorns(pts, p, lit, t) {
+    if (!pts.beta || !pts.gamma || !pts.xi) return;
+    const horn = lit ? p.lineActive : p.figureStroke;
+    ctx.strokeStyle = horn;
+    ctx.lineWidth = (lit ? 2 : 1.2) * dpr;
+    ctx.lineCap = "round";
+    ctx.shadowColor = p.figureGlow;
+    ctx.shadowBlur = lit ? 16 : 6;
+
+    ctx.beginPath();
+    ctx.moveTo(pts.beta.x, pts.beta.y);
+    ctx.quadraticCurveTo(pts.beta.x - 28 * dpr, pts.beta.y - 38 * dpr, pts.xi.x - 8 * dpr, pts.xi.y - 12 * dpr);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(pts.gamma.x, pts.gamma.y);
+    ctx.quadraticCurveTo(pts.gamma.x + 22 * dpr, pts.gamma.y - 32 * dpr, pts.xi.x + 6 * dpr, pts.xi.y - 10 * dpr);
+    ctx.stroke();
+
+    if (pts.iota) {
+      ctx.beginPath();
+      ctx.moveTo(pts.iota.x, pts.iota.y);
+      ctx.quadraticCurveTo(pts.iota.x + 24 * dpr, pts.iota.y - 8 * dpr, pts.iota.x + 32 * dpr, pts.iota.y + 14 * dpr);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(pts.iota.x, pts.iota.y);
+      ctx.quadraticCurveTo(pts.iota.x + 18 * dpr, pts.iota.y + 18 * dpr, pts.iota.x - 4 * dpr, pts.iota.y + 26 * dpr);
+      ctx.stroke();
+    }
+    ctx.shadowBlur = 0;
+  }
+
+  function drawCapricornFigure(p, t, intro) {
+    const pts = figurePoints();
+    if (!traceCapricornPath(pts, false)) return;
+
+    const lit = figureHover || hoverIdx >= 0 || focusIdx >= 0;
+    const fade = EASE(intro) * (lit ? 1 : 0.82);
+    const breathe = 0.88 + 0.12 * Math.sin(t * 0.65);
+    figureDrawT = Math.min(1, figureDrawT + 0.006);
+    const drawProg = EASE(figureDrawT);
+
+    ctx.save();
+    ctx.globalAlpha = fade * breathe;
+
+    const cx = pts.delta ? pts.delta.x : (pts.beta.x + pts.gamma.x) / 2;
+    const cy = pts.delta ? pts.delta.y : (pts.beta.y + pts.theta?.y) / 2;
+    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.min(w, h) * 0.28);
+    grad.addColorStop(0, lit ? p.figureFill.replace(/[\d.]+\)$/, "0.18)") : p.figureFill);
+    grad.addColorStop(1, "transparent");
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    ctx.setLineDash([120 * dpr, 40 * dpr]);
+    ctx.lineDashOffset = -t * 18 * dpr;
+    ctx.strokeStyle = lit ? p.lineActive : p.figureStroke;
+    ctx.lineWidth = (lit ? 2.2 : 1.3) * dpr;
+    ctx.shadowColor = p.figureGlow;
+    ctx.shadowBlur = lit ? 22 : 10;
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.shadowBlur = 0;
+
+    drawCapricornHorns(pts, p, lit, t);
+
+    if (pts.delta && pts.iota) {
+      ctx.strokeStyle = p.techBright.replace(/[\d.]+\)$/, lit ? "0.35)" : "0.12)");
+      ctx.lineWidth = 0.8 * dpr;
+      ctx.setLineDash([3 * dpr, 5 * dpr]);
+      ctx.beginPath();
+      ctx.moveTo(pts.delta.x, pts.delta.y);
+      ctx.quadraticCurveTo((pts.delta.x + pts.iota.x) / 2, pts.delta.y - 20 * dpr, pts.iota.x, pts.iota.y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    ctx.restore();
+    updateBadge(pts, lit);
+  }
+
+  function updateBadge(pts, lit) {
+    if (!badgeEl) return;
+    const cx = ((pts.xi?.x ?? 0) + (pts.delta?.x ?? 0)) / 2;
+    const cy = ((pts.xi?.y ?? 0) + (pts.theta?.y ?? pts.delta?.y ?? 0)) / 2;
+    badgeEl.style.left = `${cx / dpr}px`;
+    badgeEl.style.top = `${cy / dpr}px`;
+    badgeEl.classList.toggle("is-lit", lit);
+    badgeEl.classList.toggle("is-visible", figureDrawT > 0.35);
+  }
+
+  function hitTestFigure(sx, sy) {
+    const pts = figurePoints();
+    if (!traceCapricornPath(pts, true)) return false;
+    return ctx.isPointInPath(sx, sy);
+  }
+
+  function constellationLit() {
+    return figureHover || hoverIdx >= 0 || focusIdx >= 0;
   }
 
   function drawTechFrame(p, t) {
@@ -329,6 +478,7 @@ window.Painting = (() => {
 
   function drawConstellation(p, t, intro) {
     const lines = window.SITE.lines || [];
+    const lit = constellationLit();
     const activeKey = focusIdx >= 0 ? starKey(window.SITE.projects[focusIdx].star.bayer) : hoverIdx >= 0 ? starKey(window.SITE.projects[hoverIdx].star.bayer) : null;
 
     lines.forEach(([a, b], i) => {
@@ -338,7 +488,7 @@ window.Painting = (() => {
       const p1 = toScreen(sa.x, sa.y);
       const p2 = toScreen(sb.x, sb.y);
       const lineProg = Math.min(1, Math.max(0, intro - i * 0.08));
-      const active = activeKey && (a === activeKey || b === activeKey);
+      const active = lit && (activeKey ? (a === activeKey || b === activeKey) : true);
       drawLine(p1.x, p1.y, p2.x, p2.y, lineProg, active, p);
     });
   }
@@ -487,6 +637,7 @@ window.Painting = (() => {
     drawDust(p, time);
     drawTechRing(p, time);
     drawTechFrame(p, time);
+    drawCapricornFigure(p, time, EASE(introT));
     drawConstellation(p, time, EASE(introT));
     drawDecorStars(p, time, EASE(introT));
     drawHub(p, time, EASE(introT));
@@ -535,10 +686,14 @@ window.Painting = (() => {
   }
 
   function emitHover(idx) {
-    if (idx === lastHoverIdx) return;
+    if (idx === lastHoverIdx && figureHover === lastFigureHover) return;
     lastHoverIdx = idx;
+    lastFigureHover = figureHover;
     window.dispatchEvent(new CustomEvent("starhover", {
       detail: idx >= 0 ? { idx, project: window.SITE.projects[idx] } : { idx: -1 },
+    }));
+    window.dispatchEvent(new CustomEvent("constellationhover", {
+      detail: { lit: constellationLit(), figure: figureHover },
     }));
   }
 
@@ -552,12 +707,14 @@ window.Painting = (() => {
     mx = e.clientX / window.innerWidth;
     my = e.clientY / window.innerHeight;
     hoverIdx = hitTest(sx, sy);
-    canvas.style.cursor = hoverIdx >= 0 ? "pointer" : "crosshair";
+    figureHover = hoverIdx < 0 && hitTestFigure(sx, sy);
+    canvas.style.cursor = hoverIdx >= 0 ? "pointer" : figureHover ? "pointer" : "crosshair";
     emitHover(hoverIdx);
   }
 
   function onLeave() {
     hoverIdx = -1;
+    figureHover = false;
     emitHover(-1);
   }
 
@@ -568,6 +725,11 @@ window.Painting = (() => {
     const idx = hitTest(sx, sy);
     if (idx >= 0 && !locked) {
       focusStar(idx, e.clientX, e.clientY);
+      return;
+    }
+    if (figureHover && !locked) {
+      pulseT = 0.6;
+      window.dispatchEvent(new CustomEvent("constellationtap", { detail: window.SITE.capricornus }));
     }
   }
 
@@ -585,6 +747,13 @@ window.Painting = (() => {
     canvas = document.getElementById("painting");
     if (!canvas) return;
     ctx = canvas.getContext("2d");
+    badgeEl = document.getElementById("cap-badge");
+    if (badgeEl && window.SITE.capricornus) {
+      badgeEl.querySelector(".cap-badge-en").textContent = window.SITE.capricornus.en;
+      badgeEl.querySelector(".cap-badge-cn").textContent = `${window.SITE.capricornus.cn} · 海山羊`;
+      const myth = document.getElementById("cap-badge-myth");
+      if (myth) myth.textContent = `${window.SITE.capricornus.myth} · ♑`;
+    }
     buildMap();
     resize();
     canvas.addEventListener("pointermove", onMove);
