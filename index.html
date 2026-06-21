@@ -3,86 +3,151 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="description" content="个人作品集 — 赛博空间里的创造与实验">
+  <meta name="description" content="ShuaiAn Studio — 科技 × 可爱 × 酷炫的个人创造空间">
   <meta name="theme-color" content="#050508">
-  <title>ShuaiAn · 个人空间</title>
+  <title>ShuaiAn Studio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <canvas id="bg-canvas" aria-hidden="true"></canvas>
+  <div class="mesh-gradient" aria-hidden="true"></div>
   <div class="scanlines" aria-hidden="true"></div>
 
-  <nav class="nav">
-    <a class="nav-logo" href="#">SA<span class="blink">_</span></a>
-    <div class="nav-links">
-      <a href="#projects">项目</a>
-      <a href="#about">关于</a>
-      <a href="https://github.com/shuaianchen-glitch" target="_blank" rel="noopener">GitHub</a>
-    </div>
-  </nav>
-
-  <main>
-    <section class="hero">
-      <p class="hero-tag">// SYSTEM ONLINE</p>
-      <h1 class="hero-title">
-        <span class="glitch" data-text="SHUAIAN">SHUAIAN</span>
+  <!-- 入场动画 -->
+  <div id="intro" class="intro" aria-live="polite">
+    <div class="intro-bloom"></div>
+    <div class="intro-inner">
+      <div class="intro-logo-ring">
+        <span class="intro-logo">SA</span>
+      </div>
+      <p class="intro-eyebrow">ShuaiAn Studio</p>
+      <h1 class="intro-title">
+        <span class="intro-line">科技</span>
+        <span class="intro-line accent">× 可爱</span>
+        <span class="intro-line">× 酷炫</span>
       </h1>
-      <p class="hero-sub">构建未来感体验 · 实验 · 创造</p>
-      <p class="hero-desc">这里记录我在数字空间里做出的各种东西——小游戏、工具、实验项目，以及更多正在酝酿中的想法。</p>
-      <div class="hero-actions">
-        <a href="#projects" class="btn btn-primary">浏览项目</a>
-        <a href="https://github.com/shuaianchen-glitch" class="btn btn-ghost" target="_blank" rel="noopener">GitHub →</a>
+      <p class="intro-sub">数字空间里的实验与创造</p>
+      <div class="intro-loader" aria-hidden="true">
+        <div class="intro-loader-bar"></div>
       </div>
-      <div class="hero-stats">
-        <div class="stat">
-          <span class="stat-num" id="project-count">0</span>
-          <span class="stat-label">已发布项目</span>
-        </div>
-        <div class="stat">
-          <span class="stat-num">∞</span>
-          <span class="stat-label">进行中</span>
-        </div>
-      </div>
-    </section>
+      <button type="button" id="intro-enter" class="intro-btn">
+        <span>点击进入</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <p class="intro-skip">按 Enter 或点击任意处</p>
+    </div>
+  </div>
 
-    <section id="projects" class="section">
-      <div class="section-header">
-        <h2><span class="section-prefix">&gt;</span> 项目矩阵</h2>
-        <p>点击卡片进入体验</p>
+  <div id="app" class="app is-hidden">
+    <nav class="nav">
+      <a class="nav-logo" href="#" data-scroll="stage">SA<span class="blink">·</span>Studio</a>
+      <div class="nav-pills">
+        <button type="button" class="pill active" data-scroll="stage">探索</button>
+        <button type="button" class="pill" data-scroll="showcase">项目</button>
+        <button type="button" class="pill" data-scroll="about">关于</button>
+        <a class="pill pill-link" href="https://github.com/shuaianchen-glitch" target="_blank" rel="noopener">GitHub</a>
       </div>
-      <div class="projects-grid" id="projects-grid"></div>
-    </section>
+    </nav>
 
-    <section id="about" class="section">
-      <div class="section-header">
-        <h2><span class="section-prefix">&gt;</span> 关于我</h2>
-      </div>
-      <div class="terminal">
-        <div class="terminal-bar">
-          <span class="dot red"></span>
-          <span class="dot yellow"></span>
-          <span class="dot green"></span>
-          <span class="terminal-title">about.shuaianchen</span>
+    <main>
+      <!-- 交互轨道区 -->
+      <section id="stage" class="stage">
+        <div class="stage-copy">
+          <p class="stage-tag">INTERACTIVE HUB</p>
+          <h2 class="stage-headline">点击光点<br><span class="gradient-text">进入每个世界</span></h2>
+          <p class="stage-desc">像 Adobe 的产品矩阵，又像 Apple 的极简导航 —— 每个项目都是一颗可触摸的星。</p>
+          <div class="stage-stats">
+            <div class="stat-chip">
+              <strong id="project-count">0</strong>
+              <span>已上线</span>
+            </div>
+            <div class="stat-chip">
+              <strong>∞</strong>
+              <span>酝酿中</span>
+            </div>
+          </div>
         </div>
-        <div class="terminal-body">
-          <p><span class="prompt">$</span> whoami</p>
-          <p class="output">ShuaiAn Chen — 创造者 / 实验者</p>
-          <p><span class="prompt">$</span> cat interests.txt</p>
-          <p class="output">交互设计 · 前端开发 · 小游戏 · AI 实验 · 未来感 UI</p>
-          <p><span class="prompt">$</span> echo $MISSION</p>
-          <p class="output typing" id="typing-text"></p>
-        </div>
-      </div>
-    </section>
-  </main>
 
-  <footer class="footer">
-    <p>© <span id="year"></span> ShuaiAn Chen · Built in the cyber grid</p>
-    <p class="footer-link"><a href="https://github.com/shuaianchen-glitch">github.com/shuaianchen-glitch</a></p>
-  </footer>
+        <div class="orbit-wrap" id="orbit-wrap">
+          <div class="orbit-core" aria-hidden="true">
+            <div class="core-glow"></div>
+            <span class="core-emoji">✦</span>
+          </div>
+          <div class="orbit-ring orbit-ring-1"></div>
+          <div class="orbit-ring orbit-ring-2"></div>
+          <div id="orbit-nodes" class="orbit-nodes"></div>
+        </div>
+
+        <p class="orbit-hint">
+          <span class="pulse-dot"></span>
+          悬停预览 · 点击跳转
+        </p>
+      </section>
+
+      <!-- Apple 式横向滚动展示 -->
+      <section id="showcase" class="showcase">
+        <div class="showcase-header">
+          <h2><span class="section-prefix">01</span> 项目 Showcase</h2>
+          <p>左右滑动，或点击卡片直接体验</p>
+        </div>
+        <div class="showcase-track" id="showcase-track"></div>
+        <div class="showcase-dots" id="showcase-dots"></div>
+      </section>
+
+      <!-- 关于 -->
+      <section id="about" class="about">
+        <div class="about-grid">
+          <div class="about-visual">
+            <div class="glass-card">
+              <div class="glass-shine"></div>
+              <p class="glass-label">CREATOR</p>
+              <h3>ShuaiAn Chen</h3>
+              <p class="glass-sub">创造者 / 实验者</p>
+              <div class="glass-tags">
+                <span>交互</span><span>前端</span><span>小游戏</span><span>AI</span>
+              </div>
+            </div>
+          </div>
+          <div class="about-terminal">
+            <div class="terminal">
+              <div class="terminal-bar">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+                <span class="terminal-title">mission.sh</span>
+              </div>
+              <div class="terminal-body">
+                <p><span class="prompt">$</span> cat manifesto.txt</p>
+                <p class="output">把想法变成可触摸的数字体验。</p>
+                <p><span class="prompt">$</span> echo $VIBE</p>
+                <p class="output typing" id="typing-text"></p>
+                <p><span class="prompt">$</span> ls ./projects</p>
+                <p class="output" id="project-list"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>© <span id="year"></span> ShuaiAn Chen · Built with curiosity</p>
+      <p class="footer-link"><a href="https://github.com/shuaianchen-glitch">github.com/shuaianchen-glitch</a></p>
+    </footer>
+  </div>
+
+  <!-- 跳转过渡层 -->
+  <div id="transition" class="transition" aria-hidden="true">
+    <div class="transition-inner">
+      <span id="transition-icon" class="transition-icon"></span>
+      <p id="transition-title" class="transition-title"></p>
+    </div>
+  </div>
 
   <script src="js/main.js"></script>
 </body>
