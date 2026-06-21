@@ -1,76 +1,95 @@
-/* Capricorn dual theme — default: fixed starry night */
+/* Realistic astro × tech collision themes */
 
 html[data-theme="night"] {
   color-scheme: dark;
-  --bg: #02040c;
-  --bg-card: rgba(8, 12, 28, 0.82);
-  --glass: rgba(255, 255, 255, 0.05);
-  --sky-top: #02040c;
-  --sky-bottom: #0c1230;
-  --cyan: #7dd3fc;
-  --magenta: #c084fc;
-  --purple: #a78bfa;
-  --peach: #fcd34d;
-  --gold: #fde68a;
-  --text: #e8edf7;
-  --muted: #8b9cb8;
-  --border: rgba(255, 255, 255, 0.1);
-  --glow-cyan: rgba(125, 211, 252, 0.55);
-  --glow-magenta: rgba(192, 132, 252, 0.4);
-  --star-line: rgba(125, 211, 252, 0.32);
-  --star-core-live: #e0f2fe;
-  --star-core-evolve: #ddd6fe;
-  --nav-bg: rgba(2, 4, 12, 0.78);
-  --scanline-opacity: 0.22;
-  --theme-meta: #050508;
+  --bg: #010308;
+  --bg-deep: #010308;
+  --bg-card: rgba(6, 10, 18, 0.88);
+  --glass: rgba(8, 14, 24, 0.72);
+  --sky-top: #010308;
+  --sky-bottom: #0a1520;
+  --cyan: #5ec4e8;
+  --magenta: #8899aa;
+  --purple: #7a8fa8;
+  --peach: #c9a66b;
+  --gold: #e8dcc8;
+  --text: #e8ecf2;
+  --muted: #7a8799;
+  --border: rgba(94, 196, 232, 0.14);
+  --glow-cyan: rgba(94, 196, 232, 0.45);
+  --glow-magenta: rgba(180, 160, 140, 0.25);
+  --star-line: rgba(94, 196, 232, 0.38);
+  --star-core-live: #f4f7fb;
+  --star-core-evolve: #a8b8cc;
+  --nav-bg: rgba(1, 3, 8, 0.82);
+  --scanline-opacity: 0.12;
+  --theme-meta: #010308;
+  --tech-grid: rgba(94, 196, 232, 0.045);
+  --hud-border: rgba(94, 196, 232, 0.35);
 }
 
 html[data-theme="day"] {
   color-scheme: light;
-  --bg: #eef4fb;
-  --bg-card: rgba(255, 255, 255, 0.88);
-  --glass: rgba(255, 255, 255, 0.6);
-  --sky-top: #dbeafe;
-  --sky-bottom: #fef3c7;
-  --cyan: #0284c7;
-  --magenta: #9333ea;
-  --purple: #7c3aed;
-  --peach: #f59e0b;
-  --gold: #d97706;
-  --text: #1e293b;
-  --muted: #64748b;
-  --border: rgba(30, 41, 59, 0.12);
-  --glow-cyan: rgba(2, 132, 199, 0.28);
-  --glow-magenta: rgba(147, 51, 234, 0.22);
-  --star-line: rgba(2, 132, 199, 0.35);
-  --star-core-live: #0369a1;
-  --star-core-evolve: #7c3aed;
-  --nav-bg: rgba(238, 244, 251, 0.86);
-  --scanline-opacity: 0;
-  --theme-meta: #eef4fb;
-}
-
-html[data-theme="day"] .scanlines {
-  opacity: 0;
-}
-
-html[data-theme="day"] .sky-layer {
-  background:
-    radial-gradient(ellipse 100% 70% at 50% -10%, rgba(255, 255, 255, 0.95), transparent 55%),
-    radial-gradient(ellipse 60% 40% at 80% 90%, rgba(255, 230, 180, 0.35), transparent 50%),
-    linear-gradient(180deg, var(--sky-top) 0%, #bfdbfe 50%, var(--sky-bottom) 100%);
+  --bg: #c8d4e0;
+  --bg-deep: #b8c8d8;
+  --bg-card: rgba(255, 255, 255, 0.92);
+  --glass: rgba(255, 255, 255, 0.72);
+  --sky-top: #8fa8be;
+  --sky-bottom: #d4dce4;
+  --cyan: #0e7490;
+  --magenta: #475569;
+  --purple: #334155;
+  --peach: #92702a;
+  --gold: #78591a;
+  --text: #0f172a;
+  --muted: #475569;
+  --border: rgba(15, 23, 42, 0.14);
+  --glow-cyan: rgba(14, 116, 144, 0.28);
+  --glow-magenta: rgba(71, 85, 105, 0.18);
+  --star-line: rgba(14, 116, 144, 0.42);
+  --star-core-live: #0c4a6e;
+  --star-core-evolve: #475569;
+  --nav-bg: rgba(220, 228, 236, 0.88);
+  --scanline-opacity: 0.06;
+  --theme-meta: #eef2f6;
+  --tech-grid: rgba(14, 116, 144, 0.08);
+  --hud-border: rgba(14, 116, 144, 0.4);
 }
 
 html[data-theme="night"] .sky-layer {
   background:
-    radial-gradient(ellipse 120% 80% at 50% -20%, rgba(40, 60, 140, 0.45), transparent 55%),
-    radial-gradient(ellipse 70% 50% at 15% 70%, rgba(80, 40, 120, 0.18), transparent 50%),
-    radial-gradient(ellipse 60% 45% at 85% 25%, rgba(30, 80, 140, 0.15), transparent 45%),
-    linear-gradient(180deg, var(--sky-top) 0%, #060a1a 40%, var(--sky-bottom) 100%);
+    /* Milky Way dust lane — realistic warm/brown */
+    radial-gradient(ellipse 95% 28% at 52% 44%, rgba(140, 110, 85, 0.14), transparent 72%),
+    radial-gradient(ellipse 80% 18% at 48% 40%, rgba(210, 215, 225, 0.1), transparent 68%),
+    radial-gradient(ellipse 55% 35% at 78% 22%, rgba(60, 90, 130, 0.08), transparent 60%),
+    radial-gradient(ellipse 45% 30% at 12% 68%, rgba(40, 70, 100, 0.07), transparent 55%),
+    /* horizon glow — atmospheric */
+    radial-gradient(ellipse 120% 40% at 50% 105%, rgba(20, 40, 60, 0.35), transparent 55%),
+    linear-gradient(180deg, #010308 0%, #040810 28%, #081018 52%, #0a1520 78%, #061018 100%);
+}
+
+html[data-theme="day"] .sky-layer {
+  background:
+    radial-gradient(ellipse 100% 55% at 50% -5%, rgba(255, 255, 255, 0.85), transparent 58%),
+    radial-gradient(ellipse 70% 40% at 85% 75%, rgba(255, 248, 235, 0.35), transparent 50%),
+    radial-gradient(ellipse 50% 35% at 15% 60%, rgba(180, 200, 220, 0.25), transparent 45%),
+    linear-gradient(180deg, #7a94aa 0%, #a8bcc8 38%, #c8d4e0 62%, #d8dee6 100%);
+}
+
+html[data-theme="night"] .tech-overlay {
+  opacity: 1;
+}
+
+html[data-theme="day"] .tech-overlay {
+  opacity: 0.55;
+}
+
+html[data-theme="day"] .scanlines {
+  opacity: var(--scanline-opacity);
 }
 
 html[data-theme="night"] .constellation-wrap {
-  filter: drop-shadow(0 0 40px rgba(100, 140, 255, 0.08));
+  filter: drop-shadow(0 0 60px rgba(94, 196, 232, 0.06));
 }
 
 html[data-theme="day"] .capricorn-3d.is-visible {

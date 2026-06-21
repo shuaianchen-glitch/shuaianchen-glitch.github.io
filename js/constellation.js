@@ -94,13 +94,17 @@ window.Constellation = (() => {
       el.style.left = `${star.x * 100}%`;
       el.style.top = `${star.y * 100}%`;
       el.style.setProperty("--twinkle-delay", twinkleDelay(star.mag, i + 1));
-      el.style.setProperty("--star-scale", String(Math.max(0.75, 1.35 - star.mag * 0.12)));
+      el.style.setProperty("--star-scale", String(Math.max(1, 1.5 - star.mag * 0.1)));
 
       el.innerHTML = `
         ${badge}
-        <span class="star-glow" aria-hidden="true"></span>
-        <span class="star-core ${magClass(star.mag)}" aria-hidden="true"></span>
-        <span class="star-icon">${p.icon}</span>
+        <div class="star-chip">
+          <span class="star-orbit-ring" aria-hidden="true"></span>
+          <span class="star-glow" aria-hidden="true"></span>
+          <span class="star-core ${magClass(star.mag)}" aria-hidden="true"></span>
+          <span class="star-icon">${p.icon}</span>
+          <span class="star-id">${star.bayer}</span>
+        </div>
         <span class="star-tooltip">
           <span class="star-bayer">${star.bayer}${star.binary ? " · 双星" : ""}</span>
           <span class="star-cn">${star.cn}</span>

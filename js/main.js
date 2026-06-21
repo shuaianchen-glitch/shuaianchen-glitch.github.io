@@ -225,12 +225,12 @@ function init() {
 
   document.querySelector('meta[name="theme-color"]')?.setAttribute(
     "content",
-    Theme.current() === "day" ? "#eef4fb" : "#030510"
+    Theme.current() === "day" ? "#c8d4e0" : "#010308"
   );
   window.addEventListener("themechange", (e) => {
     document.querySelector('meta[name="theme-color"]')?.setAttribute(
       "content",
-      e.detail.theme === "day" ? "#eef4fb" : "#030510"
+      e.detail.theme === "day" ? "#c8d4e0" : "#010308"
     );
     const hint = window.SITE.stage.hint;
     const capHint = window.SITE.capricorn?.hint;
