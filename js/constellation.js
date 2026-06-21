@@ -30,6 +30,31 @@ window.Constellation = (() => {
     return `${((seed * 1.7 + mag) % 4).toFixed(2)}s`;
   }
 
+  function ensureGlowFilter(svg) {
+    if (svg.querySelector("#cap-glow")) return;
+    const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+    defs.innerHTML = `
+      <filter id="cap-glow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="1.2" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="line-glow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="0.8" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>`;
+    svg.appendChild(defs);
+  }
+
+  function renderSilhouette(svg) {
+    const g = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    g.setAttribute("class", "capricorn-silhouette");
+    g.setAttribute(
+      "d",
+      "M 18 38 L 28 22 L 42 18 L 52 28 L 56 44 L 48 58 L 68 32 L 82 36 L 74 48 L 58 62 L 38 68 L 22 58 Z"
+    );
+    svg.appendChild(g);
+  }
+
   function renderLines(svg, map) {
     const lines = window.SITE.lines || [];
     lines.forEach(([a, b]) => {
@@ -38,15 +63,28 @@ window.Constellation = (() => {
       if (!sa || !sb) return;
       const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
       line.setAttribute("class", "constellation-line");
-      line.setAttribute("x1", `${sa.x * 100}%`);
-      line.setAttribute("y1", `${sa.y * 100}%`);
-      line.setAttribute("x2", `${sb.x * 100}%`);
-      line.setAttribute("y2", `${sb.y * 100}%`);
+      line.setAttribute("filter", "url(#line-glow)");
+      line.setAttribute("x1", `${sa.x * 100}`);
+      line.setAttribute("y1", `${sa.y * 100}`);
+      line.setAttribute("x2", `${sb.x * 100}`);
+      line.setAttribute("y2", `${sb.y * 100}`);
       svg.appendChild(line);
     });
   }
 
-  function renderHub(wrap) {
+  function renderDecor(svg) {
+    window.SITE.decorStars.forEach((s, i) => {
+      const g = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      g.setAttribute("class", `decor-star ${magClass(s.mag)}`);
+      g.setAttribute("cx", `${s.x * 100}`);
+      g.setAttribute("cy", `${s.y * 100}`);
+      g.setAttribute("r", Math.max(0.35, 1.1 - s.mag * 0.15));
+      g.style.setProperty("--twinkle-delay", twinkleDelay(s.mag, i + 3));
+      svg.appendChild(g);
+    });
+  }
+
+  function renderHub(container) {
     const h = window.SITE.hub;
     const el = document.createElement("div");
     el.className = `hub-star ${magClass(h.mag)}`;
@@ -54,104 +92,91 @@ window.Constellation = (() => {
     el.style.top = `${h.y * 100}%`;
     el.style.setProperty("--twinkle-delay", twinkleDelay(h.mag, 0));
     el.innerHTML = `
-      <span class="star-glow" aria-hidden="true"></span>
-      <span class="star-core" aria-hidden="true"></span>
-      <span class="hub-tooltip">
-        <span class="star-bayer">${h.bayer}</span>
-        <span class="star-cn">${h.cn}</span>
-        <span class="star-meta">${h.name} · 视星等 ${h.mag}</span>
+      <span class="astro-star" aria-hidden="true">
+        <span class="astro-core"></span>
+        <span class="astro-flare"></span>
+        <span class="astro-ring"></span>
+      </span>
+      <span class="astro-label hub-label">
+        <span class="astro-bayer">${h.bayer}</span>
+        <span class="astro-cn">${h.cn}</span>
       </span>`;
-    wrap.appendChild(el);
-  }
-
-  function renderDecor(svg, wrap, map) {
-    window.SITE.decorStars.forEach((s, i) => {
-      const g = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-      g.setAttribute("class", `decor-star ${magClass(s.mag)}`);
-      g.setAttribute("cx", `${s.x * 100}%`);
-      g.setAttribute("cy", `${s.y * 100}%`);
-      g.setAttribute("r", Math.max(1.2, 3.2 - s.mag * 0.35));
-      g.style.setProperty("--twinkle-delay", twinkleDelay(s.mag, i + 3));
-      svg.appendChild(g);
-    });
+    container.appendChild(el);
   }
 
   function renderNodes(container, onLive, onSoon) {
-    const projects = window.SITE.projects;
     container.innerHTML = "";
-
-    projects.forEach((p, i) => {
+    window.SITE.projects.forEach((p, i) => {
       const { star } = p;
       const cls = p.live ? "star-node live" : "star-node evolving";
-      const badge = p.live
-        ? '<span class="star-badge live">LIVE</span>'
-        : '<span class="star-badge evolve">🧬</span>';
 
       const el = document.createElement("button");
       el.type = "button";
       el.className = cls;
       el.dataset.idx = String(i);
+      el.dataset.bayer = star.bayer;
       el.style.left = `${star.x * 100}%`;
       el.style.top = `${star.y * 100}%`;
       el.style.setProperty("--twinkle-delay", twinkleDelay(star.mag, i + 1));
-      el.style.setProperty("--star-scale", String(Math.max(1, 1.5 - star.mag * 0.1)));
+      el.setAttribute("aria-label", `${star.bayer} ${star.cn} · ${p.title}`);
 
       el.innerHTML = `
-        ${badge}
-        <div class="star-chip">
-          <span class="star-orbit-ring" aria-hidden="true"></span>
-          <span class="star-glow" aria-hidden="true"></span>
-          <span class="star-core ${magClass(star.mag)}" aria-hidden="true"></span>
-          <span class="star-icon">${p.icon}</span>
-          <span class="star-id">${star.bayer}</span>
-        </div>
-        <span class="star-tooltip">
-          <span class="star-bayer">${star.bayer}${star.binary ? " · 双星" : ""}</span>
-          <span class="star-cn">${star.cn}</span>
-          <span class="star-meta">${star.name} · 视星等 ${star.mag}</span>
-          <span class="star-project">${p.title}</span>
+        <span class="astro-star ${magClass(star.mag)}" aria-hidden="true">
+          <span class="astro-core"></span>
+          <span class="astro-flare"></span>
+          <span class="astro-pulse"></span>
+        </span>
+        <span class="astro-label">
+          <span class="astro-bayer">${star.bayer}</span>
+          <span class="astro-cn">${star.cn}</span>
+        </span>
+        <span class="astro-card">
+          <span class="astro-card-icon">${p.icon}</span>
+          <span class="astro-card-title">${p.title}</span>
+          <span class="astro-card-meta">${star.name} · 视星等 ${star.mag}${p.live ? " · LIVE" : " · 攀登中"}</span>
         </span>`;
 
-      el.addEventListener("click", () => {
-        if (p.live) onLive(p);
-        else onSoon(p);
-      });
+      el.addEventListener("mouseenter", () => highlightStar(star.bayer));
+      el.addEventListener("mouseleave", clearHighlight);
+      el.addEventListener("click", () => (p.live ? onLive(p) : onSoon(p)));
 
       container.appendChild(el);
     });
   }
 
+  function highlightStar(bayer) {
+    document.querySelectorAll(".star-node").forEach((n) => {
+      n.classList.toggle("is-linked", n.dataset.bayer === bayer || n.classList.contains("is-hover"));
+    });
+    document.querySelectorAll(".constellation-line").forEach((line) => {
+      line.classList.remove("is-active");
+    });
+  }
+
+  function clearHighlight() {
+    document.querySelectorAll(".star-node").forEach((n) => n.classList.remove("is-linked"));
+  }
+
   function render() {
     const wrap = document.getElementById("constellation-wrap");
     const svg = document.getElementById("constellation-svg");
-    const nodes = document.getElementById("star-nodes");
-    if (!wrap || !svg || !nodes) return;
+    if (!wrap || !svg) return;
 
     svg.innerHTML = "";
     wrap.querySelectorAll(".hub-star").forEach((n) => n.remove());
 
+    ensureGlowFilter(svg);
+    renderSilhouette(svg);
     const map = buildStarMap();
-    renderDecor(svg, wrap, map);
+    renderDecor(svg);
     renderLines(svg, map);
     renderHub(wrap);
-
     return map;
   }
 
   function init(onLive, onSoon) {
     render();
     renderNodes(document.getElementById("star-nodes"), onLive, onSoon);
-
-    const wrap = document.getElementById("constellation-wrap");
-    if (!wrap) return;
-
-    wrap.addEventListener("pointermove", (e) => {
-      const rect = wrap.getBoundingClientRect();
-      const px = ((e.clientX - rect.left) / rect.width - 0.5) * 8;
-      const py = ((e.clientY - rect.top) / rect.height - 0.5) * 8;
-      wrap.style.setProperty("--parallax-x", `${px}px`);
-      wrap.style.setProperty("--parallax-y", `${py}px`);
-    });
   }
 
   return { init, render };
