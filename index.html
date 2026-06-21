@@ -3,19 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="description" content="ShuaiAn Studio — 摩羯座星图 · 温柔攀岩与数字创造">
+  <meta name="description" content="ShuaiAn Studio — 星轨上的温柔攀岩与数字创造">
   <meta name="theme-color" content="#07050f">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <title>ShuaiAn Studio · Capricornus</title>
-  <link rel="stylesheet" href="css/themes.css?v=20250622-v11">
-  <link rel="stylesheet" href="css/style.css?v=20250622-v11">
+  <title>ShuaiAn Studio · Orbit</title>
+  <link rel="stylesheet" href="css/themes.css?v=20250622-v12">
+  <link rel="stylesheet" href="css/style.css?v=20250622-v12">
 </head>
 <body>
   <div id="intro" class="intro" aria-live="polite">
     <div class="intro-glow"></div>
     <div class="intro-inner">
       <span class="intro-sigil">♑</span>
-      <p class="intro-eyebrow" id="intro-eyebrow">ShuaiAn · Capricornus</p>
+      <p class="intro-eyebrow" id="intro-eyebrow">ShuaiAn Studio</p>
       <h1 class="intro-title" id="intro-title"></h1>
       <p class="intro-sub" id="intro-sub"></p>
       <button type="button" id="intro-enter" class="intro-btn">
@@ -29,10 +29,10 @@
 
   <div id="app" class="app is-hidden">
     <nav class="nav">
-      <a class="nav-logo" href="#" data-scroll="stage">SA<span class="sigil-dot">·</span>Capricorn</a>
+      <a class="nav-logo" href="#" data-scroll="stage">SA<span class="sigil-dot">·</span>Orbit</a>
       <div class="nav-actions">
         <div class="nav-pills">
-          <button type="button" class="pill active" data-scroll="stage">星图</button>
+          <button type="button" class="pill active" data-scroll="stage">星轨</button>
           <button type="button" class="pill" data-scroll="showcase">造物</button>
           <button type="button" class="pill" data-scroll="about">关于</button>
           <a class="pill pill-link" href="https://github.com/shuaianchen-glitch" target="_blank" rel="noopener">GitHub</a>
@@ -47,7 +47,7 @@
     <main>
       <section id="stage" class="stage">
         <div class="painting-frame">
-          <canvas id="painting" aria-label="摩羯座星图交互画作"></canvas>
+          <canvas id="painting" aria-label="星轨交互画作"></canvas>
 
           <div class="hud-frame" aria-hidden="true">
             <span class="hud-corner hud-tl"></span>
@@ -57,18 +57,12 @@
             <div class="hud-grid"></div>
           </div>
 
-          <div class="cap-badge glass-hud" id="cap-badge" aria-hidden="true">
-            <span class="cap-badge-en">CAPRICORNUS</span>
-            <span class="cap-badge-cn">摩羯座 · 海山羊</span>
-            <span class="cap-badge-myth" id="cap-badge-myth">The Sea-Goat · ♑</span>
-          </div>
-
           <aside class="caption-panel glass-hud">
             <div class="hud-bar">
               <span class="hud-dot"></span>
-              <span class="hud-bar-label">STAR CHART · LIVE</span>
+              <span class="hud-bar-label">ORBIT MAP · LIVE</span>
             </div>
-            <p class="caption-tag" id="stage-tag">CAPRICORNUS · 摩羯星图</p>
+            <p class="caption-tag" id="stage-tag">ORBIT MAP · 星轨图</p>
             <h2 class="caption-title" id="stage-headline"></h2>
             <p class="caption-desc" id="stage-desc"></p>
             <blockquote class="caption-quote" id="stage-quote"></blockquote>
@@ -106,15 +100,15 @@
           </aside>
 
           <div class="hud-telemetry glass-hud" aria-hidden="true">
-            <p><span>SYS</span> CAPRICORNUS NAV</p>
-            <p><span>RA</span> 20h 14m · <span>DEC</span> −14° 47′</p>
+            <p><span>SYS</span> ORBIT NAV</p>
+            <p><span>TRK</span> 6 nodes · <span>HUB</span> δ anchor</p>
             <p><span>MAG</span> <em id="telemetry-mag">—</em> · <span>SIG</span> <em id="telemetry-sig">STANDBY</em></p>
             <p class="telemetry-scan">SCAN <span id="telemetry-scan">0000</span></p>
           </div>
 
           <div class="painting-meta glass-hud" aria-hidden="true">
-            <span>IAU J2000 · HD CATALOG</span>
-            <span>ShuaiAn Studio · ♑</span>
+            <span>ShuaiAn Studio</span>
+            <span>orbit · v12</span>
           </div>
         </div>
       </section>
@@ -158,7 +152,7 @@
     </main>
 
     <footer class="footer">
-      <p>© <span id="year"></span> ShuaiAn Chen · 摩羯座星轨</p>
+      <p>© <span id="year"></span> ShuaiAn Chen · 星轨</p>
       <a href="https://github.com/shuaianchen-glitch">github.com/shuaianchen-glitch</a>
     </footer>
   </div>
@@ -189,10 +183,10 @@
     <p class="transition-title" id="transition-title"></p>
   </div>
 
-  <script defer src="content/site.js?v=20250622-v11"></script>
-  <script defer src="js/theme.js?v=20250622-v11"></script>
-  <script defer src="js/painting.js?v=20250622-v11"></script>
-  <script defer src="js/detail.js?v=20250622-v11"></script>
-  <script defer src="js/main.js?v=20250622-v11"></script>
+  <script defer src="content/site.js?v=20250622-v12"></script>
+  <script defer src="js/theme.js?v=20250622-v12"></script>
+  <script defer src="js/painting.js?v=20250622-v12"></script>
+  <script defer src="js/detail.js?v=20250622-v12"></script>
+  <script defer src="js/main.js?v=20250622-v12"></script>
 </body>
 </html>

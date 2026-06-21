@@ -192,30 +192,11 @@ function initStarReadout() {
     $("#telemetry-sig").textContent = p.live ? "LOCKED" : "EVOLVING";
   });
 
-  window.addEventListener("constellationhover", (e) => {
-    document.body.classList.toggle("constellation-lit", e.detail.lit);
+  window.addEventListener("orbithover", (e) => {
+    document.body.classList.toggle("orbit-lit", e.detail.lit);
     const sig = $("#telemetry-sig");
     if (!sig || e.detail.lit) return;
     sig.textContent = "STANDBY";
-  });
-
-  window.addEventListener("constellationtap", (e) => {
-    const cap = e.detail;
-    const panel = $("#star-readout");
-    if (!panel) return;
-    panel.hidden = false;
-    panel.classList.add("is-visible");
-    $("#readout-icon").textContent = "♑";
-    $("#readout-bayer").textContent = `${cap.en} · ${cap.cn}`;
-    $("#readout-title").textContent = cap.myth;
-    $("#readout-latin").textContent = cap.subtitle || "The Sea-Goat";
-    $("#readout-desc").textContent = "Pan 跃入河流，化身海山羊；项目星钉在 IAU 连线上，每颗星都是一段旅程。";
-    $("#readout-mag").textContent = "δ Cap mag 2.87";
-    $("#readout-tags").textContent = "IAU · J2000";
-    const status = $("#readout-status");
-    status.textContent = "MYTH";
-    status.className = "readout-status is-live";
-    $("#telemetry-sig").textContent = "MYTHOS";
   });
 
   let scan = 0;

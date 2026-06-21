@@ -1,19 +1,19 @@
 window.SITE = {
   intro: {
-    eyebrow: "ShuaiAn · Capricornus",
+    eyebrow: "ShuaiAn Studio",
     title: ["在星途上，", "把想法推上山"],
     accentLine: 1,
-    sub: "一幅星图，六次触碰，无限可能",
-    btn: "展开星图",
+    sub: "一颗星，一段旅程；触碰，细节自然展开",
+    btn: "展开星轨",
     skip: "按 Enter 或点击任意处",
   },
 
   stage: {
-    tag: "CAPRICORNUS · 摩羯星图",
+    tag: "ORBIT MAP · 星轨图",
     headline: ["点一颗星，", "读一段旅程"],
-    desc: "项目钉在 IAU 摩羯连线上——背景是深空，星轨是导航。悬停读星历，点击展开造物细节。",
+    desc: "项目悬在星轨之上——不标注星座，只留轨迹与光。悬停读星，点击展开造物。",
     quote: "推石上山不是惩罚，是把重复雕成形状。",
-    hint: "悬停读星历 · 点击展开细节",
+    hint: "悬停读星 · 点击展开细节",
     stats: { live: "已点亮", climbing: "攀登中" },
   },
 
@@ -42,13 +42,6 @@ window.SITE = {
 
   defaultTheme: "night",
 
-  capricornus: {
-    en: "CAPRICORNUS",
-    cn: "摩羯座",
-    myth: "海山羊 · Pan 遁入尼罗",
-    subtitle: "The Sea-Goat",
-  },
-
   hub: {
     bayer: "δ Cap",
     name: "Deneb Algedi",
@@ -57,7 +50,7 @@ window.SITE = {
     dist: "39 光年",
     x: 0.58,
     y: 0.56,
-    note: "海山羊之心 · 摩羯座最亮星",
+    note: "星轨枢纽 · 最亮锚点",
   },
 
   projects: [

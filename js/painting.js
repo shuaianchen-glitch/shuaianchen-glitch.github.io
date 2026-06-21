@@ -22,7 +22,6 @@ window.Painting = (() => {
   let lastFigureHover = false;
   let figureHover = false;
   let figureDrawT = 0;
-  let badgeEl = null;
 
   const EASE = (t) => 1 - Math.pow(1 - t, 3);
 
@@ -59,6 +58,8 @@ window.Painting = (() => {
         labelBg: "rgba(255, 255, 255, 0.82)", labelBorder: "rgba(14, 116, 144, 0.35)",
         figureFill: "rgba(14, 116, 144, 0.08)", figureStroke: "rgba(14, 116, 144, 0.28)",
         figureGlow: "rgba(14, 116, 144, 0.45)",
+        illCore: "rgba(255, 255, 255, 0.35)", illMid: "rgba(200, 230, 245, 0.2)",
+        illEdge: "rgba(160, 200, 220, 0.1)", illTail: "rgba(180, 220, 240, 0.15)",
       };
     }
     return {
@@ -72,6 +73,8 @@ window.Painting = (() => {
       labelBg: "rgba(8, 12, 28, 0.72)", labelBorder: "rgba(126, 200, 255, 0.35)",
       figureFill: "rgba(100, 180, 255, 0.12)", figureStroke: "rgba(160, 220, 255, 0.38)",
       figureGlow: "rgba(120, 220, 255, 0.55)",
+      illCore: "rgba(230, 245, 255, 0.28)", illMid: "rgba(180, 215, 255, 0.16)",
+      illEdge: "rgba(130, 175, 230, 0.08)", illTail: "rgba(140, 200, 240, 0.14)",
     };
   }
 
@@ -152,135 +155,184 @@ window.Painting = (() => {
     return pts;
   }
 
-  function traceCapricornPath(pts, expand) {
-    const ex = expand ? 18 * dpr : 0;
+  function traceFigurePath(pts, expand) {
+    const e = expand * dpr;
     if (!pts.beta || !pts.xi || !pts.gamma) return false;
 
     ctx.beginPath();
-    ctx.moveTo(pts.beta.x, pts.beta.y);
-    ctx.quadraticCurveTo(pts.beta.x - ex * 1.2, pts.beta.y - ex * 2.2, pts.xi.x, pts.xi.y - ex * 0.3);
-    ctx.quadraticCurveTo(pts.gamma.x + ex * 0.8, pts.gamma.y - ex * 1.8, pts.gamma.x, pts.gamma.y);
+    ctx.moveTo(pts.beta.x - e * 0.3, pts.beta.y + e * 0.2);
+    ctx.bezierCurveTo(
+      pts.beta.x - 38 * dpr - e, pts.beta.y - 48 * dpr - e,
+      pts.xi.x - 12 * dpr, pts.xi.y - 42 * dpr - e * 0.5,
+      pts.xi.x, pts.xi.y - e * 0.4
+    );
+    ctx.bezierCurveTo(
+      pts.xi.x + 14 * dpr, pts.xi.y - 36 * dpr - e * 0.3,
+      pts.gamma.x + 28 * dpr + e * 0.5, pts.gamma.y - 28 * dpr - e,
+      pts.gamma.x + e * 0.2, pts.gamma.y
+    );
 
     if (pts.delta) {
-      ctx.quadraticCurveTo(pts.gamma.x + ex * 0.4, pts.delta.y - ex * 0.5, pts.delta.x, pts.delta.y);
-    }
-    if (pts.iota) {
-      ctx.quadraticCurveTo(
-        pts.iota.x - ex * 0.2,
-        pts.iota.y - ex * 0.8,
-        pts.iota.x + ex * 0.6,
-        pts.iota.y + ex * 0.2
+      ctx.bezierCurveTo(
+        pts.gamma.x + 20 * dpr, pts.gamma.y + 28 * dpr,
+        pts.delta.x - 8 * dpr, pts.delta.y - 12 * dpr,
+        pts.delta.x, pts.delta.y
       );
-      ctx.quadraticCurveTo(pts.iota.x, pts.iota.y + ex * 1.2, pts.iota.x - ex * 1.5, pts.iota.y);
     }
-    if (pts.nu && pts.theta) {
-      ctx.quadraticCurveTo(pts.nu.x, pts.nu.y, pts.theta.x - ex * 0.3, pts.theta.y);
-      ctx.lineTo(pts.alpha?.x ?? pts.theta.x, pts.alpha?.y ?? pts.theta.y);
-      ctx.quadraticCurveTo(pts.alpha?.x ?? pts.beta.x, (pts.alpha?.y ?? pts.beta.y) + ex, pts.beta.x, pts.beta.y);
+
+    if (pts.iota) {
+      ctx.bezierCurveTo(
+        pts.delta.x + 40 * dpr, pts.delta.y - 24 * dpr,
+        pts.iota.x - 16 * dpr, pts.iota.y - 20 * dpr,
+        pts.iota.x + 8 * dpr, pts.iota.y + 4 * dpr
+      );
+      ctx.bezierCurveTo(
+        pts.iota.x + 36 * dpr, pts.iota.y + 12 * dpr,
+        pts.iota.x + 8 * dpr, pts.iota.y + 32 * dpr,
+        pts.iota.x - 20 * dpr, pts.iota.y + 8 * dpr
+      );
+    }
+
+    if (pts.nu && pts.theta && pts.alpha) {
+      ctx.bezierCurveTo(
+        pts.nu.x + 8 * dpr, pts.nu.y + 8 * dpr,
+        pts.theta.x - 16 * dpr, pts.theta.y + 12 * dpr,
+        pts.theta.x, pts.theta.y
+      );
+      ctx.bezierCurveTo(
+        pts.alpha.x - 24 * dpr, pts.alpha.y + 16 * dpr,
+        pts.alpha.x - 8 * dpr, pts.alpha.y - 8 * dpr,
+        pts.alpha.x, pts.alpha.y
+      );
+      ctx.bezierCurveTo(
+        pts.beta.x - 20 * dpr, pts.beta.y + 8 * dpr,
+        pts.beta.x - 8 * dpr, pts.beta.y + 4 * dpr,
+        pts.beta.x - e * 0.3, pts.beta.y + e * 0.2
+      );
     } else {
-      ctx.lineTo(pts.beta.x, pts.beta.y);
+      ctx.closePath();
     }
+    return true;
+  }
+
+  function traceFishTail(pts) {
+    if (!pts.delta || !pts.iota) return false;
+    ctx.beginPath();
+    ctx.moveTo(pts.delta.x, pts.delta.y);
+    ctx.bezierCurveTo(
+      pts.delta.x + 50 * dpr, pts.delta.y - 30 * dpr,
+      pts.iota.x - 10 * dpr, pts.iota.y - 24 * dpr,
+      pts.iota.x + 12 * dpr, pts.iota.y
+    );
+    ctx.bezierCurveTo(
+      pts.iota.x + 40 * dpr, pts.iota.y + 20 * dpr,
+      pts.iota.x, pts.iota.y + 40 * dpr,
+      pts.delta.x + 20 * dpr, pts.delta.y + 16 * dpr
+    );
     ctx.closePath();
     return true;
   }
 
-  function drawCapricornHorns(pts, p, lit, t) {
-    if (!pts.beta || !pts.gamma || !pts.xi) return;
-    const horn = lit ? p.lineActive : p.figureStroke;
-    ctx.strokeStyle = horn;
-    ctx.lineWidth = (lit ? 2 : 1.2) * dpr;
-    ctx.lineCap = "round";
-    ctx.shadowColor = p.figureGlow;
-    ctx.shadowBlur = lit ? 16 : 6;
-
+  function traceHorns(pts) {
+    if (!pts.beta || !pts.xi || !pts.gamma) return;
     ctx.beginPath();
     ctx.moveTo(pts.beta.x, pts.beta.y);
-    ctx.quadraticCurveTo(pts.beta.x - 28 * dpr, pts.beta.y - 38 * dpr, pts.xi.x - 8 * dpr, pts.xi.y - 12 * dpr);
-    ctx.stroke();
-
+    ctx.bezierCurveTo(pts.beta.x - 32 * dpr, pts.beta.y - 44 * dpr, pts.xi.x - 18 * dpr, pts.xi.y - 22 * dpr, pts.xi.x - 4 * dpr, pts.xi.y - 8 * dpr);
+    ctx.bezierCurveTo(pts.beta.x - 8 * dpr, pts.beta.y - 4 * dpr, pts.beta.x, pts.beta.y, pts.beta.x, pts.beta.y);
+    ctx.closePath();
     ctx.beginPath();
     ctx.moveTo(pts.gamma.x, pts.gamma.y);
-    ctx.quadraticCurveTo(pts.gamma.x + 22 * dpr, pts.gamma.y - 32 * dpr, pts.xi.x + 6 * dpr, pts.xi.y - 10 * dpr);
-    ctx.stroke();
-
-    if (pts.iota) {
-      ctx.beginPath();
-      ctx.moveTo(pts.iota.x, pts.iota.y);
-      ctx.quadraticCurveTo(pts.iota.x + 24 * dpr, pts.iota.y - 8 * dpr, pts.iota.x + 32 * dpr, pts.iota.y + 14 * dpr);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(pts.iota.x, pts.iota.y);
-      ctx.quadraticCurveTo(pts.iota.x + 18 * dpr, pts.iota.y + 18 * dpr, pts.iota.x - 4 * dpr, pts.iota.y + 26 * dpr);
-      ctx.stroke();
-    }
-    ctx.shadowBlur = 0;
+    ctx.bezierCurveTo(pts.gamma.x + 26 * dpr, pts.gamma.y - 36 * dpr, pts.xi.x + 14 * dpr, pts.xi.y - 18 * dpr, pts.xi.x + 2 * dpr, pts.xi.y - 6 * dpr);
+    ctx.bezierCurveTo(pts.gamma.x + 6 * dpr, pts.gamma.y - 2 * dpr, pts.gamma.x, pts.gamma.y, pts.gamma.x, pts.gamma.y);
+    ctx.closePath();
   }
 
-  function drawCapricornFigure(p, t, intro) {
+  function drawSkyGuideIllustration(p, t, intro) {
     const pts = figurePoints();
-    if (!traceCapricornPath(pts, false)) return;
+    if (!pts.beta) return;
 
     const lit = figureHover || hoverIdx >= 0 || focusIdx >= 0;
-    const fade = EASE(intro) * (lit ? 1 : 0.82);
-    const breathe = 0.88 + 0.12 * Math.sin(t * 0.65);
-    figureDrawT = Math.min(1, figureDrawT + 0.006);
-    const drawProg = EASE(figureDrawT);
+    const fade = EASE(intro) * (lit ? 1 : 0.9);
+    const breathe = 0.92 + 0.08 * Math.sin(t * 0.5);
+    figureDrawT = Math.min(1, figureDrawT + 0.005);
+
+    const cx = pts.delta ? pts.delta.x * 0.4 + pts.xi.x * 0.3 + pts.beta.x * 0.3 : w * 0.5;
+    const cy = pts.delta ? pts.delta.y * 0.45 + pts.xi.y * 0.35 + pts.theta.y * 0.2 : h * 0.45;
+    const scaleB = breathe * (lit ? 1.02 : 1);
 
     ctx.save();
-    ctx.globalAlpha = fade * breathe;
+    ctx.globalAlpha = fade;
+    ctx.translate(cx, cy);
+    ctx.scale(scaleB, scaleB);
+    ctx.translate(-cx, -cy);
 
-    const cx = pts.delta ? pts.delta.x : (pts.beta.x + pts.gamma.x) / 2;
-    const cy = pts.delta ? pts.delta.y : (pts.beta.y + pts.theta?.y) / 2;
-    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.min(w, h) * 0.28);
-    grad.addColorStop(0, lit ? p.figureFill.replace(/[\d.]+\)$/, "0.18)") : p.figureFill);
-    grad.addColorStop(1, "transparent");
-    ctx.fillStyle = grad;
+    ctx.globalCompositeOperation = "screen";
+
+    traceFigurePath(pts, 10);
+    ctx.filter = `blur(${18 * dpr}px)`;
+    ctx.fillStyle = lit ? "rgba(160, 210, 255, 0.14)" : "rgba(130, 180, 240, 0.08)";
+    ctx.fill();
+    ctx.filter = "none";
+
+    traceFigurePath(pts, 4);
+    ctx.filter = `blur(${8 * dpr}px)`;
+    ctx.fillStyle = lit ? "rgba(190, 225, 255, 0.18)" : "rgba(160, 205, 245, 0.1)";
+    ctx.fill();
+    ctx.filter = "none";
+
+    ctx.globalCompositeOperation = "source-over";
+
+    traceFigurePath(pts, 0);
+    const bodyGrad = ctx.createLinearGradient(cx, cy - 90 * dpr, cx, cy + 100 * dpr);
+    bodyGrad.addColorStop(0, lit ? p.illCore.replace(/[\d.]+\)$/, "0.32)") : p.illCore);
+    bodyGrad.addColorStop(0.45, p.illMid);
+    bodyGrad.addColorStop(1, p.illEdge);
+    ctx.fillStyle = bodyGrad;
     ctx.fill();
 
-    ctx.setLineDash([120 * dpr, 40 * dpr]);
-    ctx.lineDashOffset = -t * 18 * dpr;
-    ctx.strokeStyle = lit ? p.lineActive : p.figureStroke;
-    ctx.lineWidth = (lit ? 2.2 : 1.3) * dpr;
-    ctx.shadowColor = p.figureGlow;
-    ctx.shadowBlur = lit ? 22 : 10;
-    ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.shadowBlur = 0;
-
-    drawCapricornHorns(pts, p, lit, t);
-
-    if (pts.delta && pts.iota) {
-      ctx.strokeStyle = p.techBright.replace(/[\d.]+\)$/, lit ? "0.35)" : "0.12)");
-      ctx.lineWidth = 0.8 * dpr;
-      ctx.setLineDash([3 * dpr, 5 * dpr]);
-      ctx.beginPath();
-      ctx.moveTo(pts.delta.x, pts.delta.y);
-      ctx.quadraticCurveTo((pts.delta.x + pts.iota.x) / 2, pts.delta.y - 20 * dpr, pts.iota.x, pts.iota.y);
-      ctx.stroke();
-      ctx.setLineDash([]);
+    if (traceFishTail(pts)) {
+      const tailGrad = ctx.createLinearGradient(pts.delta.x, pts.delta.y, pts.iota.x, pts.iota.y);
+      tailGrad.addColorStop(0, p.illMid);
+      tailGrad.addColorStop(0.6, lit ? p.illTail.replace(/[\d.]+\)$/, "0.22)") : p.illTail);
+      tailGrad.addColorStop(1, "rgba(100, 160, 220, 0.04)");
+      ctx.fillStyle = tailGrad;
+      ctx.fill();
     }
 
-    ctx.restore();
-    updateBadge(pts, lit);
-  }
+    traceHorns(pts);
+    ctx.fillStyle = lit ? "rgba(220, 238, 255, 0.2)" : "rgba(200, 225, 250, 0.12)";
+    ctx.fill();
 
-  function updateBadge(pts, lit) {
-    if (!badgeEl) return;
-    const cx = ((pts.xi?.x ?? 0) + (pts.delta?.x ?? 0)) / 2;
-    const cy = ((pts.xi?.y ?? 0) + (pts.theta?.y ?? pts.delta?.y ?? 0)) / 2;
-    badgeEl.style.left = `${cx / dpr}px`;
-    badgeEl.style.top = `${cy / dpr}px`;
-    badgeEl.classList.toggle("is-lit", lit);
-    badgeEl.classList.toggle("is-visible", figureDrawT > 0.35);
+    ctx.globalCompositeOperation = "screen";
+    for (let i = 4; i >= 0; i -= 1) {
+      traceFigurePath(pts, 0);
+      ctx.filter = `blur(${i * 2.5 * dpr}px)`;
+      ctx.strokeStyle = `rgba(200, 230, 255, ${(lit ? 0.14 : 0.07) - i * 0.012})`;
+      ctx.lineWidth = (2 + i * 2.5) * dpr;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.stroke();
+    }
+    ctx.filter = "none";
+    ctx.globalCompositeOperation = "source-over";
+
+    traceFigurePath(pts, 0);
+    ctx.strokeStyle = lit ? "rgba(235, 248, 255, 0.45)" : "rgba(210, 235, 255, 0.22)";
+    ctx.lineWidth = 1.1 * dpr;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.stroke();
+
+    ctx.restore();
   }
 
   function hitTestFigure(sx, sy) {
     const pts = figurePoints();
-    if (!traceCapricornPath(pts, true)) return false;
+    if (!traceFigurePath(pts, 14)) return false;
     return ctx.isPointInPath(sx, sy);
   }
 
-  function constellationLit() {
+  function orbitLit() {
     return figureHover || hoverIdx >= 0 || focusIdx >= 0;
   }
 
@@ -330,9 +382,9 @@ window.Painting = (() => {
     ctx.font = `${9 * dpr}px SF Mono, Menlo, monospace`;
     ctx.fillStyle = p.text;
     ctx.textAlign = "left";
-    ctx.fillText(`SECTOR-♑ · ${String(tick).padStart(4, "0")}`, x + 8 * dpr, y - 6 * dpr);
+    ctx.fillText(`ORBIT · ${String(tick).padStart(4, "0")}`, x + 8 * dpr, y - 6 * dpr);
     ctx.textAlign = "right";
-    ctx.fillText("J2000.0", x + fw - 8 * dpr, y + fh + 14 * dpr);
+    ctx.fillText("TRACK", x + fw - 8 * dpr, y + fh + 14 * dpr);
   }
 
   function drawCrosshair(p) {
@@ -449,36 +501,43 @@ window.Painting = (() => {
     ctx.restore();
   }
 
-  function drawLine(x1, y1, x2, y2, prog, active, p) {
-    const dx = x2 - x1;
-    const dy = y2 - y1;
-    const len = Math.hypot(dx, dy);
-    if (len < 1) return;
-    const ex = x1 + dx * prog;
-    const ey = y1 + dy * prog;
-
-    ctx.strokeStyle = active ? p.lineActive : p.line;
-    ctx.lineWidth = active ? 1.8 : 1;
-    ctx.lineCap = "round";
-    ctx.shadowColor = active ? p.lineActive : "transparent";
-    ctx.shadowBlur = active ? 12 : 0;
+  function drawOrbitArc(x1, y1, x2, y2, prog, active, p) {
+    const mx = (x1 + x2) / 2;
+    const my = (y1 + y2) / 2 - Math.hypot(x2 - x1, y2 - y1) * 0.12;
     ctx.beginPath();
     ctx.moveTo(x1, y1);
-    ctx.lineTo(ex, ey);
-    ctx.stroke();
-    ctx.shadowBlur = 0;
+    ctx.quadraticCurveTo(mx, my, x2, y2);
 
-    if (active && prog > 0.5) {
-      ctx.fillStyle = p.lineActive;
-      ctx.beginPath();
-      ctx.arc(ex, ey, 2, 0, Math.PI * 2);
-      ctx.fill();
+    if (prog >= 1) {
+      ctx.strokeStyle = active ? p.lineActive : p.line;
+      ctx.lineWidth = active ? 1.6 * dpr : 0.9 * dpr;
+      ctx.lineCap = "round";
+      ctx.shadowColor = active ? p.lineActive : "transparent";
+      ctx.shadowBlur = active ? 14 : 0;
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+      return;
     }
+
+    const steps = 40;
+    const end = Math.floor(steps * prog);
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    for (let i = 1; i <= end; i += 1) {
+      const t = i / steps;
+      const px = (1 - t) * (1 - t) * x1 + 2 * (1 - t) * t * mx + t * t * x2;
+      const py = (1 - t) * (1 - t) * y1 + 2 * (1 - t) * t * my + t * t * y2;
+      ctx.lineTo(px, py);
+    }
+    ctx.strokeStyle = active ? p.lineActive : p.line;
+    ctx.lineWidth = active ? 1.6 * dpr : 0.9 * dpr;
+    ctx.lineCap = "round";
+    ctx.stroke();
   }
 
   function drawConstellation(p, t, intro) {
     const lines = window.SITE.lines || [];
-    const lit = constellationLit();
+    const lit = orbitLit();
     const activeKey = focusIdx >= 0 ? starKey(window.SITE.projects[focusIdx].star.bayer) : hoverIdx >= 0 ? starKey(window.SITE.projects[hoverIdx].star.bayer) : null;
 
     lines.forEach(([a, b], i) => {
@@ -489,7 +548,7 @@ window.Painting = (() => {
       const p2 = toScreen(sb.x, sb.y);
       const lineProg = Math.min(1, Math.max(0, intro - i * 0.08));
       const active = lit && (activeKey ? (a === activeKey || b === activeKey) : true);
-      drawLine(p1.x, p1.y, p2.x, p2.y, lineProg, active, p);
+      drawOrbitArc(p1.x, p1.y, p2.x, p2.y, lineProg, active, p);
     });
   }
 
@@ -637,7 +696,7 @@ window.Painting = (() => {
     drawDust(p, time);
     drawTechRing(p, time);
     drawTechFrame(p, time);
-    drawCapricornFigure(p, time, EASE(introT));
+    drawSkyGuideIllustration(p, time, EASE(introT));
     drawConstellation(p, time, EASE(introT));
     drawDecorStars(p, time, EASE(introT));
     drawHub(p, time, EASE(introT));
@@ -692,8 +751,8 @@ window.Painting = (() => {
     window.dispatchEvent(new CustomEvent("starhover", {
       detail: idx >= 0 ? { idx, project: window.SITE.projects[idx] } : { idx: -1 },
     }));
-    window.dispatchEvent(new CustomEvent("constellationhover", {
-      detail: { lit: constellationLit(), figure: figureHover },
+    window.dispatchEvent(new CustomEvent("orbithover", {
+      detail: { lit: orbitLit(), figure: figureHover },
     }));
   }
 
@@ -725,11 +784,6 @@ window.Painting = (() => {
     const idx = hitTest(sx, sy);
     if (idx >= 0 && !locked) {
       focusStar(idx, e.clientX, e.clientY);
-      return;
-    }
-    if (figureHover && !locked) {
-      pulseT = 0.6;
-      window.dispatchEvent(new CustomEvent("constellationtap", { detail: window.SITE.capricornus }));
     }
   }
 
@@ -747,13 +801,6 @@ window.Painting = (() => {
     canvas = document.getElementById("painting");
     if (!canvas) return;
     ctx = canvas.getContext("2d");
-    badgeEl = document.getElementById("cap-badge");
-    if (badgeEl && window.SITE.capricornus) {
-      badgeEl.querySelector(".cap-badge-en").textContent = window.SITE.capricornus.en;
-      badgeEl.querySelector(".cap-badge-cn").textContent = `${window.SITE.capricornus.cn} · 海山羊`;
-      const myth = document.getElementById("cap-badge-myth");
-      if (myth) myth.textContent = `${window.SITE.capricornus.myth} · ♑`;
-    }
     buildMap();
     resize();
     canvas.addEventListener("pointermove", onMove);

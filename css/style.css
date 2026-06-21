@@ -349,75 +349,11 @@ html[data-theme="day"] .glass-hud {
   border-top: 1px solid var(--border);
 }
 
-/* Capricornus badge — Sky Guide style */
-
-.cap-badge {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  pointer-events: none;
-  z-index: 3;
-  padding: 0.5rem 0.85rem;
-  border-radius: 12px;
-  opacity: 0;
-  transition: opacity 0.6s var(--ease-out), box-shadow 0.4s, border-color 0.4s;
-}
-
-.cap-badge.is-visible {
-  opacity: 0.55;
-}
-
-.cap-badge.is-lit {
-  opacity: 1;
-  box-shadow: 0 0 40px var(--glow), inset 0 0 20px rgba(126, 200, 255, 0.06);
-  border-color: var(--accent);
-}
-
-.cap-badge-en {
-  display: block;
-  font-family: var(--font-display);
-  font-size: clamp(0.85rem, 1.8vw, 1.05rem);
-  font-weight: 600;
-  letter-spacing: 0.28em;
-  color: var(--text);
-  opacity: 0.85;
-}
-
-.cap-badge-cn {
-  display: block;
-  font-size: 0.72rem;
-  color: var(--muted);
-  margin-top: 0.15rem;
-  letter-spacing: 0.12em;
-}
-
-.cap-badge-myth {
-  display: block;
-  font-family: var(--font-mono);
-  font-size: 0.58rem;
-  color: var(--accent);
-  opacity: 0.55;
-  margin-top: 0.35rem;
-  letter-spacing: 0.1em;
-}
-
-.cap-badge.is-lit .cap-badge-en {
-  background: linear-gradient(120deg, var(--accent), var(--gold));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+body.orbit-lit .hud-frame {
   opacity: 1;
 }
 
-.cap-badge.is-lit .cap-badge-myth {
-  opacity: 0.9;
-}
-
-body.constellation-lit .hud-frame {
-  opacity: 1;
-}
-
-body.constellation-lit .hud-corner {
+body.orbit-lit .hud-corner {
   opacity: 0.85;
   border-color: var(--accent);
 }
