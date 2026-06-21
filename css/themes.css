@@ -1,0 +1,76 @@
+/* Capricorn dual theme — default: fixed starry night */
+
+html[data-theme="night"] {
+  color-scheme: dark;
+  --bg: #030510;
+  --bg-card: rgba(8, 12, 28, 0.78);
+  --glass: rgba(255, 255, 255, 0.04);
+  --sky-top: #030510;
+  --sky-bottom: #0a0e22;
+  --cyan: #7dd3fc;
+  --magenta: #c084fc;
+  --purple: #a78bfa;
+  --peach: #fcd34d;
+  --gold: #fde68a;
+  --text: #e8edf7;
+  --muted: #8b9cb8;
+  --border: rgba(255, 255, 255, 0.09);
+  --glow-cyan: rgba(125, 211, 252, 0.5);
+  --glow-magenta: rgba(192, 132, 252, 0.35);
+  --star-line: rgba(125, 211, 252, 0.22);
+  --star-core-live: #e0f2fe;
+  --star-core-evolve: #ddd6fe;
+  --nav-bg: rgba(3, 5, 16, 0.72);
+  --scanline-opacity: 0.28;
+  --theme-meta: #050508;
+}
+
+html[data-theme="day"] {
+  color-scheme: light;
+  --bg: #eef4fb;
+  --bg-card: rgba(255, 255, 255, 0.82);
+  --glass: rgba(255, 255, 255, 0.55);
+  --sky-top: #dbeafe;
+  --sky-bottom: #fef3c7;
+  --cyan: #0284c7;
+  --magenta: #9333ea;
+  --purple: #7c3aed;
+  --peach: #f59e0b;
+  --gold: #d97706;
+  --text: #1e293b;
+  --muted: #64748b;
+  --border: rgba(30, 41, 59, 0.1);
+  --glow-cyan: rgba(2, 132, 199, 0.25);
+  --glow-magenta: rgba(147, 51, 234, 0.2);
+  --star-line: rgba(2, 132, 199, 0.28);
+  --star-core-live: #0369a1;
+  --star-core-evolve: #7c3aed;
+  --nav-bg: rgba(238, 244, 251, 0.82);
+  --scanline-opacity: 0;
+  --theme-meta: #eef4fb;
+}
+
+html[data-theme="day"] .scanlines {
+  opacity: 0;
+}
+
+html[data-theme="day"] .sky-layer {
+  background:
+    radial-gradient(ellipse 90% 60% at 50% 0%, rgba(255, 255, 255, 0.9), transparent 60%),
+    linear-gradient(180deg, var(--sky-top) 0%, #bfdbfe 45%, var(--sky-bottom) 100%);
+}
+
+html[data-theme="night"] .sky-layer {
+  background:
+    radial-gradient(ellipse 100% 80% at 50% 0%, rgba(30, 40, 90, 0.35), transparent 55%),
+    linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 100%);
+}
+
+html[data-theme="day"] .capricorn-3d.is-visible {
+  opacity: 1;
+}
+
+html[data-theme="night"] .capricorn-3d {
+  opacity: 0;
+  pointer-events: none;
+}
