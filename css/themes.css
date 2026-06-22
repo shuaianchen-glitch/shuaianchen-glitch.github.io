@@ -1,6 +1,6 @@
 html[data-theme="night"] {
   color-scheme: dark;
-  --bg: #050310;
+  --bg: #000000;
   --bg-card: rgba(12, 8, 28, 0.92);
   --text: #e8ecf4;
   --muted: #8a9bb5;

@@ -22,6 +22,7 @@ window.Painting = (() => {
   let lastFigureHover = false;
   let figureHover = false;
   let figureDrawT = 0;
+  let particles = [];
 
   const EASE = (t) => 1 - Math.pow(1 - t, 3);
 
@@ -63,8 +64,8 @@ window.Painting = (() => {
       };
     }
     return {
-      bg0: "#050310", bg1: "#0c0820", bg2: "#140a32",
-      nebA: "rgba(88, 40, 160, 0.55)", nebB: "rgba(30, 80, 160, 0.4)",
+      bg0: "#000000", bg1: "#030208", bg2: "#060412",
+      nebA: "rgba(88, 40, 160, 0.35)", nebB: "rgba(30, 80, 160, 0.25)",
       line: "rgba(160, 210, 255, 0.22)", lineActive: "rgba(120, 220, 255, 0.72)",
       star: "#e8f0ff", starLive: "#fff8ec", starGlow: "rgba(180, 220, 255, 0.55)",
       hub: "#f0d890", tech: "rgba(0, 220, 255, 0.18)", techBright: "rgba(0, 220, 255, 0.55)",
@@ -105,6 +106,146 @@ window.Painting = (() => {
     const py = cy + (sy - cy) / scale;
     const c = chart;
     return { nx: (px - c.x) / c.w, ny: (py - c.y) / c.h };
+  }
+
+  function initParticles() {
+    const mobile = window.innerWidth < 768;
+    const count = mobile ? 320 : 1100;
+    particles = Array.from({ length: count }, () => {
+      const roll = Math.random();
+      const type = roll > 0.97 ? "orb" : roll > 0.72 ? "spark" : "dust";
+      return {
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        size: type === "orb" ? 2 + Math.random() * 5 : type === "spark" ? 0.7 + Math.random() * 1.6 : 0.25 + Math.random() * 0.7,
+        type,
+        hue: Math.random() > 0.55 ? 42 + Math.random() * 18 : 188 + Math.random() * 40,
+        alpha: type === "orb" ? 0.12 + Math.random() * 0.18 : 0.25 + Math.random() * 0.55,
+        phase: Math.random() * Math.PI * 2,
+      };
+    });
+  }
+
+  function flowAt(x, y, t) {
+    const nx = x / w;
+    const ny = y / h;
+    const a =
+      Math.sin(ny * 8 + t * 0.45 + nx * 3) * 1.8 +
+      Math.cos(nx * 7 - t * 0.35) * 1.2 +
+      Math.sin((nx + ny) * 6 + t * 0.25) * 0.9;
+    return a;
+  }
+
+  function updateParticles(t) {
+    const mxPx = mx * w;
+    const myPx = my * h;
+    const pullR = 260 * dpr;
+
+    particles.forEach((pt) => {
+      const angle = flowAt(pt.x, pt.y, t) + pt.phase * 0.15;
+      const drift = pt.type === "orb" ? 0.12 : pt.type === "spark" ? 0.28 : 0.1;
+      pt.vx += Math.cos(angle) * drift * 0.06;
+      pt.vy += Math.sin(angle) * drift * 0.06;
+
+      const dx = mxPx - pt.x;
+      const dy = myPx - pt.y;
+      const dist = Math.hypot(dx, dy) || 1;
+      if (dist < pullR) {
+        const pull = Math.pow(1 - dist / pullR, 1.6);
+        const swirl = pull * 0.55;
+        pt.vx += (dx / dist) * swirl * 0.22 + (-dy / dist) * swirl * 0.08;
+        pt.vy += (dy / dist) * swirl * 0.22 + (dx / dist) * swirl * 0.08;
+      }
+
+      pt.vx *= 0.92;
+      pt.vy *= 0.92;
+      pt.x += pt.vx * dpr;
+      pt.y += pt.vy * dpr;
+
+      if (pt.x < -8) pt.x = w + 8;
+      if (pt.x > w + 8) pt.x = -8;
+      if (pt.y < -8) pt.y = h + 8;
+      if (pt.y > h + 8) pt.y = -8;
+    });
+  }
+
+  function particleColor(hue, alpha) {
+    return `hsla(${hue}, ${hue < 80 ? 90 : 75}%, ${hue < 80 ? 68 : 72}%, ${alpha})`;
+  }
+
+  function drawParticleLinks(t) {
+    if (window.innerWidth < 768) return;
+    const sparks = particles.filter((p) => p.type === "spark");
+    const maxD = 75 * dpr;
+    const cap = Math.min(sparks.length, 90);
+    ctx.lineWidth = 0.5 * dpr;
+    for (let i = 0; i < cap; i += 1) {
+      const a = sparks[i];
+      for (let j = i + 1; j < cap; j += 1) {
+        const b = sparks[j];
+        const d = Math.hypot(a.x - b.x, a.y - b.y);
+        if (d > maxD) continue;
+        const alpha = (1 - d / maxD) * 0.1 * (0.55 + 0.45 * Math.sin(t * 1.2 + i * 0.3));
+        ctx.strokeStyle = particleColor(200, alpha);
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
+      }
+    }
+  }
+
+  function drawOneParticle(pt, t) {
+    const tw = 0.55 + 0.45 * Math.sin(t * 1.6 + pt.phase);
+    const alpha = pt.alpha * tw * (pt.type === "orb" ? 0.85 : 1);
+    const r = pt.size * dpr * (pt.type === "orb" ? 1.8 : 1);
+
+    if (pt.type === "orb") {
+      const g = ctx.createRadialGradient(pt.x, pt.y, 0, pt.x, pt.y, r * 8);
+      g.addColorStop(0, particleColor(pt.hue, alpha * 0.55));
+      g.addColorStop(0.35, particleColor(pt.hue, alpha * 0.18));
+      g.addColorStop(1, "transparent");
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(pt.x, pt.y, r * 8, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    const core = ctx.createRadialGradient(pt.x, pt.y, 0, pt.x, pt.y, r * 2.5);
+    core.addColorStop(0, particleColor(pt.hue, alpha));
+    core.addColorStop(0.4, particleColor(pt.hue, alpha * 0.35));
+    core.addColorStop(1, "transparent");
+    ctx.fillStyle = core;
+    ctx.beginPath();
+    ctx.arc(pt.x, pt.y, r * 2.5, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  function drawParticleBanner(t) {
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(0, 0, w, h);
+
+    const glow = ctx.createRadialGradient(w * 0.52, h * 0.46, 0, w * 0.5, h * 0.48, Math.max(w, h) * 0.55);
+    glow.addColorStop(0, "rgba(30, 50, 90, 0.22)");
+    glow.addColorStop(0.35, "rgba(12, 18, 40, 0.1)");
+    glow.addColorStop(1, "transparent");
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, w, h);
+
+    updateParticles(t);
+
+    ctx.globalCompositeOperation = "screen";
+    drawParticleLinks(t);
+    particles.forEach((pt) => drawOneParticle(pt, t));
+    ctx.globalCompositeOperation = "source-over";
+
+    const vig = ctx.createRadialGradient(w / 2, h / 2, Math.min(w, h) * 0.15, w / 2, h / 2, Math.max(w, h) * 0.72);
+    vig.addColorStop(0, "transparent");
+    vig.addColorStop(1, "rgba(0, 0, 0, 0.72)");
+    ctx.fillStyle = vig;
+    ctx.fillRect(0, 0, w, h);
   }
 
   function drawNebula(p) {
@@ -692,8 +833,12 @@ window.Painting = (() => {
 
     const p = palette();
     ctx.clearRect(0, 0, w, h);
-    drawNebula(p);
-    drawDust(p, time);
+    if (isDay()) {
+      drawNebula(p);
+      drawDust(p, time);
+    } else {
+      drawParticleBanner(time);
+    }
     drawTechRing(p, time);
     drawTechFrame(p, time);
     drawSkyGuideIllustration(p, time, EASE(introT));
@@ -795,6 +940,7 @@ window.Painting = (() => {
     canvas.style.width = `${window.innerWidth}px`;
     canvas.style.height = `${window.innerHeight}px`;
     chartRect();
+    initParticles();
   }
 
   function init() {
@@ -809,6 +955,7 @@ window.Painting = (() => {
     window.addEventListener("resize", resize);
     window.addEventListener("themechange", () => {
       buildMap();
+      initParticles();
     });
     cancelAnimationFrame(raf);
     raf = requestAnimationFrame(frame);

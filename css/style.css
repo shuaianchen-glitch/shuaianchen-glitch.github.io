@@ -30,7 +30,7 @@ body.detail-open { overflow: hidden; }
   z-index: 300;
   display: grid;
   place-items: center;
-  background: var(--bg);
+  background: #000;
   transition: opacity 0.9s var(--ease-out), visibility 0.9s;
 }
 
