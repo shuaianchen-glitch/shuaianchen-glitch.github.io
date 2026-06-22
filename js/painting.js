@@ -139,28 +139,49 @@ window.Painting = (() => {
   }
 
   function updateParticles(t) {
-    const mxPx = mx * w;
-    const myPx = my * h;
-    const pullR = 260 * dpr;
+    const g = window.HandGesture;
+    const useGesture = !isDay() && g?.enabled && g.hasHand;
+    const gx = (useGesture ? g.x : mx) * w;
+    const gy = (useGesture ? g.y : my) * h;
+    const pullR = useGesture ? 340 * dpr : 260 * dpr;
 
     particles.forEach((pt) => {
       const angle = flowAt(pt.x, pt.y, t) + pt.phase * 0.15;
       const drift = pt.type === "orb" ? 0.12 : pt.type === "spark" ? 0.28 : 0.1;
-      pt.vx += Math.cos(angle) * drift * 0.06;
-      pt.vy += Math.sin(angle) * drift * 0.06;
+      const flowMix = useGesture ? 0.35 : 1;
+      pt.vx += Math.cos(angle) * drift * 0.06 * flowMix;
+      pt.vy += Math.sin(angle) * drift * 0.06 * flowMix;
 
-      const dx = mxPx - pt.x;
-      const dy = myPx - pt.y;
+      const dx = gx - pt.x;
+      const dy = gy - pt.y;
       const dist = Math.hypot(dx, dy) || 1;
-      if (dist < pullR) {
+
+      if (useGesture) {
+        const closed = 1 - g.openness;
+        const opened = g.openness;
+
+        if (closed > 0.28 && dist < pullR * 1.2) {
+          const pull = Math.pow(1 - Math.min(dist / (pullR * 1.2), 1), 1.4) * closed * 1.35;
+          pt.vx += (dx / dist) * pull * 0.85;
+          pt.vy += (dy / dist) * pull * 0.85;
+        }
+
+        if (opened > 0.45 && dist < pullR * 1.5) {
+          const push = Math.pow(1 - Math.min(dist / (pullR * 1.5), 1), 1.2) * opened * 0.95;
+          pt.vx -= (dx / dist) * push * 0.7;
+          pt.vy -= (dy / dist) * push * 0.7;
+          pt.vx += (Math.random() - 0.5) * opened * 0.08;
+          pt.vy += (Math.random() - 0.5) * opened * 0.08;
+        }
+      } else if (dist < pullR) {
         const pull = Math.pow(1 - dist / pullR, 1.6);
         const swirl = pull * 0.55;
         pt.vx += (dx / dist) * swirl * 0.22 + (-dy / dist) * swirl * 0.08;
         pt.vy += (dy / dist) * swirl * 0.22 + (dx / dist) * swirl * 0.08;
       }
 
-      pt.vx *= 0.92;
-      pt.vy *= 0.92;
+      pt.vx *= useGesture ? 0.9 : 0.92;
+      pt.vy *= useGesture ? 0.9 : 0.92;
       pt.x += pt.vx * dpr;
       pt.y += pt.vy * dpr;
 
@@ -223,6 +244,39 @@ window.Painting = (() => {
     ctx.fill();
   }
 
+  function drawHandAura(t) {
+    const g = window.HandGesture;
+    if (!g?.enabled || !g.hasHand || isDay()) return;
+
+    const hx = g.x * w;
+    const hy = g.y * h;
+    const closed = 1 - g.openness;
+    const opened = g.openness;
+    const r = (80 + closed * 120) * dpr;
+
+    ctx.globalCompositeOperation = "screen";
+    const aura = ctx.createRadialGradient(hx, hy, 0, hx, hy, r);
+    if (closed > opened) {
+      aura.addColorStop(0, `rgba(255, 210, 120, ${0.22 + closed * 0.2})`);
+      aura.addColorStop(0.45, `rgba(120, 200, 255, ${0.08 + closed * 0.1})`);
+    } else {
+      aura.addColorStop(0, `rgba(120, 220, 255, ${0.1 + opened * 0.12})`);
+      aura.addColorStop(0.5, "rgba(255, 200, 100, 0.06)");
+    }
+    aura.addColorStop(1, "transparent");
+    ctx.fillStyle = aura;
+    ctx.beginPath();
+    ctx.arc(hx, hy, r, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = `rgba(200, 235, 255, ${0.15 + closed * 0.25})`;
+    ctx.lineWidth = 1.5 * dpr;
+    ctx.beginPath();
+    ctx.arc(hx, hy, 24 * dpr + Math.sin(t * 3) * 4 * dpr, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.globalCompositeOperation = "source-over";
+  }
+
   function drawParticleBanner(t) {
     ctx.fillStyle = "#000000";
     ctx.fillRect(0, 0, w, h);
@@ -239,6 +293,7 @@ window.Painting = (() => {
     ctx.globalCompositeOperation = "screen";
     drawParticleLinks(t);
     particles.forEach((pt) => drawOneParticle(pt, t));
+    drawHandAura(t);
     ctx.globalCompositeOperation = "source-over";
 
     const vig = ctx.createRadialGradient(w / 2, h / 2, Math.min(w, h) * 0.15, w / 2, h / 2, Math.max(w, h) * 0.72);

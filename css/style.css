@@ -198,6 +198,86 @@ body.detail-open { overflow: hidden; }
   cursor: pointer;
 }
 
+.gesture-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  padding: 0.38rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: box-shadow 0.3s, border-color 0.3s;
+}
+
+.gesture-toggle.is-active {
+  border-color: var(--accent);
+  box-shadow: 0 0 20px var(--glow);
+  color: var(--accent);
+}
+
+.gesture-icon { font-size: 0.85rem; }
+
+.gesture-video {
+  position: fixed;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.gesture-hud {
+  position: absolute;
+  bottom: 5.5rem;
+  right: clamp(1rem, 3vw, 2rem);
+  z-index: 5;
+  padding: 0.55rem 0.75rem;
+  border-radius: 12px;
+  min-width: 160px;
+  pointer-events: none;
+}
+
+.gesture-hud-title {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.4rem;
+  color: var(--muted);
+}
+
+.gesture-hud-title span { color: var(--accent); margin-right: 0.35rem; }
+.gesture-hud-title em { font-style: normal; color: var(--text); }
+
+.gesture-meter {
+  height: 3px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  margin-bottom: 0.4rem;
+}
+
+#gesture-meter-fill {
+  height: 100%;
+  width: 50%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--gold), var(--accent));
+  transition: width 0.12s ease-out;
+}
+
+.gesture-tip {
+  font-size: 0.58rem;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 900px) {
+  .gesture-hud { bottom: 4.5rem; right: 0.75rem; }
+  .gesture-label { display: none; }
+}
+
 /* ── Painting stage ── */
 
 .stage {

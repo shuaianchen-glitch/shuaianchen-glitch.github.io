@@ -7,8 +7,8 @@
   <meta name="theme-color" content="#000000">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <title>ShuaiAn Studio · Orbit</title>
-  <link rel="stylesheet" href="css/themes.css?v=20250622-v13">
-  <link rel="stylesheet" href="css/style.css?v=20250622-v13">
+  <link rel="stylesheet" href="css/themes.css?v=20250622-v14">
+  <link rel="stylesheet" href="css/style.css?v=20250622-v14">
 </head>
 <body>
   <div id="intro" class="intro" aria-live="polite">
@@ -37,6 +37,10 @@
           <button type="button" class="pill" data-scroll="about">关于</button>
           <a class="pill pill-link" href="https://github.com/shuaianchen-glitch" target="_blank" rel="noopener">GitHub</a>
         </div>
+        <button type="button" id="gesture-toggle" class="gesture-toggle" aria-label="隔空手势互动" title="握拳聚合 · 张手散开">
+          <span class="gesture-icon">🖐</span>
+          <span class="gesture-label">隔空</span>
+        </button>
         <button type="button" id="theme-toggle" class="theme-toggle" aria-label="切换主题">
           <span class="theme-icon">☀️</span>
           <span class="theme-label">白昼</span>
@@ -108,7 +112,13 @@
 
           <div class="painting-meta glass-hud" aria-hidden="true">
             <span>ShuaiAn Studio</span>
-            <span>orbit · v13</span>
+            <span>orbit · v14</span>
+          </div>
+
+          <div id="gesture-hud" class="gesture-hud glass-hud" hidden>
+            <p class="gesture-hud-title"><span>GESTURE</span> <em id="gesture-state">等待</em></p>
+            <div class="gesture-meter" aria-hidden="true"><div id="gesture-meter-fill"></div></div>
+            <p class="gesture-tip">握拳 · 粒子聚合 · 张手 · 粒子散开</p>
           </div>
         </div>
       </section>
@@ -157,6 +167,8 @@
     </footer>
   </div>
 
+  <video id="gesture-video" class="gesture-video" playsinline muted autoplay hidden aria-hidden="true"></video>
+
   <div id="detail-layer" class="detail-layer" aria-hidden="true">
     <div class="detail-backdrop" id="detail-backdrop"></div>
     <div class="detail-ripple" id="detail-ripple"></div>
@@ -183,10 +195,11 @@
     <p class="transition-title" id="transition-title"></p>
   </div>
 
-  <script defer src="content/site.js?v=20250622-v13"></script>
-  <script defer src="js/theme.js?v=20250622-v13"></script>
-  <script defer src="js/painting.js?v=20250622-v13"></script>
-  <script defer src="js/detail.js?v=20250622-v13"></script>
-  <script defer src="js/main.js?v=20250622-v13"></script>
+  <script defer src="content/site.js?v=20250622-v14"></script>
+  <script defer src="js/theme.js?v=20250622-v14"></script>
+  <script defer src="js/painting.js?v=20250622-v14"></script>
+  <script defer src="js/detail.js?v=20250622-v14"></script>
+  <script defer src="js/main.js?v=20250622-v14"></script>
+  <script type="module" src="js/gesture.js?v=20250622-v14"></script>
 </body>
 </html>
