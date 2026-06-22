@@ -153,7 +153,6 @@ function applyCopy() {
   $("#stage-tag").textContent = s.tag;
   $("#stage-headline").innerHTML = `${s.headline[0]}<br><span class="accent">${s.headline[1]}</span>`;
   $("#stage-desc").textContent = s.desc;
-  $("#stage-quote").textContent = s.quote;
   $("#stage-hint").innerHTML = `<span class="hint-pulse"></span> ${s.hint}`;
   $("#stat-live-label").textContent = s.stats.live;
   $("#stat-climb-label").textContent = s.stats.climbing;

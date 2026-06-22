@@ -9,11 +9,10 @@ window.SITE = {
   },
 
   stage: {
-    tag: "ORBIT MAP · 星轨图",
-    headline: ["点一颗星，", "读一段旅程"],
-    desc: "项目悬在星轨之上——不标注星座，只留轨迹与光。悬停读星，点击展开造物。",
-    quote: "推石上山不是惩罚，是把重复雕成形状。",
-    hint: "悬停读星 · 点击展开 · 🖐 隔空手势",
+    tag: "ShuaiAn Studio · Orbit",
+    headline: ["Interactive", "Orbit"],
+    desc: "把 UI 交给星轨与粒子——悬停读星，点击展开造物。开启隔空手势，握拳聚合、张手散开。",
+    hint: "右侧画布交互 · 悬停读星 · 点击展开 · 🖐 隔空",
     stats: { live: "已点亮", climbing: "攀登中" },
   },
 

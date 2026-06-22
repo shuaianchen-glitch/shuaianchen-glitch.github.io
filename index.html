@@ -7,8 +7,8 @@
   <meta name="theme-color" content="#000000">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <title>ShuaiAn Studio · Orbit</title>
-  <link rel="stylesheet" href="css/themes.css?v=20250622-v14">
-  <link rel="stylesheet" href="css/style.css?v=20250622-v14">
+  <link rel="stylesheet" href="css/themes.css?v=20250622-v15">
+  <link rel="stylesheet" href="css/style.css?v=20250622-v15">
 </head>
 <body>
   <div id="intro" class="intro" aria-live="polite">
@@ -50,75 +50,57 @@
 
     <main>
       <section id="stage" class="stage">
-        <div class="painting-frame">
-          <canvas id="painting" aria-label="星轨交互画作"></canvas>
+        <div class="hero-split">
+          <div class="hero-copy">
+            <p class="hero-eyebrow" id="stage-tag">ORBIT MAP · 星轨图</p>
+            <h1 class="hero-title" id="stage-headline"></h1>
+            <p class="hero-desc" id="stage-desc"></p>
 
-          <div class="hud-frame" aria-hidden="true">
-            <span class="hud-corner hud-tl"></span>
-            <span class="hud-corner hud-tr"></span>
-            <span class="hud-corner hud-bl"></span>
-            <span class="hud-corner hud-br"></span>
-            <div class="hud-grid"></div>
+            <aside class="hero-readout" id="star-readout" aria-live="polite" hidden>
+              <div class="readout-header">
+                <span class="readout-icon" id="readout-icon"></span>
+                <div>
+                  <p class="readout-bayer" id="readout-bayer"></p>
+                  <h3 class="readout-title" id="readout-title"></h3>
+                </div>
+                <span class="readout-status" id="readout-status"></span>
+              </div>
+              <p class="readout-latin" id="readout-latin"></p>
+              <p class="readout-desc" id="readout-desc"></p>
+              <div class="readout-meta">
+                <span id="readout-mag"></span>
+                <span id="readout-tags"></span>
+              </div>
+            </aside>
+
+            <div class="hero-foot">
+              <div class="hero-stats">
+                <span><strong id="project-count">0</strong> <em id="stat-live-label">已点亮</em></span>
+                <span class="hero-stats-sep">·</span>
+                <span><strong id="climbing-count">0</strong> <em id="stat-climb-label">攀登中</em></span>
+              </div>
+              <p class="hero-hint" id="stage-hint">
+                <span class="hint-pulse"></span>
+                悬停读星 · 点击展开
+              </p>
+              <p class="hero-telemetry" aria-hidden="true">
+                <span>MAG</span> <em id="telemetry-mag">—</em>
+                <span class="hero-stats-sep">·</span>
+                <span>SIG</span> <em id="telemetry-sig">STANDBY</em>
+                <span class="hero-stats-sep">·</span>
+                <span>SCAN</span> <em id="telemetry-scan">0000</em>
+              </p>
+            </div>
           </div>
 
-          <aside class="caption-panel glass-hud">
-            <div class="hud-bar">
-              <span class="hud-dot"></span>
-              <span class="hud-bar-label">ORBIT MAP · LIVE</span>
-            </div>
-            <p class="caption-tag" id="stage-tag">ORBIT MAP · 星轨图</p>
-            <h2 class="caption-title" id="stage-headline"></h2>
-            <p class="caption-desc" id="stage-desc"></p>
-            <blockquote class="caption-quote" id="stage-quote"></blockquote>
-            <div class="caption-stats">
-              <div class="stat-chip">
-                <strong id="project-count">0</strong>
-                <span id="stat-live-label">已点亮</span>
-              </div>
-              <div class="stat-chip">
-                <strong id="climbing-count">0</strong>
-                <span id="stat-climb-label">攀登中</span>
-              </div>
-            </div>
-            <p class="caption-hint" id="stage-hint">
-              <span class="hint-pulse"></span>
-              悬停读星历 · 点击展开细节
-            </p>
-          </aside>
+          <div class="hero-visual painting-frame">
+            <canvas id="painting" aria-label="星轨交互画作"></canvas>
 
-          <aside class="star-readout glass-hud" id="star-readout" aria-live="polite" hidden>
-            <div class="readout-header">
-              <span class="readout-icon" id="readout-icon"></span>
-              <div>
-                <p class="readout-bayer" id="readout-bayer"></p>
-                <h3 class="readout-title" id="readout-title"></h3>
-              </div>
-              <span class="readout-status" id="readout-status"></span>
+            <div id="gesture-hud" class="gesture-hud" hidden>
+              <p class="gesture-hud-title"><span>GESTURE</span> <em id="gesture-state">等待</em></p>
+              <div class="gesture-meter" aria-hidden="true"><div id="gesture-meter-fill"></div></div>
+              <p class="gesture-tip">握拳 · 粒子聚合 · 张手 · 粒子散开</p>
             </div>
-            <p class="readout-latin" id="readout-latin"></p>
-            <p class="readout-desc" id="readout-desc"></p>
-            <div class="readout-meta">
-              <span id="readout-mag"></span>
-              <span id="readout-tags"></span>
-            </div>
-          </aside>
-
-          <div class="hud-telemetry glass-hud" aria-hidden="true">
-            <p><span>SYS</span> ORBIT NAV</p>
-            <p><span>TRK</span> 6 nodes · <span>HUB</span> δ anchor</p>
-            <p><span>MAG</span> <em id="telemetry-mag">—</em> · <span>SIG</span> <em id="telemetry-sig">STANDBY</em></p>
-            <p class="telemetry-scan">SCAN <span id="telemetry-scan">0000</span></p>
-          </div>
-
-          <div class="painting-meta glass-hud" aria-hidden="true">
-            <span>ShuaiAn Studio</span>
-            <span>orbit · v14</span>
-          </div>
-
-          <div id="gesture-hud" class="gesture-hud glass-hud" hidden>
-            <p class="gesture-hud-title"><span>GESTURE</span> <em id="gesture-state">等待</em></p>
-            <div class="gesture-meter" aria-hidden="true"><div id="gesture-meter-fill"></div></div>
-            <p class="gesture-tip">握拳 · 粒子聚合 · 张手 · 粒子散开</p>
           </div>
         </div>
       </section>
@@ -195,11 +177,11 @@
     <p class="transition-title" id="transition-title"></p>
   </div>
 
-  <script defer src="content/site.js?v=20250622-v14"></script>
-  <script defer src="js/theme.js?v=20250622-v14"></script>
-  <script defer src="js/painting.js?v=20250622-v14"></script>
-  <script defer src="js/detail.js?v=20250622-v14"></script>
-  <script defer src="js/main.js?v=20250622-v14"></script>
-  <script type="module" src="js/gesture.js?v=20250622-v14"></script>
+  <script defer src="content/site.js?v=20250622-v15"></script>
+  <script defer src="js/theme.js?v=20250622-v15"></script>
+  <script defer src="js/painting.js?v=20250622-v15"></script>
+  <script defer src="js/detail.js?v=20250622-v15"></script>
+  <script defer src="js/main.js?v=20250622-v15"></script>
+  <script type="module" src="js/gesture.js?v=20250622-v15"></script>
 </body>
 </html>

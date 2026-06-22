@@ -80,10 +80,9 @@ window.Painting = (() => {
   }
 
   function chartRect() {
-    const padX = w * 0.08;
-    const padY = h * 0.12;
-    const top = padY + (window.innerWidth < 768 ? 60 : 0);
-    chart = { x: padX, y: top, w: w - padX * 2, h: h - top - padY };
+    const padX = w * 0.06;
+    const padY = h * 0.1;
+    chart = { x: padX, y: padY, w: w - padX * 2, h: h - padY * 2 };
     return chart;
   }
 
@@ -963,8 +962,8 @@ window.Painting = (() => {
     const sy = (e.clientY - rect.top) * dpr;
     pointerX = sx;
     pointerY = sy;
-    mx = e.clientX / window.innerWidth;
-    my = e.clientY / window.innerHeight;
+    mx = (e.clientX - rect.left) / rect.width;
+    my = (e.clientY - rect.top) / rect.height;
     hoverIdx = hitTest(sx, sy);
     figureHover = hoverIdx < 0 && hitTestFigure(sx, sy);
     canvas.style.cursor = hoverIdx >= 0 ? "pointer" : figureHover ? "pointer" : "crosshair";
@@ -989,11 +988,13 @@ window.Painting = (() => {
 
   function resize() {
     if (!canvas) return;
+    const container = canvas.parentElement;
+    const rect = container?.getBoundingClientRect() || { width: window.innerWidth, height: window.innerHeight };
     dpr = Math.min(window.devicePixelRatio || 1, 2);
-    w = canvas.width = Math.floor(window.innerWidth * dpr);
-    h = canvas.height = Math.floor(window.innerHeight * dpr);
-    canvas.style.width = `${window.innerWidth}px`;
-    canvas.style.height = `${window.innerHeight}px`;
+    w = canvas.width = Math.floor(rect.width * dpr);
+    h = canvas.height = Math.floor(rect.height * dpr);
+    canvas.style.width = `${rect.width}px`;
+    canvas.style.height = `${rect.height}px`;
     chartRect();
     initParticles();
   }
@@ -1008,6 +1009,9 @@ window.Painting = (() => {
     canvas.addEventListener("pointerleave", onLeave);
     canvas.addEventListener("click", onClick);
     window.addEventListener("resize", resize);
+    if (canvas.parentElement && typeof ResizeObserver !== "undefined") {
+      new ResizeObserver(resize).observe(canvas.parentElement);
+    }
     window.addEventListener("themechange", () => {
       buildMap();
       initParticles();
