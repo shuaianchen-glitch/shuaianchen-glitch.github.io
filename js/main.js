@@ -1,4 +1,4 @@
-const INTRO_KEY = "sa-studio-intro-v4";
+const INTRO_KEY = "sa-studio-intro-v5";
 const $ = (sel) => document.querySelector(sel);
 
 function projects() {

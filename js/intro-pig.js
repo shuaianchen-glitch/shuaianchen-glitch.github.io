@@ -1,7 +1,7 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
 
 window.IntroPig = (() => {
-  const MIN_HOLD = 4;
+  const MIN_HOLD = 5;
 
   let canvas;
   let renderer;
@@ -19,16 +19,26 @@ window.IntroPig = (() => {
   function buildPig() {
     const group = new THREE.Group();
     const pink = new THREE.MeshStandardMaterial({
-      color: 0xffb6c8,
-      roughness: 0.42,
-      metalness: 0.06,
+      color: 0xff9eb5,
+      emissive: 0xff6080,
+      emissiveIntensity: 0.35,
+      roughness: 0.38,
     });
-    const pinkDark = new THREE.MeshStandardMaterial({ color: 0xff8fab, roughness: 0.48 });
+    const pinkDark = new THREE.MeshStandardMaterial({
+      color: 0xff7a9a,
+      emissive: 0xff4060,
+      emissiveIntensity: 0.2,
+      roughness: 0.45,
+    });
     const gold = new THREE.MeshStandardMaterial({
-      color: 0xf0c060,
-      roughness: 0.32,
-      metalness: 0.55,
+      color: 0xffd060,
+      emissive: 0xffa020,
+      emissiveIntensity: 0.25,
+      roughness: 0.28,
+      metalness: 0.5,
     });
+    const eyeWhite = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2 });
+    const eyeBlack = new THREE.MeshStandardMaterial({ color: 0x1a1020, roughness: 0.3 });
 
     const body = new THREE.Mesh(new THREE.SphereGeometry(1.05, 32, 32), pink);
     body.scale.set(1.35, 1, 1.55);
@@ -49,15 +59,24 @@ window.IntroPig = (() => {
       group.add(nostril);
     });
 
-    [[-0.42, 0.72, -0.15], [0.42, 0.72, -0.15]].forEach(([x, y, z]) => {
-      const ear = new THREE.Mesh(new THREE.SphereGeometry(0.22, 16, 16), pink);
-      ear.scale.set(0.55, 1, 0.35);
+    [[-0.22, 0.48, 1.35], [0.22, 0.48, 1.35]].forEach(([x, y, z]) => {
+      const eye = new THREE.Mesh(new THREE.SphereGeometry(0.11, 12, 12), eyeWhite);
+      eye.position.set(x, y, z);
+      group.add(eye);
+      const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.055, 8, 8), eyeBlack);
+      pupil.position.set(x + x * 0.08, y - 0.02, z + 0.08);
+      group.add(pupil);
+    });
+
+    [[-0.48, 0.78, -0.1], [0.48, 0.78, -0.1]].forEach(([x, y, z]) => {
+      const ear = new THREE.Mesh(new THREE.SphereGeometry(0.24, 16, 16), pink);
+      ear.scale.set(0.5, 1, 0.32);
       ear.position.set(x, y, z);
-      ear.rotation.z = x > 0 ? -0.45 : 0.45;
+      ear.rotation.z = x > 0 ? -0.5 : 0.5;
       group.add(ear);
     });
 
-    const band = new THREE.Mesh(new THREE.TorusGeometry(0.58, 0.05, 12, 32), gold);
+    const band = new THREE.Mesh(new THREE.TorusGeometry(0.58, 0.06, 12, 32), gold);
     band.rotation.x = Math.PI / 2;
     band.position.set(0, 0.62, 0.95);
     group.add(band);
@@ -67,39 +86,25 @@ window.IntroPig = (() => {
     tail.position.set(0, 0.15, -1.35);
     group.add(tail);
 
-    [[-0.45, -0.55, 0.55], [0.45, -0.55, 0.55], [-0.45, -0.55, -0.35], [0.45, -0.55, -0.35]].forEach(([x, y, z]) => {
-      const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.1, 0.35, 12), pinkDark);
-      leg.position.set(x, y, z);
-      group.add(leg);
-    });
-
     const wingMat = new THREE.MeshStandardMaterial({
       color: 0xffffff,
-      roughness: 0.85,
+      emissive: 0xaaccff,
+      emissiveIntensity: 0.15,
+      roughness: 0.8,
       transparent: true,
-      opacity: 0.9,
+      opacity: 0.92,
     });
     cloud = new THREE.Group();
-    for (let i = 0; i < 10; i += 1) {
-      const puff = new THREE.Mesh(new THREE.SphereGeometry(0.38 + Math.random() * 0.22, 16, 16), wingMat);
-      puff.position.set((Math.random() - 0.5) * 2, -0.55 - Math.random() * 0.25, (Math.random() - 0.5) * 1.3);
+    for (let i = 0; i < 12; i += 1) {
+      const puff = new THREE.Mesh(new THREE.SphereGeometry(0.42 + Math.random() * 0.25, 16, 16), wingMat);
+      puff.position.set((Math.random() - 0.5) * 2.2, -0.6 - Math.random() * 0.3, (Math.random() - 0.5) * 1.4);
       cloud.add(puff);
     }
     cloud.position.y = -0.15;
     group.add(cloud);
 
-    group.scale.setScalar(1.25);
+    group.scale.setScalar(1.55);
     return group;
-  }
-
-  function buildStars() {
-    const geo = new THREE.BufferGeometry();
-    const pts = [];
-    for (let i = 0; i < 400; i += 1) {
-      pts.push((Math.random() - 0.5) * 40, (Math.random() - 0.5) * 40, (Math.random() - 0.5) * 40);
-    }
-    geo.setAttribute("position", new THREE.Float32BufferAttribute(pts, 3));
-    return new THREE.Points(geo, new THREE.PointsMaterial({ color: 0xaad4ff, size: 0.06, transparent: true, opacity: 0.6 }));
   }
 
   function resize() {
@@ -123,37 +128,38 @@ window.IntroPig = (() => {
     time += 0.016;
     const holdT = Math.min(time / MIN_HOLD, 1);
     const scrollP = time >= MIN_HOLD ? scrollProgress() : 0;
-    const animP = holdT * 0.3 + scrollP * 0.7;
-    const ease = 1 - Math.pow(1 - animP, 2.2);
+    const animP = holdT * 0.35 + scrollP * 0.65;
+    const ease = 1 - Math.pow(1 - animP, 2);
 
-    const bob = Math.sin(time * 1.8) * 0.1;
-    const wing = Math.sin(time * 2.8) * 0.07;
+    const bob = Math.sin(time * 1.6) * 0.12;
+    const wing = Math.sin(time * 2.5) * 0.08;
 
     if (pig) {
       pig.position.y = bob;
-      pig.rotation.y = mouseX * 0.4 + ease * Math.PI * 0.45;
-      pig.rotation.z = Math.sin(time * 1.2) * 0.06 - mouseX * 0.06;
+      pig.rotation.y = mouseX * 0.35 + ease * Math.PI * 0.35;
+      pig.rotation.z = Math.sin(time * 1.1) * 0.05;
     }
     if (cloud) {
-      cloud.scale.set(1 + wing * 0.18, 1, 1 + wing * 0.18);
+      cloud.scale.set(1 + wing * 0.2, 1, 1 + wing * 0.2);
     }
 
     if (container) {
-      container.rotation.x = THREE.MathUtils.degToRad(12 - ease * 32);
-      container.rotation.y = ease * 0.35;
-      container.position.y = ease * 2.2;
-      container.position.z = -ease * 2.8;
-      const scale = 1.28 - ease * 0.55;
-      container.scale.setScalar(Math.max(0.55, scale));
+      container.position.set(0, 0.15 + bob * 0.5, 0);
+      container.rotation.x = THREE.MathUtils.degToRad(8 - ease * 28);
+      container.rotation.y = ease * 0.25;
+      const scale = 1.65 - ease * 0.45;
+      container.scale.setScalar(Math.max(0.85, scale));
+      container.position.y = 0.2 + bob + ease * 1.8;
+      container.position.z = -ease * 2.2;
     }
 
-    const bar = time < MIN_HOLD ? holdT * 0.35 : 0.35 + scrollP * 0.65;
+    const bar = time < MIN_HOLD ? holdT * 0.4 : 0.4 + scrollP * 0.6;
     const ui = document.getElementById("intro-progress-fill");
     if (ui) ui.style.width = `${Math.round(bar * 100)}%`;
 
     const hint = document.getElementById("intro-sub");
     if (hint && time < MIN_HOLD) {
-      hint.textContent = window.SITE?.intro?.subHold || "稍候，飞猪正在入场…";
+      hint.textContent = window.SITE?.intro?.subHold || "飞猪入场中…";
     } else if (hint && time >= MIN_HOLD) {
       hint.textContent = window.SITE?.intro?.sub || "向下滚动继续浏览";
     }
@@ -161,7 +167,7 @@ window.IntroPig = (() => {
     renderer.render(scene, camera);
     raf = requestAnimationFrame(tick);
 
-    if (!done && time >= MIN_HOLD && scrollP >= 0.82) {
+    if (!done && time >= MIN_HOLD && scrollP >= 0.78) {
       done = true;
       onComplete?.();
     }
@@ -172,29 +178,33 @@ window.IntroPig = (() => {
     canvas = document.getElementById("intro-canvas");
     if (!canvas) return;
 
-    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setClearColor(0x030208, 1);
+    renderer.setClearColor(0x05030c, 1);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
 
     scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x030208, 0.045);
+    scene.fog = new THREE.FogExp2(0x05030c, 0.018);
 
-    camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
-    camera.position.set(0, 0.45, 3.8);
+    camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
+    camera.position.set(0, 0.35, 2.6);
+    camera.lookAt(0, 0.1, 0);
 
-    scene.add(new THREE.AmbientLight(0x8899cc, 0.6));
-    const key = new THREE.DirectionalLight(0xffffff, 1.25);
-    key.position.set(3, 5, 4);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.85));
+    const key = new THREE.DirectionalLight(0xffffff, 1.6);
+    key.position.set(2, 4, 5);
     scene.add(key);
-    const rim = new THREE.DirectionalLight(0x7ec8ff, 0.5);
-    rim.position.set(-4, 2, -2);
+    const fill = new THREE.DirectionalLight(0xffaac0, 0.55);
+    fill.position.set(-3, 1, 3);
+    scene.add(fill);
+    const rim = new THREE.DirectionalLight(0x88ccff, 0.45);
+    rim.position.set(0, 2, -3);
     scene.add(rim);
 
     container = new THREE.Group();
     pig = buildPig();
     container.add(pig);
     scene.add(container);
-    scene.add(buildStars());
 
     resize();
     window.addEventListener("resize", resize);

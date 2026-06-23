@@ -5,7 +5,7 @@ window.SITE = {
     sub: "前端 · 交互 · 小游戏 — 向下滚动继续浏览",
     subHold: "飞猪入场中，请稍候…",
     btn: "进入主页",
-    holdSec: 4,
+    holdSec: 5,
   },
 
   stage: {

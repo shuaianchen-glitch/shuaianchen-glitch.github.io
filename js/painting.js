@@ -23,6 +23,10 @@ window.Painting = (() => {
   let figureHover = false;
   let figureDrawT = 0;
   let particles = [];
+  let gridCols = 0;
+  let gridRows = 0;
+  let gridGapX = 0;
+  let gridGapY = 0;
   let cometTrail = [];
   let lastCometX = 0;
   let lastCometY = 0;
@@ -115,22 +119,39 @@ window.Painting = (() => {
 
   function initParticles() {
     const mobile = window.innerWidth < 768;
-    const count = mobile ? 320 : 1100;
-    particles = Array.from({ length: count }, () => {
-      const roll = Math.random();
-      const type = roll > 0.97 ? "orb" : roll > 0.72 ? "spark" : "dust";
-      return {
-        x: Math.random() * w,
-        y: Math.random() * h,
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: (Math.random() - 0.5) * 0.4,
-        size: type === "orb" ? 2 + Math.random() * 5 : type === "spark" ? 0.7 + Math.random() * 1.6 : 0.25 + Math.random() * 0.7,
-        type,
-        hue: Math.random() > 0.55 ? 42 + Math.random() * 18 : 188 + Math.random() * 40,
-        alpha: type === "orb" ? 0.12 + Math.random() * 0.18 : 0.25 + Math.random() * 0.55,
-        phase: Math.random() * Math.PI * 2,
-      };
-    });
+    gridCols = mobile ? 16 : 26;
+    gridRows = mobile ? 12 : 20;
+    const padX = w * 0.06;
+    const padY = h * 0.06;
+    gridGapX = gridCols > 1 ? (w - padX * 2) / (gridCols - 1) : w;
+    gridGapY = gridRows > 1 ? (h - padY * 2) / (gridRows - 1) : h;
+
+    particles = [];
+    for (let row = 0; row < gridRows; row += 1) {
+      for (let col = 0; col < gridCols; col += 1) {
+        const hx = padX + col * gridGapX;
+        const hy = padY + row * gridGapY;
+        particles.push({
+          hx,
+          hy,
+          x: hx,
+          y: hy,
+          vx: 0,
+          vy: 0,
+          col,
+          row,
+          size: 3.4 + (col % 3) * 0.35,
+          type: "entropy",
+          alpha: 0.95,
+          phase: Math.random() * Math.PI * 2,
+        });
+      }
+    }
+  }
+
+  function particleAt(col, row) {
+    if (col < 0 || row < 0 || col >= gridCols || row >= gridRows) return null;
+    return particles[row * gridCols + col];
   }
 
   function pushComet(x, y) {
@@ -216,72 +237,132 @@ window.Painting = (() => {
     const useGesture = !isDay() && g?.enabled && g.hasHand;
     const gx = (useGesture ? g.x : mx) * w;
     const gy = (useGesture ? g.y : my) * h;
-    const pullR = useGesture ? 580 * dpr : 260 * dpr;
-    const pushR = pullR * 2.4;
+    const closed = useGesture ? 1 - g.openness : 0;
+    const opened = useGesture ? g.openness : 0;
+    const pullR = 520 * dpr;
+    const pushR = 720 * dpr;
 
     if (useGesture) {
-      const opened = g.openness;
       if (opened > 0.52 && prevGestureOpen <= 0.52) gestureBurst = 1;
       prevGestureOpen = opened;
     } else {
       prevGestureOpen = 0.5;
     }
-
     if (gestureBurst > 0) gestureBurst = Math.max(0, gestureBurst - 0.022);
 
     particles.forEach((pt) => {
-      const angle = flowAt(pt.x, pt.y, t) + pt.phase * 0.15;
-      const drift = pt.type === "orb" ? 0.12 : pt.type === "spark" ? 0.28 : 0.1;
-      const flowMix = useGesture ? 0.25 : 1;
-      pt.vx += Math.cos(angle) * drift * 0.06 * flowMix;
-      pt.vy += Math.sin(angle) * drift * 0.06 * flowMix;
+      if (pt.type !== "entropy") return;
+
+      const homePull = 0.05 + closed * 0.28;
+      pt.vx += (pt.hx - pt.x) * homePull;
+      pt.vy += (pt.hy - pt.y) * homePull;
 
       const dx = gx - pt.x;
       const dy = gy - pt.y;
       const dist = Math.hypot(dx, dy) || 1;
 
-      if (useGesture) {
-        const closed = 1 - g.openness;
-        const opened = g.openness;
-
-        if (closed > 0.18 && dist < pullR * 1.5) {
-          const pull = Math.pow(1 - Math.min(dist / (pullR * 1.5), 1), 1.1) * closed * 2.6;
-          pt.vx += (dx / dist) * pull * 1.2;
-          pt.vy += (dy / dist) * pull * 1.2;
-        }
-
-        if (opened > 0.28 && dist < pushR) {
-          const falloff = Math.pow(1 - Math.min(dist / pushR, 1), 0.75);
-          const push = falloff * opened * 3.2;
-          pt.vx -= (dx / dist) * push * 1.5;
-          pt.vy -= (dy / dist) * push * 1.5;
-          pt.vx += (-dy / dist) * push * 0.65;
-          pt.vy += (dx / dist) * push * 0.65;
-          pt.vx += (Math.random() - 0.5) * opened * 0.45;
-          pt.vy += (Math.random() - 0.5) * opened * 0.45;
-        }
-
-        if (gestureBurst > 0 && dist < pushR * 1.1) {
-          const blast = gestureBurst * Math.pow(1 - Math.min(dist / (pushR * 1.1), 1), 0.6) * 4.5;
-          pt.vx -= (dx / dist) * blast;
-          pt.vy -= (dy / dist) * blast;
-        }
-      } else if (dist < pullR * 0.65) {
-        const pull = Math.pow(1 - dist / (pullR * 0.65), 1.8);
-        const swirl = pull * 0.35;
-        pt.vx += (dx / dist) * swirl * 0.15 + (-dy / dist) * swirl * 0.05;
-        pt.vy += (dy / dist) * swirl * 0.15 + (dx / dist) * swirl * 0.05;
+      if (useGesture && closed > 0.15 && dist < pullR) {
+        const pull = Math.pow(1 - Math.min(dist / pullR, 1), 1.1) * closed * 3.2;
+        pt.vx += (dx / dist) * pull;
+        pt.vy += (dy / dist) * pull;
       }
 
-      pt.vx *= useGesture ? 0.86 : 0.92;
-      pt.vy *= useGesture ? 0.86 : 0.92;
+      if (useGesture && opened > 0.22) {
+        if (dist < pushR) {
+          const push = Math.pow(1 - Math.min(dist / pushR, 1), 0.65) * opened * 4.2;
+          pt.vx -= (dx / dist) * push;
+          pt.vy -= (dy / dist) * push;
+          pt.vx += (-dy / dist) * push * 0.55;
+          pt.vy += (dx / dist) * push * 0.55;
+          pt.vx += (Math.random() - 0.5) * opened * 0.65;
+          pt.vy += (Math.random() - 0.5) * opened * 0.65;
+        }
+      } else if (!useGesture && dist < 180 * dpr) {
+        const nudge = Math.pow(1 - dist / (180 * dpr), 1.5) * 0.35;
+        pt.vx -= (dx / dist) * nudge * 0.4;
+        pt.vy -= (dy / dist) * nudge * 0.4;
+      }
+
+      if (gestureBurst > 0 && dist < pushR) {
+        const blast = gestureBurst * Math.pow(1 - Math.min(dist / pushR, 1), 0.55) * 5;
+        pt.vx -= (dx / dist) * blast;
+        pt.vy -= (dy / dist) * blast;
+      }
+
+      pt.vx *= 0.86;
+      pt.vy *= 0.86;
       pt.x += pt.vx * dpr;
       pt.y += pt.vy * dpr;
+    });
+  }
 
-      if (pt.x < -8) pt.x = w + 8;
-      if (pt.x > w + 8) pt.x = -8;
-      if (pt.y < -8) pt.y = h + 8;
-      if (pt.y > h + 8) pt.y = -8;
+  function entropyOrder() {
+    if (!particles.length) return 1;
+    let sum = 0;
+    particles.forEach((p) => {
+      sum += Math.hypot(p.x - p.hx, p.y - p.hy);
+    });
+    const avg = sum / particles.length;
+    return Math.max(0, Math.min(1, 1 - avg / (gridGapX * 1.8)));
+  }
+
+  function drawEntropyLinks() {
+    const order = entropyOrder();
+    const baseAlpha = 0.08 + order * 0.38;
+    ctx.lineWidth = 1 * dpr;
+    ctx.lineCap = "round";
+
+    for (let row = 0; row < gridRows; row += 1) {
+      for (let col = 0; col < gridCols; col += 1) {
+        const a = particleAt(col, row);
+        if (!a) continue;
+        const right = particleAt(col + 1, row);
+        const down = particleAt(col, row + 1);
+        const da = Math.hypot(a.x - a.hx, a.y - a.hy);
+
+        if (right) {
+          const db = Math.hypot(right.x - right.hx, right.y - right.hy);
+          const alpha = baseAlpha * (1 - (da + db) / (gridGapX * 3));
+          if (alpha > 0.02) {
+            ctx.strokeStyle = `rgba(210, 225, 255, ${alpha})`;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(right.x, right.y);
+            ctx.stroke();
+          }
+        }
+        if (down) {
+          const db = Math.hypot(down.x - down.hx, down.y - down.hy);
+          const alpha = baseAlpha * (1 - (da + db) / (gridGapY * 3));
+          if (alpha > 0.02) {
+            ctx.strokeStyle = `rgba(210, 225, 255, ${alpha})`;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(down.x, down.y);
+            ctx.stroke();
+          }
+        }
+      }
+    }
+  }
+
+  function drawEntropyDots(t) {
+    particles.forEach((pt) => {
+      const tw = 0.88 + 0.12 * Math.sin(t * 1.4 + pt.phase);
+      const r = pt.size * dpr * tw;
+      const glow = ctx.createRadialGradient(pt.x, pt.y, 0, pt.x, pt.y, r * 3.2);
+      glow.addColorStop(0, "rgba(255, 255, 255, 0.98)");
+      glow.addColorStop(0.25, "rgba(200, 225, 255, 0.55)");
+      glow.addColorStop(0.55, "rgba(140, 190, 255, 0.15)");
+      glow.addColorStop(1, "transparent");
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(pt.x, pt.y, r * 3.2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "rgba(255, 255, 255, 0.92)";
+      ctx.beginPath();
+      ctx.arc(pt.x, pt.y, r * 0.55, 0, Math.PI * 2);
+      ctx.fill();
     });
   }
 
@@ -384,24 +465,18 @@ window.Painting = (() => {
     ctx.fillStyle = "#000000";
     ctx.fillRect(0, 0, w, h);
 
-    const glow = ctx.createRadialGradient(w * 0.52, h * 0.46, 0, w * 0.5, h * 0.48, Math.max(w, h) * 0.55);
-    glow.addColorStop(0, "rgba(30, 50, 90, 0.22)");
-    glow.addColorStop(0.35, "rgba(12, 18, 40, 0.1)");
-    glow.addColorStop(1, "transparent");
-    ctx.fillStyle = glow;
-    ctx.fillRect(0, 0, w, h);
-
     updateParticles(t);
 
     ctx.globalCompositeOperation = "screen";
-    drawParticleLinks(t);
-    particles.forEach((pt) => drawOneParticle(pt, t));
+    drawEntropyLinks();
+    drawEntropyDots(t);
+    drawComet();
     drawHandAura(t);
     ctx.globalCompositeOperation = "source-over";
 
-    const vig = ctx.createRadialGradient(w / 2, h / 2, Math.min(w, h) * 0.15, w / 2, h / 2, Math.max(w, h) * 0.72);
+    const vig = ctx.createRadialGradient(w / 2, h / 2, Math.min(w, h) * 0.2, w / 2, h / 2, Math.max(w, h) * 0.85);
     vig.addColorStop(0, "transparent");
-    vig.addColorStop(1, "rgba(0, 0, 0, 0.72)");
+    vig.addColorStop(1, "rgba(0, 0, 0, 0.45)");
     ctx.fillStyle = vig;
     ctx.fillRect(0, 0, w, h);
   }
@@ -998,7 +1073,6 @@ window.Painting = (() => {
     } else {
       drawParticleBanner(time);
     }
-    drawComet();
 
     raf = requestAnimationFrame(frame);
   }
