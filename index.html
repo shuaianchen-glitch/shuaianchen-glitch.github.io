@@ -3,69 +3,82 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="description" content="ShuaiAn Chen — Cognitive Field Interface">
-  <meta name="theme-color" content="#050608">
+  <meta name="description" content="ShuaiAn Chen — Structured Field Geometry">
+  <meta name="theme-color" content="#0a0b0d">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <title>陈帅安 · Cognitive Field</title>
+  <title>陈帅安 · Structured Field</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/themes.css?v=20250622-v22">
-  <link rel="stylesheet" href="css/field.css?v=20250622-v22">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/themes.css?v=20250622-v23">
+  <link rel="stylesheet" href="css/field.css?v=20250622-v23">
 </head>
 <body>
-  <canvas id="field-canvas" aria-label="Cognitive field — spatial interface"></canvas>
-
-  <div class="field-ui" aria-live="polite">
-    <header class="field-chrome field-chrome--top">
-      <span class="field-system-label" id="field-label">Cognitive Field Interface</span>
-      <a class="field-link" href="https://github.com/shuaianchen-glitch" target="_blank" rel="noopener">GitHub</a>
-    </header>
-
-    <div class="field-core" id="field-core">
-      <p class="field-name-en" id="field-name-en">ShuaiAn Chen</p>
-      <h1 class="field-name" id="field-name">陈帅安</h1>
-      <p class="field-role" id="field-role">Frontend · Interaction · Generative Systems</p>
-      <p class="field-philosophy" id="field-philosophy">重复不是惩罚，是雕刻。</p>
+  <div class="sfg-app" aria-live="polite">
+    <div class="sfg-ambient" aria-hidden="true">
+      <div class="sfg-gradient"></div>
+      <svg class="sfg-guides" id="sfg-guides" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice"></svg>
     </div>
 
-    <div class="field-labels" id="field-labels" aria-hidden="true"></div>
+    <header class="sfg-chrome sfg-chrome--top">
+      <div class="sfg-chrome-left">
+        <span class="sfg-system" id="sfg-label">Structured Field Geometry</span>
+        <span class="sfg-version" id="sfg-version">SFG · 01</span>
+      </div>
+      <a class="sfg-link" href="https://github.com/shuaianchen-glitch" target="_blank" rel="noopener">GitHub</a>
+    </header>
 
-    <aside class="field-meta" id="field-meta" hidden>
-      <p class="field-meta-kicker" id="meta-type">node</p>
-      <h2 class="field-meta-title" id="meta-title"></h2>
-      <p class="field-meta-body" id="meta-body"></p>
-      <div class="field-meta-tags" id="meta-tags"></div>
-      <dl class="field-meta-metrics">
-        <div><dt>Weight</dt><dd id="meta-weight">—</dd></div>
-        <div><dt>Relevance</dt><dd id="meta-relevance">—</dd></div>
+    <main class="sfg-stage" id="sfg-stage">
+      <section class="sfg-core" id="sfg-core" aria-label="Identity core">
+        <p class="sfg-core-en" id="sfg-name-en">ShuaiAn Chen</p>
+        <h1 class="sfg-core-name" id="sfg-name">陈帅安</h1>
+        <p class="sfg-core-role" id="sfg-role">Frontend · Interaction · Generative Systems</p>
+        <p class="sfg-core-philosophy" id="sfg-philosophy">重复不是惩罚，是雕刻。</p>
+        <div class="sfg-core-mark" aria-hidden="true"><span></span></div>
+      </section>
+
+      <div class="sfg-layer sfg-layer--primary" id="ring-primary" aria-label="Primary geometry ring"></div>
+      <div class="sfg-layer sfg-layer--secondary" id="ring-secondary" aria-label="Secondary data field"></div>
+    </main>
+
+    <aside class="sfg-meta" id="sfg-meta" hidden>
+      <p class="sfg-meta-kicker" id="meta-type">Type</p>
+      <h2 class="sfg-meta-title" id="meta-title"></h2>
+      <p class="sfg-meta-body" id="meta-body"></p>
+      <div class="sfg-meta-tags" id="meta-tags"></div>
+      <dl class="sfg-meta-metrics">
+        <div><dt>Wt</dt><dd id="meta-weight">—</dd></div>
+        <div><dt>Rel</dt><dd id="meta-relevance">—</dd></div>
       </dl>
     </aside>
 
-    <aside class="field-sub" id="field-sub" hidden>
-      <div class="field-sub-backdrop" id="field-backdrop"></div>
-      <article class="field-sub-panel" role="dialog" aria-modal="true">
-        <button type="button" class="field-sub-close" id="field-close" aria-label="Return to field">← Field</button>
-        <p class="field-sub-kicker" id="sub-type">project</p>
-        <h2 class="field-sub-title" id="sub-title"></h2>
-        <p class="field-sub-body" id="sub-body"></p>
-        <div class="field-sub-tags" id="sub-tags"></div>
-        <button type="button" class="field-sub-cta" id="sub-cta" hidden>Open project →</button>
+    <aside class="sfg-panel-wrap" id="sfg-panel" hidden>
+      <div class="sfg-panel-backdrop" id="panel-backdrop"></div>
+      <article class="sfg-panel" role="dialog" aria-modal="true" aria-labelledby="panel-title">
+        <button type="button" class="sfg-panel-close" id="panel-close" aria-label="Close reading panel">Close</button>
+        <p class="sfg-panel-kicker" id="panel-type">Project</p>
+        <h2 class="sfg-panel-title" id="panel-title"></h2>
+        <p class="sfg-panel-body" id="panel-body"></p>
+        <div class="sfg-panel-tags" id="panel-tags"></div>
+        <dl class="sfg-panel-metrics">
+          <div><dt>Weight</dt><dd id="panel-weight">—</dd></div>
+          <div><dt>Relevance</dt><dd id="panel-relevance">—</dd></div>
+        </dl>
+        <button type="button" class="sfg-panel-cta" id="panel-cta" hidden>Open project →</button>
       </article>
     </aside>
 
-    <footer class="field-chrome field-chrome--bottom">
-      <span id="field-hint-probe">Move · probe the field</span>
-      <span class="field-chrome-sep">·</span>
-      <span id="field-hint-scroll">Scroll · traverse depth</span>
-      <span class="field-chrome-sep">·</span>
+    <footer class="sfg-chrome sfg-chrome--bottom">
+      <span id="sfg-hint-hover">Hover · reveal metadata</span>
+      <span class="sfg-sep">·</span>
+      <span id="sfg-hint-focus">Select · open reading panel</span>
+      <span class="sfg-sep">·</span>
       <span>© <span id="year"></span> ShuaiAn Chen</span>
     </footer>
   </div>
 
-  <script defer src="js/vendor/three.min.js?v=20250622-v22"></script>
-  <script defer src="content/site.js?v=20250622-v22"></script>
-  <script defer src="js/cognitive-field.js?v=20250622-v22"></script>
-  <script defer src="js/main.js?v=20250622-v22"></script>
+  <script defer src="content/site.js?v=20250622-v23"></script>
+  <script defer src="js/structured-field.js?v=20250622-v23"></script>
+  <script defer src="js/main.js?v=20250622-v23"></script>
 </body>
 </html>
