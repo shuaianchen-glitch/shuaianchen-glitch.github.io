@@ -154,18 +154,17 @@ window.Painting = (() => {
     if (isDay() || cometTrail.length < 2) return;
 
     ctx.globalCompositeOperation = "screen";
-    const tailEnd = cometTrail[cometTrail.length - 1];
 
     for (let i = 1; i < cometTrail.length; i += 1) {
       const a = cometTrail[i - 1];
       const b = cometTrail[i];
       const t = 1 - i / cometTrail.length;
-      const alpha = Math.pow(t, 1.6) * a.life * 0.65;
-      const width = (2 + t * 14) * dpr;
+      const alpha = Math.pow(t, 2.2) * a.life * 0.18;
+      const width = (0.8 + t * 5) * dpr;
       const grad = ctx.createLinearGradient(a.x, a.y, b.x, b.y);
-      grad.addColorStop(0, `rgba(255, 230, 180, ${alpha})`);
-      grad.addColorStop(0.35, `rgba(255, 140, 50, ${alpha * 0.55})`);
-      grad.addColorStop(1, `rgba(100, 180, 255, ${alpha * 0.08})`);
+      grad.addColorStop(0, `rgba(255, 160, 80, ${alpha * 0.45})`);
+      grad.addColorStop(0.45, `rgba(180, 200, 255, ${alpha * 0.2})`);
+      grad.addColorStop(1, `rgba(235, 242, 255, ${alpha * 0.04})`);
       ctx.strokeStyle = grad;
       ctx.lineWidth = width;
       ctx.lineCap = "round";
@@ -175,38 +174,27 @@ window.Painting = (() => {
       ctx.stroke();
     }
 
-    if (tailEnd && cometTrail.length > 4) {
-      const head = cometTrail[0];
-      ctx.strokeStyle = `rgba(80, 160, 255, ${0.08 * tailEnd.life})`;
-      ctx.lineWidth = 1 * dpr;
-      ctx.beginPath();
-      ctx.moveTo(tailEnd.x, tailEnd.y);
-      ctx.lineTo(head.x, head.y);
-      ctx.stroke();
-    }
-
     const head = cometTrail[0];
     if (head) {
-      const fireR = (22 + Math.min(cometSpeed, 55) * 0.45) * dpr;
-      const outer = ctx.createRadialGradient(head.x, head.y, 0, head.x, head.y, fireR * 2.2);
-      outer.addColorStop(0, "rgba(255, 255, 240, 1)");
-      outer.addColorStop(0.08, "rgba(255, 210, 80, 0.95)");
-      outer.addColorStop(0.22, "rgba(255, 120, 30, 0.65)");
-      outer.addColorStop(0.45, "rgba(255, 60, 20, 0.22)");
-      outer.addColorStop(0.7, "rgba(120, 180, 255, 0.08)");
-      outer.addColorStop(1, "transparent");
-      ctx.fillStyle = outer;
+      const fireR = (7 + Math.min(cometSpeed, 28) * 0.1) * dpr;
+      const bloom = ctx.createRadialGradient(head.x, head.y, 0, head.x, head.y, fireR * 2.4);
+      bloom.addColorStop(0, "rgba(255, 240, 200, 0.55)");
+      bloom.addColorStop(0.2, "rgba(255, 150, 60, 0.35)");
+      bloom.addColorStop(0.5, "rgba(255, 90, 30, 0.12)");
+      bloom.addColorStop(1, "transparent");
+      ctx.fillStyle = bloom;
       ctx.beginPath();
-      ctx.arc(head.x, head.y, fireR * 2.2, 0, Math.PI * 2);
+      ctx.arc(head.x, head.y, fireR * 2.4, 0, Math.PI * 2);
       ctx.fill();
 
-      const core = ctx.createRadialGradient(head.x, head.y, 0, head.x, head.y, fireR * 0.45);
-      core.addColorStop(0, "rgba(255, 255, 255, 1)");
-      core.addColorStop(0.5, "rgba(255, 200, 100, 0.85)");
-      core.addColorStop(1, "rgba(255, 100, 40, 0)");
+      const core = ctx.createRadialGradient(head.x, head.y, 0, head.x, head.y, fireR * 0.9);
+      core.addColorStop(0, "rgba(255, 255, 255, 0.95)");
+      core.addColorStop(0.35, "rgba(255, 180, 80, 0.75)");
+      core.addColorStop(0.7, "rgba(255, 100, 40, 0.25)");
+      core.addColorStop(1, "transparent");
       ctx.fillStyle = core;
       ctx.beginPath();
-      ctx.arc(head.x, head.y, fireR * 0.55, 0, Math.PI * 2);
+      ctx.arc(head.x, head.y, fireR * 0.95, 0, Math.PI * 2);
       ctx.fill();
     }
 
@@ -1010,17 +998,7 @@ window.Painting = (() => {
     } else {
       drawParticleBanner(time);
     }
-    drawTechRing(p, time);
-    drawTechFrame(p, time);
-    drawSkyGuideIllustration(p, time, EASE(introT));
-    drawConstellation(p, time, EASE(introT));
-    drawDecorStars(p, time, EASE(introT));
-    drawHub(p, time, EASE(introT));
-    drawProjectStars(p, time, EASE(introT));
     drawComet();
-    drawCrosshair(p);
-    drawFocusVignette();
-    drawPulse(p);
 
     raf = requestAnimationFrame(frame);
   }
@@ -1083,26 +1061,15 @@ window.Painting = (() => {
     mx = (e.clientX - rect.left) / rect.width;
     my = (e.clientY - rect.top) / rect.height;
     if (!isDay()) pushComet(sx, sy);
-    hoverIdx = hitTest(sx, sy);
-    figureHover = hoverIdx < 0 && hitTestFigure(sx, sy);
-    canvas.style.cursor = hoverIdx >= 0 ? "pointer" : figureHover ? "pointer" : "crosshair";
-    emitHover(hoverIdx);
+    canvas.style.cursor = "crosshair";
   }
 
   function onLeave() {
-    hoverIdx = -1;
-    figureHover = false;
-    emitHover(-1);
+    /* no star hover */
   }
 
-  function onClick(e) {
-    const rect = canvas.getBoundingClientRect();
-    const sx = (e.clientX - rect.left) * dpr;
-    const sy = (e.clientY - rect.top) * dpr;
-    const idx = hitTest(sx, sy);
-    if (idx >= 0 && !locked) {
-      focusStar(idx, e.clientX, e.clientY);
-    }
+  function onClick() {
+    /* 星轨已移除，点击画布无操作 */
   }
 
   function resize() {

@@ -26,7 +26,7 @@ body.detail-open { overflow: hidden; }
 
 .intro {
   position: relative;
-  height: 360vh;
+  height: 520vh;
   z-index: 300;
   background: #030208;
 }
@@ -85,20 +85,27 @@ body.detail-open { overflow: hidden; }
   margin-bottom: 0.5rem;
 }
 
-.intro-hero-title .accent {
-  background: linear-gradient(120deg, #fff, var(--accent));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+.intro-btn.is-waiting {
+  opacity: 0.45;
+  cursor: wait;
 }
 
-.intro-hero-line {
+.intro-btn:disabled {
+  pointer-events: none;
+}
+
+.intro-hero-title #intro-title-line1 {
   display: block;
-  font-size: clamp(1rem, 2.5vw, 1.35rem);
+  font-size: clamp(2rem, 6vw, 3.2rem);
+}
+
+.intro-hero-title #intro-title-line2 {
+  display: block;
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
   font-weight: 500;
   color: var(--muted);
   margin-top: 0.35rem;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
 }
 
 .intro-sub {
@@ -1161,8 +1168,8 @@ html[data-theme="day"] .detail-layer.is-open .detail-backdrop {
 .fan-stage {
   position: relative;
   flex: 1;
-  height: min(480px, 62vh);
-  min-height: 400px;
+  height: min(960px, 72vh);
+  min-height: 800px;
   perspective: 1400px;
   touch-action: pan-y;
 }
@@ -1171,8 +1178,8 @@ html[data-theme="day"] .detail-layer.is-open .detail-backdrop {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: min(88vw, 380px);
-  padding: 1.85rem 1.75rem;
+  width: min(90vw, 400px);
+  padding: 2.2rem 2rem;
   border-radius: 20px;
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -1210,7 +1217,7 @@ html[data-theme="day"] .detail-layer.is-open .detail-backdrop {
 
 @media (max-width: 640px) {
   .fan-nav { display: none; }
-  .fan-stage { height: min(380px, 52vh); min-height: 300px; }
+  .fan-stage { height: min(760px, 65vh); min-height: 620px; }
 }
 
 .showcase-star {

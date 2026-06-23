@@ -1,39 +1,42 @@
 window.SITE = {
   intro: {
-    eyebrow: "ShuaiAn Studio",
-    sub: "向下滚动，太乙猪带你飞进星轨",
-    btn: "跳过 · 直接入场",
+    eyebrow: "ShuaiAn Chen",
+    title: ["陈帅安", "个人站点"],
+    sub: "前端 · 交互 · 小游戏 — 向下滚动继续浏览",
+    subHold: "飞猪入场中，请稍候…",
+    btn: "进入主页",
+    holdSec: 4,
   },
 
   stage: {
-    tag: "ShuaiAn Studio · Orbit",
-    headline: ["Interactive", "Orbit"],
-    desc: "把 UI 交给星轨与粒子——悬停读星，点击展开造物。开启隔空手势，握拳聚合、张手散开。",
-    hint: "右侧画布交互 · 悬停读星 · 点击展开 · 🖐 隔空",
-    stats: { live: "已点亮", climbing: "攀登中" },
+    tag: "ShuaiAn Chen · Studio",
+    headline: ["你好，", "我是陈帅安"],
+    desc: "这里汇总我做的小项目与实验。右侧粒子场支持鼠标彗尾；开启摄像头后，握拳聚合、张手散开。",
+    hint: "粒子互动 · 摄像头隔空手势",
+    stats: { live: "已上线", climbing: "进行中" },
   },
 
   showcase: {
-    title: "01 · 造物清单",
-    desc: "每一样，都是攀山路上的一个脚印",
-    ctaLive: "进入星轨 →",
-    ctaSoon: "持续进化 🧬",
+    title: "01 · 项目",
+    desc: "做过的东西，和还在做的",
+    ctaLive: "打开项目 →",
+    ctaSoon: "进行中",
   },
 
   about: {
     manifesto: "重复不是惩罚，是雕刻。",
-    vibe: "温柔地攀岩，酷一点地创造。",
-    climbingLabel: "攀登中",
+    vibe: "写代码，做小东西，偶尔攀岩。",
+    climbingLabel: "进行中",
   },
 
   transition: {
-    entering: (name) => `正在进入 ${name}…`,
-    whispers: ["再推一次。", "星轨已对齐。", "温柔地，继续攀登。"],
+    entering: (name) => `正在打开 ${name}…`,
+    whispers: ["继续。", "慢慢来。", "下次再来。"],
   },
 
   soon: {
-    title: "持续进化 🧬",
-    message: "尽情期待 · DNA 正在重组",
+    title: "进行中",
+    message: "还在做，敬请期待",
   },
 
   defaultTheme: "night",

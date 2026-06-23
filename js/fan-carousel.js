@@ -12,7 +12,7 @@ window.FanCarousel = (() => {
 
   function cardHtml(p, i) {
     const copy = window.SITE.showcase;
-    const starLine = `<span class="showcase-star">${p.star.bayer} · ${p.star.cn}</span>`;
+    const starLine = `<span class="showcase-star">${(p.tags || []).join(" · ") || p.title}</span>`;
     const cta = p.live ? copy.ctaLive : copy.ctaSoon;
     const inner = `
       ${starLine}
@@ -38,10 +38,10 @@ window.FanCarousel = (() => {
       if (offset < -n / 2) offset += n;
 
       const abs = Math.abs(offset);
-      const x = offset * 118;
-      const rot = offset * 6;
-      const scale = Math.max(0.82, 1 - abs * 0.06);
-      const lift = abs === 0 ? -16 : abs * 6;
+      const x = offset * 154;
+      const rot = offset * 5.5;
+      const scale = Math.max(0.84, 1 - abs * 0.055);
+      const lift = abs === 0 ? -20 : abs * 8;
       const opacity = Math.max(0.4, 1 - abs * 0.12);
 
       card.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${lift}px)) rotate(${rot}deg) scale(${scale})`;

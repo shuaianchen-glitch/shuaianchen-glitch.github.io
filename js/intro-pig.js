@@ -1,6 +1,8 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
 
 window.IntroPig = (() => {
+  const MIN_HOLD = 4;
+
   let canvas;
   let renderer;
   let scene;
@@ -9,10 +11,8 @@ window.IntroPig = (() => {
   let cloud;
   let container;
   let raf = 0;
-  let scrollProgress = 0;
-  let mouseX = 0;
-  let mouseY = 0;
   let time = 0;
+  let mouseX = 0;
   let onComplete = null;
   let done = false;
 
@@ -20,13 +20,13 @@ window.IntroPig = (() => {
     const group = new THREE.Group();
     const pink = new THREE.MeshStandardMaterial({
       color: 0xffb6c8,
-      roughness: 0.45,
-      metalness: 0.08,
+      roughness: 0.42,
+      metalness: 0.06,
     });
-    const pinkDark = new THREE.MeshStandardMaterial({ color: 0xff8fab, roughness: 0.5 });
+    const pinkDark = new THREE.MeshStandardMaterial({ color: 0xff8fab, roughness: 0.48 });
     const gold = new THREE.MeshStandardMaterial({
       color: 0xf0c060,
-      roughness: 0.35,
+      roughness: 0.32,
       metalness: 0.55,
     });
 
@@ -77,30 +77,29 @@ window.IntroPig = (() => {
       color: 0xffffff,
       roughness: 0.85,
       transparent: true,
-      opacity: 0.88,
+      opacity: 0.9,
     });
     cloud = new THREE.Group();
-    for (let i = 0; i < 8; i += 1) {
-      const puff = new THREE.Mesh(new THREE.SphereGeometry(0.35 + Math.random() * 0.2, 16, 16), wingMat);
-      puff.position.set((Math.random() - 0.5) * 1.8, -0.55 - Math.random() * 0.2, (Math.random() - 0.5) * 1.2);
+    for (let i = 0; i < 10; i += 1) {
+      const puff = new THREE.Mesh(new THREE.SphereGeometry(0.38 + Math.random() * 0.22, 16, 16), wingMat);
+      puff.position.set((Math.random() - 0.5) * 2, -0.55 - Math.random() * 0.25, (Math.random() - 0.5) * 1.3);
       cloud.add(puff);
     }
     cloud.position.y = -0.15;
     group.add(cloud);
 
-    group.position.y = 0.2;
+    group.scale.setScalar(1.25);
     return group;
   }
 
   function buildStars() {
     const geo = new THREE.BufferGeometry();
     const pts = [];
-    for (let i = 0; i < 500; i += 1) {
+    for (let i = 0; i < 400; i += 1) {
       pts.push((Math.random() - 0.5) * 40, (Math.random() - 0.5) * 40, (Math.random() - 0.5) * 40);
     }
     geo.setAttribute("position", new THREE.Float32BufferAttribute(pts, 3));
-    const mat = new THREE.PointsMaterial({ color: 0xaad4ff, size: 0.06, transparent: true, opacity: 0.7 });
-    return new THREE.Points(geo, mat);
+    return new THREE.Points(geo, new THREE.PointsMaterial({ color: 0xaad4ff, size: 0.06, transparent: true, opacity: 0.6 }));
   }
 
   function resize() {
@@ -112,7 +111,7 @@ window.IntroPig = (() => {
     camera.updateProjectionMatrix();
   }
 
-  function getProgress() {
+  function scrollProgress() {
     const intro = document.getElementById("intro");
     if (!intro) return 0;
     const max = intro.offsetHeight - window.innerHeight;
@@ -122,39 +121,47 @@ window.IntroPig = (() => {
 
   function tick() {
     time += 0.016;
-    scrollProgress = getProgress();
+    const holdT = Math.min(time / MIN_HOLD, 1);
+    const scrollP = time >= MIN_HOLD ? scrollProgress() : 0;
+    const animP = holdT * 0.3 + scrollP * 0.7;
+    const ease = 1 - Math.pow(1 - animP, 2.2);
 
-    const bob = Math.sin(time * 2.2) * 0.08;
-    const wing = Math.sin(time * 3.5) * 0.06;
+    const bob = Math.sin(time * 1.8) * 0.1;
+    const wing = Math.sin(time * 2.8) * 0.07;
 
     if (pig) {
       pig.position.y = bob;
-      pig.rotation.y = mouseX * 0.35 + scrollProgress * Math.PI * 0.6;
-      pig.rotation.z = Math.sin(time * 1.5) * 0.05 - mouseX * 0.08;
+      pig.rotation.y = mouseX * 0.4 + ease * Math.PI * 0.45;
+      pig.rotation.z = Math.sin(time * 1.2) * 0.06 - mouseX * 0.06;
     }
     if (cloud) {
-      cloud.scale.set(1 + wing * 0.15, 1, 1 + wing * 0.15);
-      cloud.position.y = -0.15 + wing * 0.05;
+      cloud.scale.set(1 + wing * 0.18, 1, 1 + wing * 0.18);
     }
 
     if (container) {
-      const p = scrollProgress;
-      const ease = 1 - Math.pow(1 - p, 3);
-      container.rotation.x = THREE.MathUtils.degToRad(18 - ease * 42);
-      container.rotation.y = ease * 0.4;
-      container.position.y = ease * 2.8;
-      container.position.z = -ease * 3.5;
-      const scale = 1 + ease * 0.15 - Math.max(0, p - 0.7) * 1.2;
-      container.scale.setScalar(Math.max(0.35, scale));
+      container.rotation.x = THREE.MathUtils.degToRad(12 - ease * 32);
+      container.rotation.y = ease * 0.35;
+      container.position.y = ease * 2.2;
+      container.position.z = -ease * 2.8;
+      const scale = 1.28 - ease * 0.55;
+      container.scale.setScalar(Math.max(0.55, scale));
     }
 
+    const bar = time < MIN_HOLD ? holdT * 0.35 : 0.35 + scrollP * 0.65;
     const ui = document.getElementById("intro-progress-fill");
-    if (ui) ui.style.width = `${Math.round(scrollProgress * 100)}%`;
+    if (ui) ui.style.width = `${Math.round(bar * 100)}%`;
+
+    const hint = document.getElementById("intro-sub");
+    if (hint && time < MIN_HOLD) {
+      hint.textContent = window.SITE?.intro?.subHold || "稍候，飞猪正在入场…";
+    } else if (hint && time >= MIN_HOLD) {
+      hint.textContent = window.SITE?.intro?.sub || "向下滚动继续浏览";
+    }
 
     renderer.render(scene, camera);
     raf = requestAnimationFrame(tick);
 
-    if (!done && scrollProgress >= 0.92) {
+    if (!done && time >= MIN_HOLD && scrollP >= 0.82) {
       done = true;
       onComplete?.();
     }
@@ -170,16 +177,16 @@ window.IntroPig = (() => {
     renderer.setClearColor(0x030208, 1);
 
     scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x030208, 0.055);
+    scene.fog = new THREE.FogExp2(0x030208, 0.045);
 
-    camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
-    camera.position.set(0, 0.8, 5.2);
+    camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+    camera.position.set(0, 0.45, 3.8);
 
-    scene.add(new THREE.AmbientLight(0x8899cc, 0.55));
-    const key = new THREE.DirectionalLight(0xffffff, 1.1);
+    scene.add(new THREE.AmbientLight(0x8899cc, 0.6));
+    const key = new THREE.DirectionalLight(0xffffff, 1.25);
     key.position.set(3, 5, 4);
     scene.add(key);
-    const rim = new THREE.DirectionalLight(0x7ec8ff, 0.45);
+    const rim = new THREE.DirectionalLight(0x7ec8ff, 0.5);
     rim.position.set(-4, 2, -2);
     scene.add(rim);
 
@@ -193,7 +200,6 @@ window.IntroPig = (() => {
     window.addEventListener("resize", resize);
     window.addEventListener("mousemove", (e) => {
       mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-      mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
     });
 
     cancelAnimationFrame(raf);
@@ -202,9 +208,8 @@ window.IntroPig = (() => {
 
   function destroy() {
     cancelAnimationFrame(raf);
-    window.removeEventListener("resize", resize);
     renderer?.dispose();
   }
 
-  return { init, destroy, getProgress };
+  return { init, destroy, MIN_HOLD };
 })();

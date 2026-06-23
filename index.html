@@ -3,27 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="description" content="ShuaiAn Studio — 星轨上的温柔攀岩与数字创造">
+  <meta name="description" content="ShuaiAn Chen — 个人站点 · 前端 · 交互 · 小游戏">
   <meta name="theme-color" content="#000000">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <title>ShuaiAn Studio · Orbit</title>
-  <link rel="stylesheet" href="css/themes.css?v=20250622-v18">
-  <link rel="stylesheet" href="css/style.css?v=20250622-v18">
+  <title>ShuaiAn Chen · Studio</title>
+  <link rel="stylesheet" href="css/themes.css?v=20250622-v19">
+  <link rel="stylesheet" href="css/style.css?v=20250622-v19">
 </head>
 <body>
   <div id="intro" class="intro" aria-live="polite">
     <div class="intro-sticky">
       <canvas id="intro-canvas" aria-hidden="true"></canvas>
       <div class="intro-ui">
-        <p class="intro-eyebrow" id="intro-eyebrow">ShuaiAn Studio</p>
-        <h1 class="intro-hero-title">
-          纵享<span class="accent">丝滑</span>
-          <span class="intro-hero-line">乘猪入场 · Scroll</span>
+        <p class="intro-eyebrow" id="intro-eyebrow">ShuaiAn Chen</p>
+        <h1 class="intro-hero-title" id="intro-title">
+          <span id="intro-title-line1">陈帅安</span>
+          <span class="intro-hero-line" id="intro-title-line2">个人站点</span>
         </h1>
-        <p class="intro-sub" id="intro-sub">向下滚动，太乙猪带你飞进星轨</p>
+        <p class="intro-sub" id="intro-sub">飞猪入场中，请稍候…</p>
         <div class="intro-progress" aria-hidden="true"><div id="intro-progress-fill"></div></div>
-        <button type="button" id="intro-enter" class="intro-btn intro-skip">
-          <span id="intro-btn-label">跳过 · 直接入场</span>
+        <button type="button" id="intro-enter" class="intro-btn intro-skip is-waiting" disabled>
+          <span id="intro-btn-label">进入主页</span>
         </button>
       </div>
     </div>
@@ -31,11 +31,11 @@
 
   <div id="app" class="app is-hidden">
     <nav class="nav">
-      <a class="nav-logo" href="#" data-scroll="stage">SA<span class="sigil-dot">·</span>Orbit</a>
+      <a class="nav-logo" href="#" data-scroll="stage">SA<span class="sigil-dot">·</span>Studio</a>
       <div class="nav-actions">
         <div class="nav-pills">
-          <button type="button" class="pill active" data-scroll="stage">星轨</button>
-          <button type="button" class="pill" data-scroll="showcase">造物</button>
+          <button type="button" class="pill active" data-scroll="stage">首页</button>
+          <button type="button" class="pill" data-scroll="showcase">项目</button>
           <button type="button" class="pill" data-scroll="about">关于</button>
           <a class="pill pill-link" href="https://github.com/shuaianchen-glitch" target="_blank" rel="noopener">GitHub</a>
         </div>
@@ -61,45 +61,21 @@
             </h1>
             <p class="hero-desc" id="stage-desc"></p>
 
-            <aside class="hero-readout" id="star-readout" aria-live="polite" hidden>
-              <div class="readout-header">
-                <span class="readout-icon" id="readout-icon"></span>
-                <div>
-                  <p class="readout-bayer" id="readout-bayer"></p>
-                  <h3 class="readout-title" id="readout-title"></h3>
-                </div>
-                <span class="readout-status" id="readout-status"></span>
-              </div>
-              <p class="readout-latin" id="readout-latin"></p>
-              <p class="readout-desc" id="readout-desc"></p>
-              <div class="readout-meta">
-                <span id="readout-mag"></span>
-                <span id="readout-tags"></span>
-              </div>
-            </aside>
-
             <div class="hero-foot">
               <div class="hero-stats">
-                <span><strong id="project-count">0</strong> <em id="stat-live-label">已点亮</em></span>
+                <span><strong id="project-count">0</strong> <em id="stat-live-label">已上线</em></span>
                 <span class="hero-stats-sep">·</span>
-                <span><strong id="climbing-count">0</strong> <em id="stat-climb-label">攀登中</em></span>
+                <span><strong id="climbing-count">0</strong> <em id="stat-climb-label">进行中</em></span>
               </div>
               <p class="hero-hint" id="stage-hint">
                 <span class="hint-pulse"></span>
-                悬停读星 · 点击展开
-              </p>
-              <p class="hero-telemetry" aria-hidden="true">
-                <span>MAG</span> <em id="telemetry-mag">—</em>
-                <span class="hero-stats-sep">·</span>
-                <span>SIG</span> <em id="telemetry-sig">STANDBY</em>
-                <span class="hero-stats-sep">·</span>
-                <span>SCAN</span> <em id="telemetry-scan">0000</em>
+                粒子互动
               </p>
             </div>
           </div>
 
           <div class="hero-visual painting-frame">
-            <canvas id="painting" aria-label="星轨交互画作"></canvas>
+            <canvas id="painting" aria-label="粒子互动画布"></canvas>
 
             <div id="gesture-hud" class="gesture-hud" hidden>
               <p class="gesture-hud-title"><span>GESTURE</span> <em id="gesture-state">等待</em></p>
@@ -112,7 +88,7 @@
 
       <section id="showcase" class="showcase">
         <header class="section-head">
-          <h2><span class="section-num">01</span>造物清单</h2>
+          <h2><span class="section-num">01</span>项目</h2>
           <p id="showcase-desc">每一样，都是攀山路上的一个脚印</p>
         </header>
         <div class="fan-carousel">
@@ -153,7 +129,7 @@
     </main>
 
     <footer class="footer">
-      <p>© <span id="year"></span> ShuaiAn Chen · 星轨</p>
+      <p>© <span id="year"></span> ShuaiAn Chen</p>
       <a href="https://github.com/shuaianchen-glitch">github.com/shuaianchen-glitch</a>
     </footer>
   </div>
@@ -186,15 +162,15 @@
     <p class="transition-title" id="transition-title"></p>
   </div>
 
-  <script type="module" src="js/intro-pig.js?v=20250622-v18"></script>
-  <script defer src="content/site.js?v=20250622-v18"></script>
-  <script defer src="js/theme.js?v=20250622-v18"></script>
-  <script defer src="js/typewriter.js?v=20250622-v18"></script>
-  <script defer src="js/cascade-nav.js?v=20250622-v18"></script>
-  <script defer src="js/fan-carousel.js?v=20250622-v18"></script>
-  <script defer src="js/painting.js?v=20250622-v18"></script>
-  <script defer src="js/detail.js?v=20250622-v18"></script>
-  <script defer src="js/main.js?v=20250622-v18"></script>
-  <script type="module" src="js/gesture.js?v=20250622-v18"></script>
+  <script type="module" src="js/intro-pig.js?v=20250622-v19"></script>
+  <script defer src="content/site.js?v=20250622-v19"></script>
+  <script defer src="js/theme.js?v=20250622-v19"></script>
+  <script defer src="js/typewriter.js?v=20250622-v19"></script>
+  <script defer src="js/cascade-nav.js?v=20250622-v19"></script>
+  <script defer src="js/fan-carousel.js?v=20250622-v19"></script>
+  <script defer src="js/painting.js?v=20250622-v19"></script>
+  <script defer src="js/detail.js?v=20250622-v19"></script>
+  <script defer src="js/main.js?v=20250622-v19"></script>
+  <script type="module" src="js/gesture.js?v=20250622-v19"></script>
 </body>
 </html>

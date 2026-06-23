@@ -1,4 +1,4 @@
-const INTRO_KEY = "sa-studio-intro-v3";
+const INTRO_KEY = "sa-studio-intro-v4";
 const $ = (sel) => document.querySelector(sel);
 
 function projects() {
@@ -37,8 +37,13 @@ function enterSite(skipIntro = false) {
 function initIntro() {
   const introCopy = window.SITE.intro;
   $("#intro-eyebrow").textContent = introCopy.eyebrow;
-  $("#intro-sub").textContent = introCopy.sub;
+  $("#intro-title-line1").textContent = introCopy.title?.[0] || "";
+  $("#intro-title-line2").textContent = introCopy.title?.[1] || "";
+  $("#intro-sub").textContent = introCopy.subHold || introCopy.sub;
   $("#intro-btn-label").textContent = introCopy.btn;
+
+  const holdMs = (introCopy.holdSec || window.IntroPig?.MIN_HOLD || 4) * 1000;
+  const skipBtn = $("#intro-enter");
 
   const go = () => {
     if ($("#intro")?.classList.contains("is-leaving")) return;
@@ -50,13 +55,18 @@ function initIntro() {
     return;
   }
 
-  $("#intro-enter")?.addEventListener("click", (e) => {
+  setTimeout(() => {
+    skipBtn?.removeAttribute("disabled");
+    skipBtn?.classList.remove("is-waiting");
+  }, holdMs);
+
+  skipBtn?.addEventListener("click", (e) => {
     e.stopPropagation();
     go();
   });
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && !$("#intro")?.classList.contains("is-leaving")) go();
+    if (e.key === "Enter" && !skipBtn?.disabled && !$("#intro")?.classList.contains("is-leaving")) go();
   });
 
   window.IntroPig?.init(go);
@@ -124,49 +134,7 @@ function startHeroTypewriter() {
 }
 
 function initStarReadout() {
-  const panel = $("#star-readout");
-  if (!panel) return;
-
-  window.addEventListener("starhover", (e) => {
-    const { idx, project: p } = e.detail;
-    if (idx < 0 || !p) {
-      panel.classList.remove("is-visible");
-      panel.hidden = true;
-      $("#telemetry-mag").textContent = "—";
-      $("#telemetry-sig").textContent = "STANDBY";
-      return;
-    }
-
-    const s = p.star;
-    panel.hidden = false;
-    requestAnimationFrame(() => panel.classList.add("is-visible"));
-    $("#readout-icon").textContent = p.icon;
-    $("#readout-bayer").textContent = `${s.bayer} · ${s.cn}`;
-    $("#readout-title").textContent = p.title;
-    $("#readout-latin").textContent = `${s.name} · 视星等 ${s.mag}`;
-    $("#readout-desc").textContent = p.desc;
-    $("#readout-mag").textContent = `mag ${s.mag}`;
-    $("#readout-tags").textContent = (p.tags || []).join(" · ");
-    const status = $("#readout-status");
-    status.textContent = p.live ? "LIVE" : "CLIMB";
-    status.className = `readout-status ${p.live ? "is-live" : "is-climb"}`;
-    $("#telemetry-mag").textContent = s.mag.toFixed(2);
-    $("#telemetry-sig").textContent = p.live ? "LOCKED" : "EVOLVING";
-  });
-
-  window.addEventListener("orbithover", (e) => {
-    document.body.classList.toggle("orbit-lit", e.detail.lit);
-    const sig = $("#telemetry-sig");
-    if (!sig || e.detail.lit) return;
-    sig.textContent = "STANDBY";
-  });
-
-  let scan = 0;
-  setInterval(() => {
-    scan = (scan + 1) % 10000;
-    const el = $("#telemetry-scan");
-    if (el) el.textContent = String(scan).padStart(4, "0");
-  }, 120);
+  /* 星轨读星面板已移除 */
 }
 
 function typeText() {
