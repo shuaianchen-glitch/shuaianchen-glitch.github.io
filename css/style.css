@@ -22,13 +22,13 @@ body {
 
 body.detail-open { overflow: hidden; }
 
-/* ── Intro (scroll 3D pig) ── */
+/* ── Intro (organic particle banner) ── */
 
 .intro {
-  position: relative;
-  height: 520vh;
+  position: fixed;
+  inset: 0;
   z-index: 300;
-  background: #030208;
+  background: #000000;
 }
 
 .intro.is-leaving {
@@ -39,10 +39,9 @@ body.detail-open { overflow: hidden; }
 }
 
 .intro-sticky {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  height: 100dvh;
+  position: relative;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
 }
 
@@ -64,8 +63,8 @@ body.detail-open { overflow: hidden; }
   justify-content: flex-end;
   padding: 1.5rem 1.5rem 2rem;
   pointer-events: none;
-  background: linear-gradient(to top, rgba(5, 3, 12, 0.88) 0%, rgba(5, 3, 12, 0.35) 55%, transparent 100%);
-  min-height: 38vh;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0.28) 55%, transparent 100%);
+  min-height: 32vh;
 }
 
 .intro-eyebrow {

@@ -2,16 +2,16 @@ window.SITE = {
   intro: {
     eyebrow: "ShuaiAn Chen",
     title: ["陈帅安", "个人站点"],
-    sub: "前端 · 交互 · 小游戏 — 向下滚动继续浏览",
-    subHold: "飞猪入场中，请稍候…",
+    sub: "前端 · 交互 · 小游戏",
+    subHold: "粒子场加载中，请稍候…",
     btn: "进入主页",
-    holdSec: 5,
+    holdSec: 4,
   },
 
   stage: {
     tag: "ShuaiAn Chen · Studio",
     headline: ["你好，", "我是陈帅安"],
-    desc: "这里汇总我做的小项目与实验。右侧粒子场支持鼠标彗尾；开启摄像头后，握拳聚合、张手散开。",
+    desc: "这里汇总我做的小项目与实验。右侧是黑色粒子场，支持鼠标彗尾；开启摄像头后，握拳聚合、张手散开。",
     hint: "粒子互动 · 摄像头隔空手势",
     stats: { live: "已上线", climbing: "进行中" },
   },

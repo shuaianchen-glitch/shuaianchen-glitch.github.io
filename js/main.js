@@ -1,4 +1,4 @@
-const INTRO_KEY = "sa-studio-intro-v5";
+const INTRO_KEY = "sa-studio-intro-v6";
 const $ = (sel) => document.querySelector(sel);
 
 function projects() {
@@ -17,7 +17,7 @@ function enterSite(skipIntro = false) {
   };
   if (!skipIntro && intro) {
     intro.classList.add("is-leaving");
-    window.IntroPig?.destroy?.();
+    window.IntroBanner?.destroy?.();
     setTimeout(() => {
       intro.style.display = "none";
       app.classList.remove("is-hidden");
@@ -26,7 +26,7 @@ function enterSite(skipIntro = false) {
     }, 850);
   } else {
     if (intro) intro.style.display = "none";
-    window.IntroPig?.destroy?.();
+    window.IntroBanner?.destroy?.();
     app.classList.remove("is-hidden");
     app.classList.add("is-visible");
     onVisible();
@@ -42,7 +42,7 @@ function initIntro() {
   $("#intro-sub").textContent = introCopy.subHold || introCopy.sub;
   $("#intro-btn-label").textContent = introCopy.btn;
 
-  const holdMs = (introCopy.holdSec || window.IntroPig?.MIN_HOLD || 4) * 1000;
+  const holdMs = (introCopy.holdSec || window.IntroBanner?.MIN_HOLD || 4) * 1000;
   const skipBtn = $("#intro-enter");
 
   const go = () => {
@@ -69,7 +69,7 @@ function initIntro() {
     if (e.key === "Enter" && !skipBtn?.disabled && !$("#intro")?.classList.contains("is-leaving")) go();
   });
 
-  window.IntroPig?.init(go);
+  window.IntroBanner?.init(go);
 }
 
 function randomWhisper() {

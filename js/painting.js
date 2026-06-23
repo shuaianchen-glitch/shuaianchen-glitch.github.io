@@ -22,11 +22,8 @@ window.Painting = (() => {
   let lastFigureHover = false;
   let figureHover = false;
   let figureDrawT = 0;
+  let organicState = null;
   let particles = [];
-  let gridCols = 0;
-  let gridRows = 0;
-  let gridGapX = 0;
-  let gridGapY = 0;
   let cometTrail = [];
   let lastCometX = 0;
   let lastCometY = 0;
@@ -118,40 +115,9 @@ window.Painting = (() => {
   }
 
   function initParticles() {
-    const mobile = window.innerWidth < 768;
-    gridCols = mobile ? 16 : 26;
-    gridRows = mobile ? 12 : 20;
-    const padX = w * 0.06;
-    const padY = h * 0.06;
-    gridGapX = gridCols > 1 ? (w - padX * 2) / (gridCols - 1) : w;
-    gridGapY = gridRows > 1 ? (h - padY * 2) / (gridRows - 1) : h;
-
-    particles = [];
-    for (let row = 0; row < gridRows; row += 1) {
-      for (let col = 0; col < gridCols; col += 1) {
-        const hx = padX + col * gridGapX;
-        const hy = padY + row * gridGapY;
-        particles.push({
-          hx,
-          hy,
-          x: hx,
-          y: hy,
-          vx: 0,
-          vy: 0,
-          col,
-          row,
-          size: 3.4 + (col % 3) * 0.35,
-          type: "entropy",
-          alpha: 0.95,
-          phase: Math.random() * Math.PI * 2,
-        });
-      }
-    }
-  }
-
-  function particleAt(col, row) {
-    if (col < 0 || row < 0 || col >= gridCols || row >= gridRows) return null;
-    return particles[row * gridCols + col];
+    if (!window.OrganicField) return;
+    if (organicState) window.OrganicField.resize(organicState, w, h);
+    else organicState = window.OrganicField.create(w, h);
   }
 
   function pushComet(x, y) {
@@ -462,23 +428,16 @@ window.Painting = (() => {
   }
 
   function drawParticleBanner(t) {
-    ctx.fillStyle = "#000000";
-    ctx.fillRect(0, 0, w, h);
+    if (!organicState && window.OrganicField) {
+      organicState = window.OrganicField.create(w, h);
+    }
+    if (!organicState) return;
 
-    updateParticles(t);
-
-    ctx.globalCompositeOperation = "screen";
-    drawEntropyLinks();
-    drawEntropyDots(t);
+    const g = window.HandGesture;
+    const gesture = g?.enabled ? g : null;
+    window.OrganicField.step(organicState, time, mx, my, gesture);
+    window.OrganicField.draw(ctx, organicState, time, mx, my, dpr, gesture);
     drawComet();
-    drawHandAura(t);
-    ctx.globalCompositeOperation = "source-over";
-
-    const vig = ctx.createRadialGradient(w / 2, h / 2, Math.min(w, h) * 0.2, w / 2, h / 2, Math.max(w, h) * 0.85);
-    vig.addColorStop(0, "transparent");
-    vig.addColorStop(1, "rgba(0, 0, 0, 0.45)");
-    ctx.fillStyle = vig;
-    ctx.fillRect(0, 0, w, h);
   }
 
   function drawNebula(p) {
