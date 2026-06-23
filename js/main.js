@@ -1,7 +1,7 @@
 window.Main = {};
 
 function init() {
-  window.StructuredField?.init();
+  window.SpatialOS?.init();
 }
 
 init();
