@@ -1,31 +1,10 @@
-html[data-theme="night"] {
+html {
   color-scheme: dark;
-  --bg: #000000;
-  --bg-card: rgba(12, 8, 28, 0.92);
-  --text: #e8ecf4;
-  --muted: #8a9bb5;
-  --accent: #7ec8ff;
-  --accent-dim: rgba(126, 200, 255, 0.35);
-  --gold: #f0d890;
-  --border: rgba(126, 200, 255, 0.18);
-  --nav-bg: rgba(5, 3, 16, 0.85);
-  --glow: rgba(126, 200, 255, 0.3);
-  --meta: #07050f;
-  --hud-bg: rgba(6, 8, 22, 0.68);
-}
-
-html[data-theme="day"] {
-  color-scheme: light;
-  --bg: #e4eaf2;
-  --bg-card: rgba(255, 255, 255, 0.94);
-  --text: #0f172a;
-  --muted: #475569;
-  --accent: #0e7490;
-  --accent-dim: rgba(14, 116, 144, 0.3);
-  --gold: #b45309;
-  --border: rgba(15, 23, 42, 0.14);
-  --nav-bg: rgba(228, 234, 242, 0.9);
-  --glow: rgba(14, 116, 144, 0.2);
-  --meta: #e4eaf2;
-  --hud-bg: rgba(255, 255, 255, 0.82);
+  --bg: #050608;
+  --text: #e8ecf2;
+  --muted: #6b7280;
+  --accent: #8eb4ff;
+  --accent-dim: rgba(142, 180, 255, 0.22);
+  --border: rgba(255, 255, 255, 0.08);
+  --panel-bg: rgba(12, 14, 18, 0.72);
 }

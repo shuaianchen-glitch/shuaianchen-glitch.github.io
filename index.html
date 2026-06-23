@@ -1,177 +1,71 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="night">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="description" content="ShuaiAn Chen — 个人站点 · 前端 · 交互 · 小游戏">
-  <meta name="theme-color" content="#000000">
+  <meta name="description" content="ShuaiAn Chen — Cognitive Field Interface">
+  <meta name="theme-color" content="#050608">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <title>ShuaiAn Chen · Studio</title>
-  <link rel="stylesheet" href="css/themes.css?v=20250622-v21">
-  <link rel="stylesheet" href="css/style.css?v=20250622-v21">
+  <title>陈帅安 · Cognitive Field</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/themes.css?v=20250622-v22">
+  <link rel="stylesheet" href="css/field.css?v=20250622-v22">
 </head>
 <body>
-  <div id="intro" class="intro" aria-live="polite">
-    <div class="intro-sticky">
-      <canvas id="intro-canvas" aria-hidden="true"></canvas>
-      <div class="intro-ui">
-        <p class="intro-eyebrow" id="intro-eyebrow">ShuaiAn Chen</p>
-        <h1 class="intro-hero-title" id="intro-title">
-          <span id="intro-title-line1">陈帅安</span>
-          <span class="intro-hero-line" id="intro-title-line2">个人站点</span>
-        </h1>
-        <p class="intro-sub" id="intro-sub">粒子场加载中，请稍候…</p>
-        <div class="intro-progress" aria-hidden="true"><div id="intro-progress-fill"></div></div>
-        <button type="button" id="intro-enter" class="intro-btn intro-skip is-waiting" disabled>
-          <span id="intro-btn-label">进入主页</span>
-        </button>
-      </div>
+  <canvas id="field-canvas" aria-label="Cognitive field — spatial interface"></canvas>
+
+  <div class="field-ui" aria-live="polite">
+    <header class="field-chrome field-chrome--top">
+      <span class="field-system-label" id="field-label">Cognitive Field Interface</span>
+      <a class="field-link" href="https://github.com/shuaianchen-glitch" target="_blank" rel="noopener">GitHub</a>
+    </header>
+
+    <div class="field-core" id="field-core">
+      <p class="field-name-en" id="field-name-en">ShuaiAn Chen</p>
+      <h1 class="field-name" id="field-name">陈帅安</h1>
+      <p class="field-role" id="field-role">Frontend · Interaction · Generative Systems</p>
+      <p class="field-philosophy" id="field-philosophy">重复不是惩罚，是雕刻。</p>
     </div>
-  </div>
 
-  <div id="app" class="app is-hidden">
-    <nav class="nav">
-      <a class="nav-logo" href="#" data-scroll="stage">SA<span class="sigil-dot">·</span>Studio</a>
-      <div class="nav-actions">
-        <div class="nav-pills">
-          <button type="button" class="pill active" data-scroll="stage">首页</button>
-          <button type="button" class="pill" data-scroll="showcase">项目</button>
-          <button type="button" class="pill" data-scroll="about">关于</button>
-          <a class="pill pill-link" href="https://github.com/shuaianchen-glitch" target="_blank" rel="noopener">GitHub</a>
-        </div>
-        <button type="button" id="gesture-toggle" class="gesture-toggle" aria-label="隔空手势互动" title="握拳聚合 · 张手散开">
-          <span class="gesture-icon">🖐</span>
-          <span class="gesture-label">隔空</span>
-        </button>
-        <button type="button" id="theme-toggle" class="theme-toggle" aria-label="切换主题">
-          <span class="theme-icon">☀️</span>
-          <span class="theme-label">白昼</span>
-        </button>
-      </div>
-    </nav>
+    <div class="field-labels" id="field-labels" aria-hidden="true"></div>
 
-    <main>
-      <section id="stage" class="stage">
-        <div class="hero-split">
-          <div class="hero-copy">
-            <p class="hero-eyebrow" id="stage-tag">ShuaiAn Chen</p>
-            <h1 class="hero-title">
-              <span id="type-line-1"></span><br>
-              <span class="accent" id="type-line-2"></span><span class="type-cursor" id="type-cursor" aria-hidden="true">_</span>
-            </h1>
-            <p class="hero-desc" id="stage-desc"></p>
+    <aside class="field-meta" id="field-meta" hidden>
+      <p class="field-meta-kicker" id="meta-type">node</p>
+      <h2 class="field-meta-title" id="meta-title"></h2>
+      <p class="field-meta-body" id="meta-body"></p>
+      <div class="field-meta-tags" id="meta-tags"></div>
+      <dl class="field-meta-metrics">
+        <div><dt>Weight</dt><dd id="meta-weight">—</dd></div>
+        <div><dt>Relevance</dt><dd id="meta-relevance">—</dd></div>
+      </dl>
+    </aside>
 
-            <div class="hero-foot">
-              <div class="hero-stats">
-                <span><strong id="project-count">0</strong> <em id="stat-live-label">已上线</em></span>
-                <span class="hero-stats-sep">·</span>
-                <span><strong id="climbing-count">0</strong> <em id="stat-climb-label">进行中</em></span>
-              </div>
-              <p class="hero-hint" id="stage-hint">
-                <span class="hint-pulse"></span>
-                粒子互动
-              </p>
-            </div>
-          </div>
+    <aside class="field-sub" id="field-sub" hidden>
+      <div class="field-sub-backdrop" id="field-backdrop"></div>
+      <article class="field-sub-panel" role="dialog" aria-modal="true">
+        <button type="button" class="field-sub-close" id="field-close" aria-label="Return to field">← Field</button>
+        <p class="field-sub-kicker" id="sub-type">project</p>
+        <h2 class="field-sub-title" id="sub-title"></h2>
+        <p class="field-sub-body" id="sub-body"></p>
+        <div class="field-sub-tags" id="sub-tags"></div>
+        <button type="button" class="field-sub-cta" id="sub-cta" hidden>Open project →</button>
+      </article>
+    </aside>
 
-          <div class="hero-visual painting-frame">
-            <canvas id="painting" aria-label="粒子互动画布"></canvas>
-
-            <div id="gesture-hud" class="gesture-hud" hidden>
-              <p class="gesture-hud-title"><span>GESTURE</span> <em id="gesture-state">等待</em></p>
-              <div class="gesture-meter" aria-hidden="true"><div id="gesture-meter-fill"></div></div>
-              <p class="gesture-tip">握拳 · 粒子聚合 · 张手 · 粒子散开</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="showcase" class="showcase">
-        <header class="section-head">
-          <h2><span class="section-num">01</span>项目</h2>
-          <p id="showcase-desc">每一样，都是攀山路上的一个脚印</p>
-        </header>
-        <div class="fan-carousel">
-          <button type="button" class="fan-nav fan-prev" id="fan-prev" aria-label="上一个">‹</button>
-          <div class="fan-stage" id="fan-stage"></div>
-          <button type="button" class="fan-nav fan-next" id="fan-next" aria-label="下一个">›</button>
-        </div>
-        <div class="showcase-dots" id="showcase-dots"></div>
-      </section>
-
-      <section id="about" class="about">
-        <div class="about-grid">
-          <article class="about-card">
-            <p class="about-label">CREATOR · ♑</p>
-            <h3>ShuaiAn Chen</h3>
-            <p class="about-role">温柔攀岩者 / 数字造物者</p>
-            <p class="about-story">写前端、做小工具、偶尔攀岩。把重复的事做成顺手的东西。</p>
-            <div class="about-tags">
-              <span>交互</span><span>前端</span><span>小游戏</span><span>AI</span>
-            </div>
-          </article>
-          <div class="about-terminal">
-            <div class="terminal-bar">
-              <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
-              <span class="terminal-title">climb.sh</span>
-            </div>
-            <div class="terminal-body">
-              <p><span class="prompt">$</span> cat manifesto.txt</p>
-              <p class="output" id="manifesto-text"></p>
-              <p><span class="prompt">$</span> echo $VIBE</p>
-              <p class="output typing" id="typing-text"></p>
-              <p><span class="prompt">$</span> ls ./projects</p>
-              <p class="output" id="project-list"></p>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer class="footer">
-      <p>© <span id="year"></span> ShuaiAn Chen</p>
-      <a href="https://github.com/shuaianchen-glitch">github.com/shuaianchen-glitch</a>
+    <footer class="field-chrome field-chrome--bottom">
+      <span id="field-hint-probe">Move · probe the field</span>
+      <span class="field-chrome-sep">·</span>
+      <span id="field-hint-scroll">Scroll · traverse depth</span>
+      <span class="field-chrome-sep">·</span>
+      <span>© <span id="year"></span> ShuaiAn Chen</span>
     </footer>
   </div>
 
-  <video id="gesture-video" class="gesture-video" playsinline muted autoplay hidden aria-hidden="true"></video>
-
-  <div id="detail-layer" class="detail-layer" aria-hidden="true">
-    <div class="detail-backdrop" id="detail-backdrop"></div>
-    <div class="detail-ripple" id="detail-ripple"></div>
-    <article class="detail-card" id="detail-card" role="dialog" aria-modal="true" aria-labelledby="detail-title" tabindex="-1">
-      <button type="button" class="detail-close" id="detail-close" aria-label="关闭">×</button>
-      <div class="detail-header">
-        <span class="detail-icon" id="detail-icon"></span>
-        <div>
-          <p class="detail-star" id="detail-star"></p>
-          <h3 class="detail-title" id="detail-title"></h3>
-        </div>
-      </div>
-      <p class="detail-desc" id="detail-desc"></p>
-      <div class="detail-tags" id="detail-tags"></div>
-      <div class="detail-actions">
-        <button type="button" class="detail-cta" id="detail-cta"></button>
-      </div>
-      <p class="detail-whisper" id="detail-whisper"></p>
-    </article>
-  </div>
-
-  <div id="transition" class="transition" aria-hidden="true">
-    <span class="transition-icon" id="transition-icon"></span>
-    <p class="transition-title" id="transition-title"></p>
-  </div>
-
-  <script defer src="js/organic-field.js?v=20250622-v21"></script>
-  <script defer src="js/intro-banner.js?v=20250622-v21"></script>
-  <script defer src="content/site.js?v=20250622-v21"></script>
-  <script defer src="js/theme.js?v=20250622-v21"></script>
-  <script defer src="js/typewriter.js?v=20250622-v21"></script>
-  <script defer src="js/cascade-nav.js?v=20250622-v21"></script>
-  <script defer src="js/fan-carousel.js?v=20250622-v21"></script>
-  <script defer src="js/painting.js?v=20250622-v21"></script>
-  <script defer src="js/detail.js?v=20250622-v21"></script>
-  <script defer src="js/main.js?v=20250622-v21"></script>
-  <script type="module" src="js/gesture.js?v=20250622-v21"></script>
+  <script defer src="js/vendor/three.min.js?v=20250622-v22"></script>
+  <script defer src="content/site.js?v=20250622-v22"></script>
+  <script defer src="js/cognitive-field.js?v=20250622-v22"></script>
+  <script defer src="js/main.js?v=20250622-v22"></script>
 </body>
 </html>
