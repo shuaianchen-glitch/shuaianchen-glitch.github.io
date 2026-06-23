@@ -990,6 +990,10 @@ window.Painting = (() => {
     if (!canvas) return;
     const container = canvas.parentElement;
     const rect = container?.getBoundingClientRect() || { width: window.innerWidth, height: window.innerHeight };
+    if (rect.width < 1 || rect.height < 1) {
+      requestAnimationFrame(resize);
+      return;
+    }
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     w = canvas.width = Math.floor(rect.width * dpr);
     h = canvas.height = Math.floor(rect.height * dpr);
@@ -1036,5 +1040,5 @@ window.Painting = (() => {
     targetScale = 1;
   }
 
-  return { init, resetView, openProject, toScreen, focusStar };
+  return { init, resetView, openProject, toScreen, focusStar, resize };
 })();

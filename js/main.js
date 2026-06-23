@@ -8,17 +8,22 @@ function projects() {
 function enterSite(skipIntro = false) {
   const intro = $("#intro");
   const app = $("#app");
+  const onVisible = () => {
+    requestAnimationFrame(() => window.Painting?.resize?.());
+  };
   if (!skipIntro && intro) {
     intro.classList.add("is-leaving");
     setTimeout(() => {
       intro.style.display = "none";
       app.classList.remove("is-hidden");
       app.classList.add("is-visible");
+      onVisible();
     }, 800);
   } else {
     if (intro) intro.style.display = "none";
     app.classList.remove("is-hidden");
     app.classList.add("is-visible");
+    onVisible();
   }
   sessionStorage.setItem(INTRO_KEY, "1");
 }
@@ -239,6 +244,7 @@ function init() {
   initIntro();
   initStarReadout();
   Painting.init();
+  requestAnimationFrame(() => window.Painting?.resize?.());
   Detail.init();
   renderShowcase();
   initNav();
