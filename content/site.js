@@ -1,11 +1,8 @@
 window.SITE = {
   intro: {
     eyebrow: "ShuaiAn Studio",
-    title: ["在星途上，", "把想法推上山"],
-    accentLine: 1,
-    sub: "一颗星，一段旅程；触碰，细节自然展开",
-    btn: "展开星轨",
-    skip: "按 Enter 或点击任意处",
+    sub: "向下滚动，太乙猪带你飞进星轨",
+    btn: "跳过 · 直接入场",
   },
 
   stage: {

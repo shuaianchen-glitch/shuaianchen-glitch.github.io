@@ -38,11 +38,11 @@ window.FanCarousel = (() => {
       if (offset < -n / 2) offset += n;
 
       const abs = Math.abs(offset);
-      const x = offset * 72;
-      const rot = offset * 7;
-      const scale = Math.max(0.78, 1 - abs * 0.07);
-      const lift = abs === 0 ? -12 : abs * 4;
-      const opacity = Math.max(0.35, 1 - abs * 0.14);
+      const x = offset * 118;
+      const rot = offset * 6;
+      const scale = Math.max(0.82, 1 - abs * 0.06);
+      const lift = abs === 0 ? -16 : abs * 6;
+      const opacity = Math.max(0.4, 1 - abs * 0.12);
 
       card.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${lift}px)) rotate(${rot}deg) scale(${scale})`;
       card.style.opacity = opacity;

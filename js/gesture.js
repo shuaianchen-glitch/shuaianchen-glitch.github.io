@@ -45,7 +45,7 @@ function computeOpenness(lm) {
     sum += Math.hypot(lm[i].x - palm.x, lm[i].y - palm.y);
   });
   const ratio = sum / tips.length / scale;
-  return Math.max(0, Math.min(1, (ratio - 1.05) / 1.55));
+  return Math.max(0, Math.min(1, (ratio - 0.75) / 1.05));
 }
 
 function updateHud() {
@@ -77,7 +77,7 @@ function updateHud() {
 
   const o = window.HandGesture.openness;
   if (state) {
-    state.textContent = o < 0.35 ? "聚合" : o > 0.65 ? "散开" : "悬停";
+    state.textContent = o < 0.38 ? "聚合" : o > 0.58 ? "散开" : "悬停";
   }
   if (fill) fill.style.width = `${Math.round(o * 100)}%`;
 }
@@ -95,7 +95,7 @@ function tick() {
         const lm = res.landmarks[0];
         const center = palmCenter(lm);
         const raw = computeOpenness(lm);
-        smoothOpen += (raw - smoothOpen) * 0.14;
+        smoothOpen += (raw - smoothOpen) * (raw > smoothOpen ? 0.24 : 0.12);
         smoothX += (center.x - smoothX) * 0.18;
         smoothY += (center.y - smoothY) * 0.18;
         window.HandGesture.hasHand = true;

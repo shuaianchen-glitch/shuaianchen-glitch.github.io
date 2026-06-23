@@ -1,4 +1,4 @@
-const INTRO_KEY = "sa-studio-intro-v2";
+const INTRO_KEY = "sa-studio-intro-v3";
 const $ = (sel) => document.querySelector(sel);
 
 function projects() {
@@ -9,6 +9,7 @@ function enterSite(skipIntro = false) {
   const intro = $("#intro");
   const app = $("#app");
   const onVisible = () => {
+    window.scrollTo(0, 0);
     requestAnimationFrame(() => {
       window.Painting?.resize?.();
       startHeroTypewriter();
@@ -16,14 +17,16 @@ function enterSite(skipIntro = false) {
   };
   if (!skipIntro && intro) {
     intro.classList.add("is-leaving");
+    window.IntroPig?.destroy?.();
     setTimeout(() => {
       intro.style.display = "none";
       app.classList.remove("is-hidden");
       app.classList.add("is-visible");
       onVisible();
-    }, 800);
+    }, 850);
   } else {
     if (intro) intro.style.display = "none";
+    window.IntroPig?.destroy?.();
     app.classList.remove("is-hidden");
     app.classList.add("is-visible");
     onVisible();
@@ -32,34 +35,31 @@ function enterSite(skipIntro = false) {
 }
 
 function initIntro() {
-  const intro = window.SITE.intro;
-  const titleEl = $("#intro-title");
-  if (titleEl) {
-    titleEl.innerHTML = intro.title
-      .map((line, i) =>
-        i === intro.accentLine
-          ? `<span class="accent">${line}</span>`
-          : `<span>${line}</span>`
-      )
-      .join("<br>");
-  }
-  $("#intro-eyebrow").textContent = intro.eyebrow;
-  $("#intro-sub").textContent = intro.sub;
-  $("#intro-btn-label").textContent = intro.btn;
+  const introCopy = window.SITE.intro;
+  $("#intro-eyebrow").textContent = introCopy.eyebrow;
+  $("#intro-sub").textContent = introCopy.sub;
+  $("#intro-btn-label").textContent = introCopy.btn;
 
-  const go = () => enterSite(false);
+  const go = () => {
+    if ($("#intro")?.classList.contains("is-leaving")) return;
+    enterSite(false);
+  };
+
   if (sessionStorage.getItem(INTRO_KEY) === "1") {
     enterSite(true);
     return;
   }
 
-  $("#intro-enter")?.addEventListener("click", go);
-  $("#intro")?.addEventListener("click", () => {
-    if (!$("#intro").classList.contains("is-leaving")) go();
+  $("#intro-enter")?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    go();
   });
+
   document.addEventListener("keydown", (e) => {
     if (e.key === "Enter" && !$("#intro")?.classList.contains("is-leaving")) go();
   });
+
+  window.IntroPig?.init(go);
 }
 
 function randomWhisper() {

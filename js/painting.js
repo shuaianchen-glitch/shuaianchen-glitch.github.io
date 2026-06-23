@@ -27,6 +27,8 @@ window.Painting = (() => {
   let lastCometX = 0;
   let lastCometY = 0;
   let cometSpeed = 0;
+  let gestureBurst = 0;
+  let prevGestureOpen = 0.5;
 
   const EASE = (t) => 1 - Math.pow(1 - t, 3);
 
@@ -137,7 +139,7 @@ window.Painting = (() => {
     lastCometY = y;
     cometSpeed = cometSpeed * 0.65 + speed * 0.35;
     cometTrail.unshift({ x, y, life: 1 });
-    if (cometTrail.length > 32) cometTrail.pop();
+    if (cometTrail.length > 48) cometTrail.pop();
   }
 
   function updateComet() {
@@ -152,18 +154,20 @@ window.Painting = (() => {
     if (isDay() || cometTrail.length < 2) return;
 
     ctx.globalCompositeOperation = "screen";
+    const tailEnd = cometTrail[cometTrail.length - 1];
 
     for (let i = 1; i < cometTrail.length; i += 1) {
       const a = cometTrail[i - 1];
       const b = cometTrail[i];
       const t = 1 - i / cometTrail.length;
-      const alpha = t * t * a.life * 0.5;
+      const alpha = Math.pow(t, 1.6) * a.life * 0.65;
+      const width = (2 + t * 14) * dpr;
       const grad = ctx.createLinearGradient(a.x, a.y, b.x, b.y);
-      grad.addColorStop(0, `rgba(220, 240, 255, ${alpha})`);
-      grad.addColorStop(0.5, `rgba(140, 210, 255, ${alpha * 0.45})`);
-      grad.addColorStop(1, "rgba(80, 160, 255, 0)");
+      grad.addColorStop(0, `rgba(255, 230, 180, ${alpha})`);
+      grad.addColorStop(0.35, `rgba(255, 140, 50, ${alpha * 0.55})`);
+      grad.addColorStop(1, `rgba(100, 180, 255, ${alpha * 0.08})`);
       ctx.strokeStyle = grad;
-      ctx.lineWidth = (1.5 + t * 5) * dpr;
+      ctx.lineWidth = width;
       ctx.lineCap = "round";
       ctx.beginPath();
       ctx.moveTo(a.x, a.y);
@@ -171,22 +175,38 @@ window.Painting = (() => {
       ctx.stroke();
     }
 
+    if (tailEnd && cometTrail.length > 4) {
+      const head = cometTrail[0];
+      ctx.strokeStyle = `rgba(80, 160, 255, ${0.08 * tailEnd.life})`;
+      ctx.lineWidth = 1 * dpr;
+      ctx.beginPath();
+      ctx.moveTo(tailEnd.x, tailEnd.y);
+      ctx.lineTo(head.x, head.y);
+      ctx.stroke();
+    }
+
     const head = cometTrail[0];
     if (head) {
-      const r = (10 + Math.min(cometSpeed, 40) * 0.2) * dpr;
-      const glow = ctx.createRadialGradient(head.x, head.y, 0, head.x, head.y, r * 5);
-      glow.addColorStop(0, "rgba(255, 255, 255, 0.95)");
-      glow.addColorStop(0.15, "rgba(200, 235, 255, 0.55)");
-      glow.addColorStop(0.45, "rgba(120, 200, 255, 0.12)");
-      glow.addColorStop(1, "transparent");
-      ctx.fillStyle = glow;
+      const fireR = (22 + Math.min(cometSpeed, 55) * 0.45) * dpr;
+      const outer = ctx.createRadialGradient(head.x, head.y, 0, head.x, head.y, fireR * 2.2);
+      outer.addColorStop(0, "rgba(255, 255, 240, 1)");
+      outer.addColorStop(0.08, "rgba(255, 210, 80, 0.95)");
+      outer.addColorStop(0.22, "rgba(255, 120, 30, 0.65)");
+      outer.addColorStop(0.45, "rgba(255, 60, 20, 0.22)");
+      outer.addColorStop(0.7, "rgba(120, 180, 255, 0.08)");
+      outer.addColorStop(1, "transparent");
+      ctx.fillStyle = outer;
       ctx.beginPath();
-      ctx.arc(head.x, head.y, r * 5, 0, Math.PI * 2);
+      ctx.arc(head.x, head.y, fireR * 2.2, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.fillStyle = "rgba(255, 255, 255, 0.98)";
+      const core = ctx.createRadialGradient(head.x, head.y, 0, head.x, head.y, fireR * 0.45);
+      core.addColorStop(0, "rgba(255, 255, 255, 1)");
+      core.addColorStop(0.5, "rgba(255, 200, 100, 0.85)");
+      core.addColorStop(1, "rgba(255, 100, 40, 0)");
+      ctx.fillStyle = core;
       ctx.beginPath();
-      ctx.arc(head.x, head.y, 2.2 * dpr, 0, Math.PI * 2);
+      ctx.arc(head.x, head.y, fireR * 0.55, 0, Math.PI * 2);
       ctx.fill();
     }
 
@@ -208,12 +228,23 @@ window.Painting = (() => {
     const useGesture = !isDay() && g?.enabled && g.hasHand;
     const gx = (useGesture ? g.x : mx) * w;
     const gy = (useGesture ? g.y : my) * h;
-    const pullR = useGesture ? 340 * dpr : 260 * dpr;
+    const pullR = useGesture ? 580 * dpr : 260 * dpr;
+    const pushR = pullR * 2.4;
+
+    if (useGesture) {
+      const opened = g.openness;
+      if (opened > 0.52 && prevGestureOpen <= 0.52) gestureBurst = 1;
+      prevGestureOpen = opened;
+    } else {
+      prevGestureOpen = 0.5;
+    }
+
+    if (gestureBurst > 0) gestureBurst = Math.max(0, gestureBurst - 0.022);
 
     particles.forEach((pt) => {
       const angle = flowAt(pt.x, pt.y, t) + pt.phase * 0.15;
       const drift = pt.type === "orb" ? 0.12 : pt.type === "spark" ? 0.28 : 0.1;
-      const flowMix = useGesture ? 0.35 : 1;
+      const flowMix = useGesture ? 0.25 : 1;
       pt.vx += Math.cos(angle) * drift * 0.06 * flowMix;
       pt.vy += Math.sin(angle) * drift * 0.06 * flowMix;
 
@@ -225,18 +256,27 @@ window.Painting = (() => {
         const closed = 1 - g.openness;
         const opened = g.openness;
 
-        if (closed > 0.28 && dist < pullR * 1.2) {
-          const pull = Math.pow(1 - Math.min(dist / (pullR * 1.2), 1), 1.4) * closed * 1.35;
-          pt.vx += (dx / dist) * pull * 0.85;
-          pt.vy += (dy / dist) * pull * 0.85;
+        if (closed > 0.18 && dist < pullR * 1.5) {
+          const pull = Math.pow(1 - Math.min(dist / (pullR * 1.5), 1), 1.1) * closed * 2.6;
+          pt.vx += (dx / dist) * pull * 1.2;
+          pt.vy += (dy / dist) * pull * 1.2;
         }
 
-        if (opened > 0.45 && dist < pullR * 1.5) {
-          const push = Math.pow(1 - Math.min(dist / (pullR * 1.5), 1), 1.2) * opened * 0.95;
-          pt.vx -= (dx / dist) * push * 0.7;
-          pt.vy -= (dy / dist) * push * 0.7;
-          pt.vx += (Math.random() - 0.5) * opened * 0.08;
-          pt.vy += (Math.random() - 0.5) * opened * 0.08;
+        if (opened > 0.28 && dist < pushR) {
+          const falloff = Math.pow(1 - Math.min(dist / pushR, 1), 0.75);
+          const push = falloff * opened * 3.2;
+          pt.vx -= (dx / dist) * push * 1.5;
+          pt.vy -= (dy / dist) * push * 1.5;
+          pt.vx += (-dy / dist) * push * 0.65;
+          pt.vy += (dx / dist) * push * 0.65;
+          pt.vx += (Math.random() - 0.5) * opened * 0.45;
+          pt.vy += (Math.random() - 0.5) * opened * 0.45;
+        }
+
+        if (gestureBurst > 0 && dist < pushR * 1.1) {
+          const blast = gestureBurst * Math.pow(1 - Math.min(dist / (pushR * 1.1), 1), 0.6) * 4.5;
+          pt.vx -= (dx / dist) * blast;
+          pt.vy -= (dy / dist) * blast;
         }
       } else if (dist < pullR * 0.65) {
         const pull = Math.pow(1 - dist / (pullR * 0.65), 1.8);
@@ -245,8 +285,8 @@ window.Painting = (() => {
         pt.vy += (dy / dist) * swirl * 0.15 + (dx / dist) * swirl * 0.05;
       }
 
-      pt.vx *= useGesture ? 0.9 : 0.92;
-      pt.vy *= useGesture ? 0.9 : 0.92;
+      pt.vx *= useGesture ? 0.86 : 0.92;
+      pt.vy *= useGesture ? 0.86 : 0.92;
       pt.x += pt.vx * dpr;
       pt.y += pt.vy * dpr;
 
@@ -317,16 +357,17 @@ window.Painting = (() => {
     const hy = g.y * h;
     const closed = 1 - g.openness;
     const opened = g.openness;
-    const r = (80 + closed * 120) * dpr;
+    const r = (120 + closed * 200 + opened * 160) * dpr;
 
     ctx.globalCompositeOperation = "screen";
     const aura = ctx.createRadialGradient(hx, hy, 0, hx, hy, r);
     if (closed > opened) {
-      aura.addColorStop(0, `rgba(255, 210, 120, ${0.22 + closed * 0.2})`);
-      aura.addColorStop(0.45, `rgba(120, 200, 255, ${0.08 + closed * 0.1})`);
+      aura.addColorStop(0, `rgba(255, 210, 120, ${0.35 + closed * 0.35})`);
+      aura.addColorStop(0.4, `rgba(120, 200, 255, ${0.12 + closed * 0.15})`);
     } else {
-      aura.addColorStop(0, `rgba(120, 220, 255, ${0.1 + opened * 0.12})`);
-      aura.addColorStop(0.5, "rgba(255, 200, 100, 0.06)");
+      aura.addColorStop(0, `rgba(160, 240, 255, ${0.2 + opened * 0.35})`);
+      aura.addColorStop(0.35, `rgba(80, 200, 255, ${0.1 + opened * 0.2})`);
+      aura.addColorStop(0.6, "rgba(255, 200, 100, 0.08)");
     }
     aura.addColorStop(1, "transparent");
     ctx.fillStyle = aura;
@@ -334,10 +375,19 @@ window.Painting = (() => {
     ctx.arc(hx, hy, r, 0, Math.PI * 2);
     ctx.fill();
 
-    ctx.strokeStyle = `rgba(200, 235, 255, ${0.15 + closed * 0.25})`;
-    ctx.lineWidth = 1.5 * dpr;
+    if (gestureBurst > 0) {
+      const br = (gestureBurst * 420 + 80) * dpr;
+      ctx.strokeStyle = `rgba(140, 220, 255, ${gestureBurst * 0.55})`;
+      ctx.lineWidth = (3 + gestureBurst * 8) * dpr;
+      ctx.beginPath();
+      ctx.arc(hx, hy, br, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    ctx.strokeStyle = `rgba(200, 235, 255, ${0.15 + closed * 0.25 + opened * 0.2})`;
+    ctx.lineWidth = 2 * dpr;
     ctx.beginPath();
-    ctx.arc(hx, hy, 24 * dpr + Math.sin(t * 3) * 4 * dpr, 0, Math.PI * 2);
+    ctx.arc(hx, hy, 28 * dpr + Math.sin(t * 3) * 6 * dpr, 0, Math.PI * 2);
     ctx.stroke();
     ctx.globalCompositeOperation = "source-over";
   }
