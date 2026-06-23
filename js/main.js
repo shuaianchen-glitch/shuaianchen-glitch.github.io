@@ -9,7 +9,10 @@ function enterSite(skipIntro = false) {
   const intro = $("#intro");
   const app = $("#app");
   const onVisible = () => {
-    requestAnimationFrame(() => window.Painting?.resize?.());
+    requestAnimationFrame(() => {
+      window.Painting?.resize?.();
+      startHeroTypewriter();
+    });
   };
   if (!skipIntro && intro) {
     intro.classList.add("is-leaving");
@@ -81,63 +84,7 @@ function navigateWithTransition(project) {
 }
 
 function renderShowcase() {
-  const track = $("#showcase-track");
-  const dots = $("#showcase-dots");
-  const copy = window.SITE.showcase;
-  if (!track) return;
-
-  track.innerHTML = projects()
-    .map((p) => {
-      const cls = "showcase-card";
-      const starLine = `<span class="showcase-star">${p.star.bayer} · ${p.star.cn}</span>`;
-      const cta = p.live ? copy.ctaLive : copy.ctaSoon;
-
-      if (p.live) {
-        const ext = p.external ? ' target="_blank" rel="noopener"' : "";
-        return `<a href="${p.link}" class="${cls}" data-i="${projects().indexOf(p)}"${ext}>
-          ${starLine}
-          <div class="showcase-icon">${p.icon}</div>
-          <h3 class="showcase-title">${p.title}</h3>
-          <p class="showcase-desc">${p.desc}</p>
-          <span class="showcase-cta">${cta}</span>
-        </a>`;
-      }
-      return `<button type="button" class="${cls}" data-i="${projects().indexOf(p)}">
-        ${starLine}
-        <div class="showcase-icon">${p.icon}</div>
-        <h3 class="showcase-title">${p.title}</h3>
-        <p class="showcase-desc">${p.desc}</p>
-        <span class="showcase-cta">${cta}</span>
-      </button>`;
-    })
-    .join("");
-
-  track.querySelectorAll("a.showcase-card").forEach((el) => {
-    el.addEventListener("click", (e) => {
-      const p = projects()[Number(el.dataset.i)];
-      if (p.external) return;
-      e.preventDefault();
-      navigateWithTransition(p);
-    });
-  });
-
-  track.querySelectorAll("button.showcase-card").forEach((el) => {
-    el.addEventListener("click", () => {
-      Painting.openProject(Number(el.dataset.i));
-      document.getElementById("stage")?.scrollIntoView({ behavior: "smooth" });
-    });
-  });
-
-  if (dots) {
-    dots.innerHTML = projects()
-      .map((_, i) => `<span data-i="${i}"${i === 0 ? ' class="active"' : ""}></span>`)
-      .join("");
-    track.addEventListener("scroll", () => {
-      const card = track.querySelector(".showcase-card");
-      const idx = Math.round(track.scrollLeft / ((card?.offsetWidth || 300) + 16));
-      dots.querySelectorAll("span").forEach((d, j) => d.classList.toggle("active", j === idx));
-    });
-  }
+  window.FanCarousel?.init();
 }
 
 function initNav() {
@@ -148,21 +95,32 @@ function initNav() {
       document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
       document.querySelectorAll(".pill[data-scroll]").forEach((p) => {
         p.classList.toggle("active", p.dataset.scroll === id);
+        if (p.dataset.scroll === id) window.CascadeNav?.replay(p);
       });
     });
   });
+  window.CascadeNav?.init();
 }
 
 function applyCopy() {
   const s = window.SITE.stage;
   $("#stage-tag").textContent = s.tag;
-  $("#stage-headline").innerHTML = `${s.headline[0]}<br><span class="accent">${s.headline[1]}</span>`;
-  $("#stage-desc").textContent = s.desc;
   $("#stage-hint").innerHTML = `<span class="hint-pulse"></span> ${s.hint}`;
   $("#stat-live-label").textContent = s.stats.live;
   $("#stat-climb-label").textContent = s.stats.climbing;
   $("#showcase-desc").textContent = window.SITE.showcase.desc;
   $("#manifesto-text").textContent = window.SITE.about.manifesto;
+}
+
+function startHeroTypewriter() {
+  const s = window.SITE.stage;
+  window.Typewriter?.run({
+    lines: s.headline,
+    desc: s.desc,
+    delay: 500,
+    speed: 46,
+    descSpeed: 24,
+  });
 }
 
 function initStarReadout() {

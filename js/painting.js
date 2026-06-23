@@ -23,6 +23,10 @@ window.Painting = (() => {
   let figureHover = false;
   let figureDrawT = 0;
   let particles = [];
+  let cometTrail = [];
+  let lastCometX = 0;
+  let lastCometY = 0;
+  let cometSpeed = 0;
 
   const EASE = (t) => 1 - Math.pow(1 - t, 3);
 
@@ -127,6 +131,68 @@ window.Painting = (() => {
     });
   }
 
+  function pushComet(x, y) {
+    const speed = Math.hypot(x - lastCometX, y - lastCometY);
+    lastCometX = x;
+    lastCometY = y;
+    cometSpeed = cometSpeed * 0.65 + speed * 0.35;
+    cometTrail.unshift({ x, y, life: 1 });
+    if (cometTrail.length > 32) cometTrail.pop();
+  }
+
+  function updateComet() {
+    cometTrail.forEach((p) => {
+      p.life *= 0.93;
+    });
+    cometTrail = cometTrail.filter((p) => p.life > 0.04);
+    cometSpeed *= 0.92;
+  }
+
+  function drawComet() {
+    if (isDay() || cometTrail.length < 2) return;
+
+    ctx.globalCompositeOperation = "screen";
+
+    for (let i = 1; i < cometTrail.length; i += 1) {
+      const a = cometTrail[i - 1];
+      const b = cometTrail[i];
+      const t = 1 - i / cometTrail.length;
+      const alpha = t * t * a.life * 0.5;
+      const grad = ctx.createLinearGradient(a.x, a.y, b.x, b.y);
+      grad.addColorStop(0, `rgba(220, 240, 255, ${alpha})`);
+      grad.addColorStop(0.5, `rgba(140, 210, 255, ${alpha * 0.45})`);
+      grad.addColorStop(1, "rgba(80, 160, 255, 0)");
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = (1.5 + t * 5) * dpr;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(b.x, b.y);
+      ctx.stroke();
+    }
+
+    const head = cometTrail[0];
+    if (head) {
+      const r = (10 + Math.min(cometSpeed, 40) * 0.2) * dpr;
+      const glow = ctx.createRadialGradient(head.x, head.y, 0, head.x, head.y, r * 5);
+      glow.addColorStop(0, "rgba(255, 255, 255, 0.95)");
+      glow.addColorStop(0.15, "rgba(200, 235, 255, 0.55)");
+      glow.addColorStop(0.45, "rgba(120, 200, 255, 0.12)");
+      glow.addColorStop(1, "transparent");
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(head.x, head.y, r * 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "rgba(255, 255, 255, 0.98)";
+      ctx.beginPath();
+      ctx.arc(head.x, head.y, 2.2 * dpr, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.globalCompositeOperation = "source-over";
+  }
+
   function flowAt(x, y, t) {
     const nx = x / w;
     const ny = y / h;
@@ -172,11 +238,11 @@ window.Painting = (() => {
           pt.vx += (Math.random() - 0.5) * opened * 0.08;
           pt.vy += (Math.random() - 0.5) * opened * 0.08;
         }
-      } else if (dist < pullR) {
-        const pull = Math.pow(1 - dist / pullR, 1.6);
-        const swirl = pull * 0.55;
-        pt.vx += (dx / dist) * swirl * 0.22 + (-dy / dist) * swirl * 0.08;
-        pt.vy += (dy / dist) * swirl * 0.22 + (dx / dist) * swirl * 0.08;
+      } else if (dist < pullR * 0.65) {
+        const pull = Math.pow(1 - dist / (pullR * 0.65), 1.8);
+        const swirl = pull * 0.35;
+        pt.vx += (dx / dist) * swirl * 0.15 + (-dy / dist) * swirl * 0.05;
+        pt.vy += (dy / dist) * swirl * 0.15 + (dx / dist) * swirl * 0.05;
       }
 
       pt.vx *= useGesture ? 0.9 : 0.92;
@@ -884,6 +950,7 @@ window.Painting = (() => {
     panY += (targetPanY - panY) * 0.07;
     scale += (targetScale - scale) * 0.07;
     if (pulseT > 0) pulseT = Math.max(0, pulseT - 0.018);
+    updateComet();
 
     const p = palette();
     ctx.clearRect(0, 0, w, h);
@@ -900,6 +967,7 @@ window.Painting = (() => {
     drawDecorStars(p, time, EASE(introT));
     drawHub(p, time, EASE(introT));
     drawProjectStars(p, time, EASE(introT));
+    drawComet();
     drawCrosshair(p);
     drawFocusVignette();
     drawPulse(p);
@@ -964,6 +1032,7 @@ window.Painting = (() => {
     pointerY = sy;
     mx = (e.clientX - rect.left) / rect.width;
     my = (e.clientY - rect.top) / rect.height;
+    if (!isDay()) pushComet(sx, sy);
     hoverIdx = hitTest(sx, sy);
     figureHover = hoverIdx < 0 && hitTestFigure(sx, sy);
     canvas.style.cursor = hoverIdx >= 0 ? "pointer" : figureHover ? "pointer" : "crosshair";

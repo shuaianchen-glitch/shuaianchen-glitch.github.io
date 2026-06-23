@@ -7,8 +7,8 @@
   <meta name="theme-color" content="#000000">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <title>ShuaiAn Studio · Orbit</title>
-  <link rel="stylesheet" href="css/themes.css?v=20250622-v16">
-  <link rel="stylesheet" href="css/style.css?v=20250622-v16">
+  <link rel="stylesheet" href="css/themes.css?v=20250622-v17">
+  <link rel="stylesheet" href="css/style.css?v=20250622-v17">
 </head>
 <body>
   <div id="intro" class="intro" aria-live="polite">
@@ -53,7 +53,10 @@
         <div class="hero-split">
           <div class="hero-copy">
             <p class="hero-eyebrow" id="stage-tag">ORBIT MAP · 星轨图</p>
-            <h1 class="hero-title" id="stage-headline"></h1>
+            <h1 class="hero-title">
+              <span id="type-line-1"></span><br>
+              <span class="accent" id="type-line-2"></span><span class="type-cursor" id="type-cursor" aria-hidden="true">_</span>
+            </h1>
             <p class="hero-desc" id="stage-desc"></p>
 
             <aside class="hero-readout" id="star-readout" aria-live="polite" hidden>
@@ -110,7 +113,11 @@
           <h2><span class="section-num">01</span>造物清单</h2>
           <p id="showcase-desc">每一样，都是攀山路上的一个脚印</p>
         </header>
-        <div class="showcase-track" id="showcase-track"></div>
+        <div class="fan-carousel">
+          <button type="button" class="fan-nav fan-prev" id="fan-prev" aria-label="上一个">‹</button>
+          <div class="fan-stage" id="fan-stage"></div>
+          <button type="button" class="fan-nav fan-next" id="fan-next" aria-label="下一个">›</button>
+        </div>
         <div class="showcase-dots" id="showcase-dots"></div>
       </section>
 
@@ -177,11 +184,14 @@
     <p class="transition-title" id="transition-title"></p>
   </div>
 
-  <script defer src="content/site.js?v=20250622-v16"></script>
-  <script defer src="js/theme.js?v=20250622-v16"></script>
-  <script defer src="js/painting.js?v=20250622-v16"></script>
-  <script defer src="js/detail.js?v=20250622-v16"></script>
-  <script defer src="js/main.js?v=20250622-v16"></script>
-  <script type="module" src="js/gesture.js?v=20250622-v16"></script>
+  <script defer src="content/site.js?v=20250622-v17"></script>
+  <script defer src="js/theme.js?v=20250622-v17"></script>
+  <script defer src="js/typewriter.js?v=20250622-v17"></script>
+  <script defer src="js/cascade-nav.js?v=20250622-v17"></script>
+  <script defer src="js/fan-carousel.js?v=20250622-v17"></script>
+  <script defer src="js/painting.js?v=20250622-v17"></script>
+  <script defer src="js/detail.js?v=20250622-v17"></script>
+  <script defer src="js/main.js?v=20250622-v17"></script>
+  <script type="module" src="js/gesture.js?v=20250622-v17"></script>
 </body>
 </html>
