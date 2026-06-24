@@ -5,6 +5,16 @@ window.SITE = {
     operator: "ShuaiAn Chen",
   },
 
+  ui: {
+    breadcrumbLine1: "SHUAIAN CHEN",
+    breadcrumbLine2: "COGNITIVE FIELD / ROOM 00",
+    roomLabel: "COGNITIVE FIELD",
+    heroTitle: "Cognitive Field",
+    heroDesc: "A structured spatial interface suspended between gesture, memory, and atmospheric depth.",
+    techMeta: "SPATIAL NODE LAYER / FULLSCREEN ROOM",
+    indexLabel: "INDEX / NODES",
+  },
+
   domains: [
     { id: "projects", label: "Projects", focus: "Build Surface" },
     { id: "systems", label: "Systems", focus: "Runtime Layer" },

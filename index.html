@@ -3,96 +3,74 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="description" content="ShuaiAn Chen — Spatial Information Operating System">
-  <meta name="theme-color" content="#08090c">
+  <meta name="description" content="ShuaiAn Chen — Cognitive Field">
+  <meta name="theme-color" content="#000000">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <title>SIO · Spatial Information OS</title>
+  <title>Cognitive Field · ShuaiAn Chen</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/themes.css?v=20250622-v24">
-  <link rel="stylesheet" href="css/spatial-os.css?v=20250622-v24">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/themes.css?v=20250622-v25">
+  <link rel="stylesheet" href="css/spatial-os.css?v=20250622-v25">
 </head>
 <body data-mode="explore">
   <div class="spos" aria-live="polite">
     <div class="spos-light-field" aria-hidden="true"></div>
 
-    <header class="spos-topbar glass-a">
-      <div class="spos-topbar-left">
-        <span class="spos-os-name">Spatial Information OS</span>
-        <span class="spos-os-meta" id="os-version">SIO · 1.0</span>
-      </div>
-      <span class="spos-operator" id="os-operator">ShuaiAn Chen</span>
-      <a class="spos-link" href="https://github.com/shuaianchen-glitch" target="_blank" rel="noopener">GitHub</a>
-    </header>
+    <main class="spos-field" id="spos-field" aria-label="Spatial node field">
+      <div class="field-layer field-layer--2" id="layer-secondary"></div>
+      <div class="field-layer field-layer--1" id="layer-primary"></div>
+      <div class="focus-lens" id="focus-lens" aria-hidden="true"></div>
+    </main>
 
-    <div class="spos-shell">
-      <aside class="spos-rail glass-a" aria-label="Structure rail">
-        <p class="rail-heading">Domains</p>
-        <nav class="rail-nav" id="rail-nav"></nav>
-        <p class="rail-heading rail-heading--sub">Active Group</p>
-        <div class="rail-groups" id="rail-groups"></div>
-      </aside>
+    <div class="spos-ui">
+      <header class="corner corner-tl">
+        <p class="mono-line" id="crumb-1">SHUAIAN CHEN</p>
+        <p class="mono-line" id="crumb-2">COGNITIVE FIELD / ROOM 00</p>
+      </header>
 
-      <main class="spos-field" id="spos-field" aria-label="Focal spatial field">
-        <div class="spos-hud glass-a" id="spos-hud" aria-label="Focus engine">
-          <button type="button" class="hud-cell" id="hud-mode-btn" title="Cycle system mode">
-            <span class="hud-key">Mode</span>
-            <span class="hud-val" id="hud-mode">Exploration</span>
-          </button>
-          <div class="hud-cell">
-            <span class="hud-key">Focus</span>
-            <span class="hud-val" id="hud-focus">Build Surface</span>
-          </div>
-          <div class="hud-cell">
-            <span class="hud-key">Depth</span>
-            <span class="hud-val hud-val--mono" id="hud-depth">32%</span>
-          </div>
-          <div class="hud-cell">
-            <span class="hud-key">Active Node</span>
-            <span class="hud-val" id="hud-active">None</span>
-          </div>
-        </div>
+      <header class="corner corner-tr">
+        <p class="mono-line mono-line--room" id="room-label">COGNITIVE FIELD</p>
+        <a class="mono-link" href="https://github.com/shuaianchen-glitch" target="_blank" rel="noopener">GITHUB</a>
+      </header>
 
-        <div class="spos-field-stage" id="field-stage">
-          <div class="field-layer field-layer--2" id="layer-secondary" aria-label="Depth level 2"></div>
-          <div class="field-layer field-layer--1" id="layer-primary" aria-label="Depth level 1"></div>
-          <div class="focus-lens" id="focus-lens" aria-hidden="true"></div>
-        </div>
-
-        <p class="spos-field-hint">Scroll in field · depth navigation · click Mode to switch density</p>
-      </main>
-
-      <aside class="spos-detail glass-a" aria-label="Detail panel">
-        <p class="detail-heading">Entity Breakdown</p>
-        <div class="detail-empty" id="detail-empty">
-          <p class="detail-empty-title">No selection</p>
-          <p class="detail-empty-body">Hover or focus a node to load structured metadata.</p>
-        </div>
-        <div class="detail-body" id="detail-body" hidden>
-          <p class="detail-kicker" id="detail-category">project</p>
-          <h2 class="detail-title" id="detail-title"></h2>
-          <p class="detail-desc" id="detail-desc"></p>
-          <div class="detail-tags" id="detail-tags"></div>
-          <dl class="detail-metrics">
-            <div><dt>Weight</dt><dd id="detail-weight">—</dd></div>
-            <div><dt>Relevance</dt><dd id="detail-relevance">—</dd></div>
-            <div><dt>Depth</dt><dd id="detail-depth-level">—</dd></div>
+      <section class="corner corner-bl" aria-label="Primary readout">
+        <h1 class="hero-title" id="hero-title">Cognitive Field</h1>
+        <p class="hero-desc" id="hero-desc">A structured spatial interface suspended between gesture, memory, and atmospheric depth.</p>
+        <div class="hero-detail" id="hero-detail" hidden>
+          <p class="mono-line mono-line--detail" id="detail-category">project</p>
+          <dl class="hero-metrics">
+            <div><dt>WT</dt><dd id="detail-weight">—</dd></div>
+            <div><dt>REL</dt><dd id="detail-relevance">—</dd></div>
+            <div><dt>LV</dt><dd id="detail-depth-level">—</dd></div>
           </dl>
-          <button type="button" class="detail-cta" id="detail-cta" hidden>Open project →</button>
-          <button type="button" class="detail-clear" id="detail-clear" hidden>Release focus</button>
+          <div class="hero-tags" id="detail-tags"></div>
+          <button type="button" class="hero-cta" id="detail-cta" hidden>Open →</button>
+          <button type="button" class="hero-clear" id="detail-clear" hidden>Release focus</button>
         </div>
-      </aside>
-    </div>
+      </section>
 
-    <footer class="spos-foot">
-      <span>Spatial computing interface · precision layout · material depth</span>
-      <span>© <span id="year"></span></span>
-    </footer>
+      <footer class="corner corner-br">
+        <p class="mono-line" id="tech-meta">SPATIAL NODE LAYER / FULLSCREEN ROOM</p>
+        <div class="hud-strip">
+          <button type="button" class="hud-chip" id="hud-mode-btn" title="Cycle mode">
+            <span>MODE</span><em id="hud-mode">Exploration</em>
+          </button>
+          <span class="hud-chip"><span>DEPTH</span><em id="hud-depth" class="mono-num">32%</em></span>
+          <span class="hud-chip"><span>FOCUS</span><em id="hud-focus">Build Surface</em></span>
+          <span class="hud-chip"><span>NODE</span><em id="hud-active">None</em></span>
+        </div>
+      </footer>
+
+      <nav class="index-rail" aria-label="Node index">
+        <p class="mono-line index-label" id="index-label">INDEX / NODES</p>
+        <div class="index-list" id="index-list"></div>
+      </nav>
+    </div>
   </div>
 
-  <script defer src="content/site.js?v=20250622-v24"></script>
-  <script defer src="js/spatial-os.js?v=20250622-v24"></script>
-  <script defer src="js/main.js?v=20250622-v24"></script>
+  <script defer src="content/site.js?v=20250622-v25"></script>
+  <script defer src="js/spatial-os.js?v=20250622-v25"></script>
+  <script defer src="js/main.js?v=20250622-v25"></script>
 </body>
 </html>
