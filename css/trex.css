@@ -1,20 +1,23 @@
-/* ── Hero stage + 3D T-Rex (图2布局) ── */
+/* ── Moonstone T-Rex · spatial inhabitant ── */
 
 .hero-stage {
-  display: flex;
-  align-items: flex-end;
-  gap: clamp(0.5rem, 2vw, 1.25rem);
-  min-height: clamp(200px, 28vh, 280px);
-  max-width: min(640px, 52vw);
+  position: relative;
+  width: min(760px, 62vw);
+  min-height: clamp(240px, 32vh, 360px);
+  pointer-events: auto;
 }
 
 .trex-viewport {
-  position: relative;
-  flex: 0 0 clamp(160px, 22vw, 240px);
-  width: clamp(160px, 22vw, 240px);
-  height: clamp(180px, 26vh, 260px);
+  position: absolute;
+  inset: -8% -6% 0 -10%;
   z-index: 3;
   pointer-events: none;
+  transform: scale(var(--trex-scale, 1));
+  transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hero-stage.is-hovered .trex-viewport {
+  --trex-scale: 1.04;
 }
 
 .trex-viewport.is-behind {
@@ -34,32 +37,10 @@
   overflow: visible;
 }
 
-.trex-roar-burst {
-  position: absolute;
-  left: 55%;
-  top: 18%;
-  font-family: var(--font-mono);
-  font-size: 0.55rem;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  color: #e879f9;
-  text-shadow: 0 0 16px rgba(232, 121, 249, 0.6);
-  animation: trex-roar-text 0.9s ease-out forwards;
-  white-space: nowrap;
-}
-
-@keyframes trex-roar-text {
-  0% { opacity: 0; transform: scale(0.7); }
-  20% { opacity: 1; transform: scale(1.05); }
-  100% { opacity: 0; transform: translateY(-14px) scale(1); }
-}
-
 .hero-copy {
   position: relative;
   z-index: 2;
-  flex: 1;
-  min-width: 0;
-  padding-bottom: 0.15rem;
+  padding: clamp(2.5rem, 8vh, 4.5rem) 0 0 clamp(0.5rem, 2vw, 1rem);
   pointer-events: none;
 }
 
@@ -70,18 +51,21 @@
 
 @media (max-width: 900px) {
   .hero-stage {
-    flex-direction: column;
-    align-items: flex-start;
-    max-width: 100%;
+    width: 100%;
+    min-height: 220px;
   }
 
   .trex-viewport {
-    width: 140px;
-    height: 160px;
-    flex-basis: 140px;
+    inset: -5% -4% 0 -8%;
+  }
+
+  .hero-copy {
+    padding-top: 5.5rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .trex-roar-burst { animation: none !important; }
+  .trex-viewport {
+    transition: none;
+  }
 }
