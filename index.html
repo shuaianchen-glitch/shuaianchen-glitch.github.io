@@ -10,8 +10,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/themes.css?v=20250622-v25">
-  <link rel="stylesheet" href="css/spatial-os.css?v=20250622-v25">
+  <link rel="stylesheet" href="css/themes.css?v=20250622-v26">
+  <link rel="stylesheet" href="css/spatial-os.css?v=20250622-v26">
+  <link rel="stylesheet" href="css/trex.css?v=20250622-v26">
 </head>
 <body data-mode="explore">
   <div class="spos" aria-live="polite">
@@ -35,18 +36,49 @@
       </header>
 
       <section class="corner corner-bl" aria-label="Primary readout">
-        <h1 class="hero-title" id="hero-title">Cognitive Field</h1>
-        <p class="hero-desc" id="hero-desc">A structured spatial interface suspended between gesture, memory, and atmospheric depth.</p>
-        <div class="hero-detail" id="hero-detail" hidden>
-          <p class="mono-line mono-line--detail" id="detail-category">project</p>
-          <dl class="hero-metrics">
-            <div><dt>WT</dt><dd id="detail-weight">—</dd></div>
-            <div><dt>REL</dt><dd id="detail-relevance">—</dd></div>
-            <div><dt>LV</dt><dd id="detail-depth-level">—</dd></div>
-          </dl>
-          <div class="hero-tags" id="detail-tags"></div>
-          <button type="button" class="hero-cta" id="detail-cta" hidden>Open →</button>
-          <button type="button" class="hero-clear" id="detail-clear" hidden>Release focus</button>
+        <div class="hero-stage" id="hero-stage">
+          <div class="trex-layer" id="trex-layer" aria-hidden="true">
+            <div class="trex" id="trex" data-state="wander">
+              <svg class="trex-svg" viewBox="0 0 120 100" aria-hidden="true">
+                <ellipse class="trex-tail" cx="18" cy="58" rx="16" ry="8"/>
+                <ellipse class="trex-body" cx="52" cy="58" rx="28" ry="22"/>
+                <ellipse class="trex-belly" cx="54" cy="62" rx="18" ry="12"/>
+                <ellipse class="trex-spot" cx="44" cy="52" rx="5" ry="4"/>
+                <ellipse class="trex-spot" cx="58" cy="48" rx="4" ry="3"/>
+                <ellipse class="trex-body-shade" cx="68" cy="62" rx="12" ry="10"/>
+                <ellipse class="trex-body" cx="78" cy="42" rx="22" ry="20"/>
+                <ellipse class="trex-blush" cx="88" cy="48" rx="5" ry="3"/>
+                <ellipse class="trex-eye-white" cx="84" cy="36" rx="7" ry="8"/>
+                <ellipse class="trex-eye" cx="86" cy="37" rx="3.5" ry="4"/>
+                <circle class="trex-eye-shine" cx="87" cy="35" r="1.2"/>
+                <path class="trex-eye-lid" d="M77 32 Q84 28 91 32 L91 40 Q84 36 77 40 Z"/>
+                <ellipse class="trex-arm" cx="62" cy="52" rx="5" ry="3" transform="rotate(-20 62 52)"/>
+                <g class="trex-jaw">
+                  <path class="trex-mouth" d="M92 44 Q98 50 94 56 Q88 54 86 48 Z"/>
+                  <path class="trex-tooth" d="M90 50 L91 54 L93 50 Z"/>
+                  <path class="trex-tooth" d="M94 52 L95 56 L97 52 Z"/>
+                </g>
+                <ellipse class="trex-leg trex-leg--l" cx="44" cy="78" rx="6" ry="10"/>
+                <ellipse class="trex-leg trex-leg--r" cx="58" cy="78" rx="6" ry="10"/>
+              </svg>
+              <div class="trex-fx" id="trex-fx"></div>
+            </div>
+          </div>
+          <div class="hero-copy">
+            <h1 class="hero-title" id="hero-title">Cognitive Field</h1>
+            <p class="hero-desc" id="hero-desc">A structured spatial interface suspended between gesture, memory, and atmospheric depth.</p>
+            <div class="hero-detail" id="hero-detail" hidden>
+              <p class="mono-line mono-line--detail" id="detail-category">project</p>
+              <dl class="hero-metrics">
+                <div><dt>WT</dt><dd id="detail-weight">—</dd></div>
+                <div><dt>REL</dt><dd id="detail-relevance">—</dd></div>
+                <div><dt>LV</dt><dd id="detail-depth-level">—</dd></div>
+              </dl>
+              <div class="hero-tags" id="detail-tags"></div>
+              <button type="button" class="hero-cta" id="detail-cta" hidden>Open →</button>
+              <button type="button" class="hero-clear" id="detail-clear" hidden>Release focus</button>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -69,8 +101,9 @@
     </div>
   </div>
 
-  <script defer src="content/site.js?v=20250622-v25"></script>
-  <script defer src="js/spatial-os.js?v=20250622-v25"></script>
-  <script defer src="js/main.js?v=20250622-v25"></script>
+  <script defer src="content/site.js?v=20250622-v26"></script>
+  <script defer src="js/spatial-os.js?v=20250622-v26"></script>
+  <script defer src="js/trex-companion.js?v=20250622-v26"></script>
+  <script defer src="js/main.js?v=20250622-v26"></script>
 </body>
 </html>
