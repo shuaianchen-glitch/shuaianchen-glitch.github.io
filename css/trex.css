@@ -1,141 +1,43 @@
-/* ── Hero stage + T-Rex companion ── */
+/* ── Hero stage + 3D T-Rex (图2布局) ── */
 
 .hero-stage {
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(0.5rem, 2vw, 1.25rem);
+  min-height: clamp(200px, 28vh, 280px);
+  max-width: min(640px, 52vw);
+}
+
+.trex-viewport {
   position: relative;
-  min-height: clamp(140px, 22vh, 220px);
-}
-
-.hero-copy {
-  position: relative;
-  z-index: 2;
-  pointer-events: none;
-}
-
-.hero-copy .hero-cta,
-.hero-copy .hero-clear {
-  pointer-events: auto;
-}
-
-.trex-layer {
-  position: absolute;
-  inset: 0;
+  flex: 0 0 clamp(160px, 22vw, 240px);
+  width: clamp(160px, 22vw, 240px);
+  height: clamp(180px, 26vh, 260px);
   z-index: 3;
   pointer-events: none;
-  overflow: visible;
 }
 
-.trex-layer.is-behind {
+.trex-viewport.is-behind {
   z-index: 1;
 }
 
-.trex {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 72px;
-  height: 60px;
-  transform-origin: 50% 85%;
-  will-change: transform;
-}
-
-.trex-svg {
+#trex-canvas {
+  display: block;
   width: 100%;
   height: 100%;
-  overflow: visible;
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.45));
-}
-
-.trex-body { fill: #6ecf8f; }
-.trex-body-shade { fill: #4fad72; }
-.trex-belly { fill: #a8e6bc; }
-.trex-spot { fill: #58b87a; opacity: 0.55; }
-.trex-eye-white { fill: #fff; }
-.trex-eye { fill: #1a1a2e; }
-.trex-eye-shine { fill: #fff; }
-.trex-blush { fill: #ff9ec4; opacity: 0.45; }
-.trex-mouth { fill: #e85d7a; }
-.trex-tooth { fill: #fff; }
-.trex-arm { fill: #58b87a; }
-.trex-leg { fill: #4fad72; transform-origin: 50% 10%; }
-.trex-tail { fill: #58b87a; transform-origin: 90% 50%; }
-
-.trex.is-walking .trex-leg--l {
-  animation: trex-leg-l 0.38s ease-in-out infinite;
-}
-
-.trex.is-walking .trex-leg--r {
-  animation: trex-leg-r 0.38s ease-in-out infinite;
-}
-
-.trex.is-walking .trex-svg {
-  animation: trex-bob 0.38s ease-in-out infinite;
-}
-
-.trex.is-sprinting .trex-leg--l {
-  animation: trex-leg-l 0.16s ease-in-out infinite;
-}
-
-.trex.is-sprinting .trex-leg--r {
-  animation: trex-leg-r 0.16s ease-in-out infinite;
-}
-
-.trex.is-sprinting .trex-svg {
-  animation: trex-bob 0.16s ease-in-out infinite;
-}
-
-.trex.is-sprinting .trex-tail {
-  animation: trex-tail-fast 0.16s ease-in-out infinite;
-}
-
-.trex.is-resting .trex-svg {
-  animation: trex-breathe 2.4s ease-in-out infinite;
-}
-
-.trex.is-resting .trex-eye-lid,
-.trex.is-resting .trex-eye-lid-r {
-  opacity: 1;
-}
-
-.trex-eye-lid,
-.trex-eye-lid-r {
-  fill: #6ecf8f;
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
-
-.trex.is-roaring .trex-jaw {
-  animation: trex-roar-jaw 0.35s ease-in-out infinite;
-}
-
-.trex.is-roaring .trex-svg {
-  animation: trex-roar-shake 0.12s ease-in-out infinite;
-}
-
-.trex.is-roaring .trex-tail {
-  animation: trex-tail-roar 0.25s ease-in-out infinite;
 }
 
 .trex-fx {
   position: absolute;
   inset: 0;
   pointer-events: none;
-}
-
-.trex-bubble {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  border: 1px solid rgba(94, 196, 212, 0.65);
-  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.5), rgba(94, 196, 212, 0.15));
-  animation: trex-bubble-rise 2.2s ease-out forwards;
+  overflow: visible;
 }
 
 .trex-roar-burst {
   position: absolute;
-  left: 50%;
-  top: -8px;
-  transform: translateX(-50%);
+  left: 55%;
+  top: 18%;
   font-family: var(--font-mono);
   font-size: 0.55rem;
   font-weight: 600;
@@ -146,73 +48,40 @@
   white-space: nowrap;
 }
 
-@keyframes trex-leg-l {
-  0%, 100% { transform: rotate(18deg); }
-  50% { transform: rotate(-22deg); }
-}
-
-@keyframes trex-leg-r {
-  0%, 100% { transform: rotate(-18deg); }
-  50% { transform: rotate(22deg); }
-}
-
-@keyframes trex-bob {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
-}
-
-@keyframes trex-breathe {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(2px) scale(0.98); }
-}
-
-@keyframes trex-tail-fast {
-  0%, 100% { transform: rotate(8deg); }
-  50% { transform: rotate(-12deg); }
-}
-
-@keyframes trex-tail-roar {
-  0%, 100% { transform: rotate(-6deg); }
-  50% { transform: rotate(14deg); }
-}
-
-@keyframes trex-roar-jaw {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(5px); }
-}
-
-@keyframes trex-roar-shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-2px); }
-  75% { transform: translateX(2px); }
-}
-
-@keyframes trex-bubble-rise {
-  0% { opacity: 0.85; transform: translateY(0) scale(0.6); }
-  100% { opacity: 0; transform: translateY(-36px) scale(1.1); }
-}
-
 @keyframes trex-roar-text {
-  0% { opacity: 0; transform: translateX(-50%) scale(0.7); }
-  20% { opacity: 1; transform: translateX(-50%) scale(1.05); }
-  100% { opacity: 0; transform: translateX(-50%) translateY(-14px) scale(1); }
+  0% { opacity: 0; transform: scale(0.7); }
+  20% { opacity: 1; transform: scale(1.05); }
+  100% { opacity: 0; transform: translateY(-14px) scale(1); }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .trex.is-walking .trex-leg--l,
-  .trex.is-walking .trex-leg--r,
-  .trex.is-sprinting .trex-leg--l,
-  .trex.is-sprinting .trex-leg--r,
-  .trex.is-walking .trex-svg,
-  .trex.is-sprinting .trex-svg,
-  .trex.is-resting .trex-svg,
-  .trex.is-roaring .trex-jaw,
-  .trex.is-roaring .trex-svg {
-    animation: none !important;
-  }
+.hero-copy {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  min-width: 0;
+  padding-bottom: 0.15rem;
+  pointer-events: none;
+}
+
+.hero-copy .hero-cta,
+.hero-copy .hero-clear {
+  pointer-events: auto;
 }
 
 @media (max-width: 900px) {
-  .trex { width: 56px; height: 48px; }
-  .hero-stage { min-height: 120px; }
+  .hero-stage {
+    flex-direction: column;
+    align-items: flex-start;
+    max-width: 100%;
+  }
+
+  .trex-viewport {
+    width: 140px;
+    height: 160px;
+    flex-basis: 140px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trex-roar-burst { animation: none !important; }
 }

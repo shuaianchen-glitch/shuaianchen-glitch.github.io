@@ -147,7 +147,7 @@ body.is-focused .field-node.is-active { pointer-events: auto; opacity: 1; }
   bottom: var(--pad);
   left: var(--pad);
   pointer-events: auto;
-  max-width: min(520px, 50vw);
+  max-width: min(680px, 55vw);
 }
 
 .corner-br {
