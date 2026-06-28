@@ -40,6 +40,9 @@ window.TrexCompanion = (() => {
   let legL;
   let legR;
   let tailGroup;
+  let tailSegs = [];
+  let armL;
+  let armR;
   let pupilL;
   let pupilR;
   let eyelidL;
@@ -65,129 +68,331 @@ window.TrexCompanion = (() => {
   let baseScale = 1.28;
 
   function skin(color, opts = {}) {
+    const c = new T.Color(color);
     return new T.MeshPhysicalMaterial({
       color,
-      roughness: opts.roughness ?? 0.62,
-      metalness: opts.metalness ?? 0.04,
-      clearcoat: opts.clearcoat ?? 0.22,
-      clearcoatRoughness: 0.32,
-      emissive: opts.emissive ?? 0x1a1814,
-      emissiveIntensity: opts.emissiveIntensity ?? 0.03,
+      roughness: opts.roughness ?? 0.52,
+      metalness: opts.metalness ?? 0.03,
+      clearcoat: opts.clearcoat ?? 0.38,
+      clearcoatRoughness: 0.22,
+      emissive: opts.emissive ?? c.clone().multiplyScalar(0.12),
+      emissiveIntensity: opts.emissiveIntensity ?? 0.09,
     });
+  }
+
+  function sculpt(parent, geo, mat, pos, rot, scale) {
+    const m = new T.Mesh(geo, mat);
+    if (pos) m.position.set(pos[0], pos[1], pos[2]);
+    if (rot) m.rotation.set(rot[0], rot[1], rot[2]);
+    if (scale) m.scale.set(scale[0], scale[1], scale[2]);
+    parent.add(m);
+    return m;
+  }
+
+  function buildEye(parent, side, y, z) {
+    const sx = side;
+    sculpt(
+      parent,
+      new T.SphereGeometry(0.105, 24, 24),
+      skin(COL.moonDark, { roughness: 0.58 }),
+      [0.04, y, z * sx],
+      [0.08, 0, 0],
+      [0.92, 0.78, 0.82]
+    );
+
+    sculpt(
+      parent,
+      new T.SphereGeometry(0.088, 24, 24),
+      skin(COL.ivory, { roughness: 0.28, clearcoat: 0.5 }),
+      [0.06, y - 0.01, (z + 0.055) * sx],
+      [0.05, 0, 0],
+      [1.05, 0.95, 0.72]
+    );
+
+    sculpt(
+      parent,
+      new T.SphereGeometry(0.072, 20, 20),
+      skin(COL.amber, { roughness: 0.32, emissive: 0x5a3010, emissiveIntensity: 0.14 }),
+      [0.1, y - 0.015, (z + 0.1) * sx],
+      [0.12, 0, 0],
+      [1.08, 1, 0.55]
+    );
+
+    const pupil = new T.Mesh(
+      new T.SphereGeometry(0.034, 16, 16),
+      skin(COL.amberDeep, { roughness: 0.2, emissive: 0x2a1408, emissiveIntensity: 0.05 })
+    );
+    pupil.position.set(0.13, y - 0.02, (z + 0.13) * sx);
+    pupil.rotation.x = 0.12;
+    parent.add(pupil);
+
+    sculpt(
+      parent,
+      new T.SphereGeometry(0.014, 10, 10),
+      skin(0xffffff, { roughness: 0.05, clearcoat: 0.9, emissive: 0xffffff, emissiveIntensity: 0.25 }),
+      [0.145, y + 0.018, (z + 0.145) * sx],
+      null,
+      null
+    );
+
+    sculpt(
+      parent,
+      new T.SphereGeometry(0.008, 8, 8),
+      skin(0xffffff, { roughness: 0.08, emissive: 0xffffff, emissiveIntensity: 0.18 }),
+      [0.118, y - 0.028, (z + 0.138) * sx],
+      null,
+      null
+    );
+
+    const lid = new T.Mesh(new T.SphereGeometry(0.1, 16, 16), skin(COL.moon, { roughness: 0.48 }));
+    lid.position.set(0.05, y + 0.028, (z + 0.08) * sx);
+    lid.rotation.x = -0.35;
+    lid.scale.set(1.05, 0.32, 0.82);
+    lid.visible = false;
+    parent.add(lid);
+
+    return { pupil, lid };
   }
 
   function buildBabyTrex() {
     trexRoot = new T.Group();
     bodyGroup = new T.Group();
     headGroup = new T.Group();
-    headGroup.position.set(0.38, 0.62, 0.06);
+    headGroup.position.set(0.42, 0.78, 0);
 
-    const torso = new T.Mesh(new T.SphereGeometry(0.36, 32, 32), skin(COL.moon));
-    torso.scale.set(1.05, 0.92, 1.22);
-    torso.position.y = 0.38;
-    bodyGroup.add(torso);
+    const bodyMat = skin(COL.moon);
+    const softMat = skin(COL.moonDark, { roughness: 0.56 });
+    const bellyMat = skin(COL.ivory, { roughness: 0.68, emissiveIntensity: 0.06 });
 
-    const belly = new T.Mesh(new T.SphereGeometry(0.24, 28, 28), skin(COL.ivory, { roughness: 0.72 }));
-    belly.scale.set(0.95, 0.65, 1.05);
-    belly.position.set(0.02, 0.28, 0.14);
-    bodyGroup.add(belly);
+    const profile = [];
+    for (let i = 0; i <= 24; i += 1) {
+      const t = i / 24;
+      const y = t * 0.52;
+      const r = 0.19 + Math.sin(t * Math.PI) * 0.14 - t * 0.06;
+      profile.push(new T.Vector2(Math.max(0.08, r), y));
+    }
+    sculpt(bodyGroup, new T.LatheGeometry(profile, 32), bodyMat, [0, 0.08, 0], [0, 0, 0], null);
+
+    sculpt(
+      bodyGroup,
+      new T.SphereGeometry(0.24, 28, 28),
+      bodyMat,
+      [0.08, 0.42, 0],
+      [0, 0, 0],
+      [1.08, 0.92, 1.18]
+    );
+
+    sculpt(
+      bodyGroup,
+      new T.SphereGeometry(0.18, 24, 24),
+      bellyMat,
+      [0.1, 0.28, 0.12],
+      [0.15, 0, 0],
+      [1.05, 0.72, 0.95]
+    );
+
+    sculpt(
+      bodyGroup,
+      new T.SphereGeometry(0.16, 20, 20),
+      softMat,
+      [0.34, 0.62, 0],
+      [0.2, 0, 0],
+      [0.95, 0.88, 0.92]
+    );
+
+    sculpt(
+      headGroup,
+      new T.SphereGeometry(0.4, 32, 32),
+      bodyMat,
+      [0, 0.08, 0],
+      [0.08, 0, 0],
+      [1.18, 1.08, 1.05]
+    );
+
+    sculpt(
+      headGroup,
+      new T.SphereGeometry(0.22, 24, 24),
+      softMat,
+      [0.28, -0.02, 0.14],
+      [0.05, -0.15, 0.25],
+      [1.05, 0.88, 0.82]
+    );
+    sculpt(
+      headGroup,
+      new T.SphereGeometry(0.22, 24, 24),
+      softMat,
+      [0.28, -0.02, -0.14],
+      [0.05, 0.15, -0.25],
+      [1.05, 0.88, 0.82]
+    );
+
+    sculpt(
+      headGroup,
+      new T.SphereGeometry(0.19, 22, 22),
+      softMat,
+      [0.34, -0.04, 0.08],
+      [0.18, 0, 0.08],
+      [1.35, 0.78, 0.9]
+    );
+
+    sculpt(
+      headGroup,
+      new T.SphereGeometry(0.16, 20, 20),
+      softMat,
+      [0.42, -0.08, 0.06],
+      [0.22, 0, 0.05],
+      [1.25, 0.72, 0.82]
+    );
+
+    sculpt(
+      headGroup,
+      new T.SphereGeometry(0.08, 12, 12),
+      skin(COL.graphite, { roughness: 0.42 }),
+      [0.48, -0.02, 0.045],
+      [0.3, 0, 0],
+      [1, 0.65, 0.8]
+    );
+    sculpt(
+      headGroup,
+      new T.SphereGeometry(0.08, 12, 12),
+      skin(COL.graphite, { roughness: 0.42 }),
+      [0.48, -0.02, -0.045],
+      [0.3, 0, 0],
+      [1, 0.65, 0.8]
+    );
+
+    jawGroup = new T.Group();
+    jawGroup.position.set(0.24, -0.16, 0.02);
+    sculpt(
+      jawGroup,
+      new T.SphereGeometry(0.15, 20, 20),
+      softMat,
+      [0.08, 0, 0.04],
+      [0.08, 0, 0],
+      [1.35, 0.68, 0.92]
+    );
+    sculpt(
+      jawGroup,
+      new T.SphereGeometry(0.08, 12, 12),
+      bellyMat,
+      [0.18, -0.02, 0.03],
+      [0.15, 0, 0],
+      [1.1, 0.55, 0.75]
+    );
+    headGroup.add(jawGroup);
+
+    const eyeL = buildEye(headGroup, 1, 0.06, 0.12);
+    pupilL = eyeL.pupil;
+    eyelidL = eyeL.lid;
+    const eyeR = buildEye(headGroup, -1, 0.06, 0.12);
+    pupilR = eyeR.pupil;
+    eyelidR = eyeR.lid;
+
+    sculpt(
+      headGroup,
+      new T.SphereGeometry(0.06, 12, 12),
+      softMat,
+      [0.12, 0.18, 0.22],
+      [0.2, 0.35, 0.15],
+      [1.1, 0.75, 0.8]
+    );
+    sculpt(
+      headGroup,
+      new T.SphereGeometry(0.06, 12, 12),
+      softMat,
+      [0.12, 0.18, -0.22],
+      [0.2, -0.35, -0.15],
+      [1.1, 0.75, 0.8]
+    );
 
     tailGroup = new T.Group();
-    tailGroup.position.set(-0.34, 0.44, 0);
-    for (let i = 0; i < 5; i += 1) {
-      const s = 0.13 - i * 0.018;
-      const seg = new T.Mesh(new T.SphereGeometry(s, 16, 16), skin(i % 2 ? COL.moonDark : COL.moon));
-      seg.position.set(-i * 0.17, i * 0.035, 0);
+    tailGroup.position.set(-0.22, 0.38, 0);
+    tailSegs = [];
+    let tx = 0;
+    let ty = 0;
+    for (let i = 0; i < 7; i += 1) {
+      const t = i / 6;
+      const rTop = 0.11 - t * 0.075;
+      const rBot = 0.085 - t * 0.062;
+      const len = 0.14 - t * 0.012;
+      const seg = new T.Mesh(
+        new T.CylinderGeometry(Math.max(0.018, rTop), Math.max(0.012, rBot), len, 14),
+        i % 2 ? softMat : bodyMat
+      );
+      seg.rotation.z = 0.42 + t * 0.18;
+      seg.position.set(tx - len * 0.42, ty + len * 0.28, 0);
+      tx -= len * 0.78;
+      ty += len * 0.34;
       tailGroup.add(seg);
+      tailSegs.push(seg);
     }
     bodyGroup.add(tailGroup);
 
-    for (let i = 0; i < 6; i += 1) {
-      const spike = new T.Mesh(new T.ConeGeometry(0.028, 0.075, 5), skin(COL.graphite, { roughness: 0.45 }));
-      spike.position.set(-0.12 + i * 0.11, 0.62 + (i % 2) * 0.03, -0.04 + (i % 3) * 0.03);
-      spike.rotation.x = -0.55;
-      bodyGroup.add(spike);
+    for (let i = 0; i < 7; i += 1) {
+      const t = i / 6;
+      sculpt(
+        bodyGroup,
+        new T.ConeGeometry(0.022, 0.07, 5),
+        skin(COL.graphite, { roughness: 0.4, metalness: 0.08 }),
+        [-0.04 + i * 0.08, 0.58 + t * 0.08, (i % 2 ? 0.04 : -0.03)],
+        [-0.75, (i % 2 ? 0.2 : -0.15), 0],
+        null
+      );
     }
 
-    const head = new T.Mesh(new T.SphereGeometry(0.38, 32, 32), skin(COL.moon));
-    head.scale.set(1.12, 1.05, 1);
-    headGroup.add(head);
+    function buildArm(zSign) {
+      const arm = new T.Group();
+      arm.position.set(0.14, 0.34, 0.22 * zSign);
+      sculpt(arm, new T.SphereGeometry(0.038, 12, 12), softMat, [0, 0.04, 0], [0, 0, -0.4 * zSign], [0.85, 1.15, 0.85]);
+      sculpt(arm, new T.SphereGeometry(0.028, 10, 10), softMat, [0.03, -0.02, 0.02 * zSign], [0.5, 0, 0], null);
+      sculpt(arm, new T.ConeGeometry(0.008, 0.028, 4), skin(COL.graphite), [0.05, -0.04, 0.03 * zSign], [0.8, 0, 0], null);
+      sculpt(arm, new T.ConeGeometry(0.008, 0.028, 4), skin(COL.graphite), [0.05, -0.04, -0.01 * zSign], [0.8, 0.3 * zSign, 0], null);
+      return arm;
+    }
 
-    const snout = new T.Mesh(new T.SphereGeometry(0.2, 24, 24), skin(COL.moonDark));
-    snout.scale.set(1.15, 0.82, 0.88);
-    snout.position.set(0.22, -0.06, 0.06);
-    headGroup.add(snout);
+    armL = buildArm(1);
+    armR = buildArm(-1);
+    bodyGroup.add(armL, armR);
 
-    jawGroup = new T.Group();
-    jawGroup.position.set(0.18, -0.14, 0.08);
-    const jaw = new T.Mesh(new T.SphereGeometry(0.14, 20, 20), skin(COL.moonDark));
-    jaw.scale.set(1.25, 0.7, 0.95);
-    jawGroup.add(jaw);
-    headGroup.add(jawGroup);
+    function buildLeg(x, z) {
+      const leg = new T.Group();
+      leg.position.set(x, 0.1, z);
+      sculpt(leg, new T.SphereGeometry(0.1, 16, 16), softMat, [0, 0.16, 0], null, [1.05, 0.95, 1.05]);
+      sculpt(leg, new T.CylinderGeometry(0.07, 0.085, 0.18, 14), softMat, [0, 0.08, 0], null, null);
+      sculpt(leg, new T.CylinderGeometry(0.055, 0.065, 0.14, 12), bodyMat, [0.01, -0.02, 0], null, null);
+      sculpt(leg, new T.SphereGeometry(0.1, 16, 16), softMat, [0.02, -0.08, 0.04], [-0.15, 0, 0], [1.45, 0.52, 1.65]);
+      for (let t = -1; t <= 1; t += 1) {
+        sculpt(
+          leg,
+          new T.ConeGeometry(0.012, 0.04, 4),
+          skin(COL.graphite, { roughness: 0.35 }),
+          [0.06 + t * 0.04, -0.1, 0.1 + t * 0.02],
+          [0.2, t * 0.15, 0],
+          null
+        );
+      }
+      return leg;
+    }
 
-    const eyeSocketL = new T.Mesh(new T.SphereGeometry(0.11, 20, 20), skin(COL.ivory, { roughness: 0.35 }));
-    eyeSocketL.position.set(0.08, 0.1, 0.2);
-    headGroup.add(eyeSocketL);
-    const irisL = new T.Mesh(new T.SphereGeometry(0.065, 16, 16), skin(COL.amber, { roughness: 0.4 }));
-    irisL.position.set(0.1, 0.08, 0.26);
-    headGroup.add(irisL);
-    pupilL = new T.Mesh(new T.SphereGeometry(0.028, 12, 12), skin(COL.amberDeep));
-    pupilL.position.set(0.12, 0.07, 0.3);
-    headGroup.add(pupilL);
-    const shineL = new T.Mesh(new T.SphereGeometry(0.012, 8, 8), skin(0xffffff, { roughness: 0.1 }));
-    shineL.position.set(0.13, 0.1, 0.32);
-    headGroup.add(shineL);
+    legL = buildLeg(0.1, 0.17);
+    legR = buildLeg(0.1, -0.17);
+    bodyGroup.add(legL, legR);
 
-    const eyeSocketR = eyeSocketL.clone();
-    eyeSocketR.position.z = 0.08;
-    headGroup.add(eyeSocketR);
-    const irisR = irisL.clone();
-    irisR.position.z = 0.14;
-    headGroup.add(irisR);
-    pupilR = pupilL.clone();
-    pupilR.position.z = 0.18;
-    headGroup.add(pupilR);
-
-    eyelidL = new T.Mesh(new T.SphereGeometry(0.115, 12, 12), skin(COL.moon));
-    eyelidL.position.copy(eyeSocketL.position);
-    eyelidL.position.z += 0.02;
-    eyelidL.scale.set(1, 0.28, 0.75);
-    eyelidL.visible = false;
-    headGroup.add(eyelidL);
-    eyelidR = eyelidL.clone();
-    eyelidR.position.copy(eyeSocketR.position);
-    eyelidR.position.z += 0.02;
-    headGroup.add(eyelidR);
-
-    const armL = new T.Mesh(new T.SphereGeometry(0.045, 10, 10), skin(COL.moonDark));
-    armL.scale.set(0.7, 1.1, 0.7);
-    armL.position.set(0.02, 0.22, 0.24);
-    bodyGroup.add(armL);
-    const armR = armL.clone();
-    armR.position.z = -0.18;
-    bodyGroup.add(armR);
-
-    legL = new T.Group();
-    legL.position.set(0.06, 0.14, 0.2);
-    const thighL = new T.Mesh(new T.CylinderGeometry(0.085, 0.1, 0.2, 12), skin(COL.moonDark));
-    thighL.position.y = 0.1;
-    legL.add(thighL);
-    const footL = new T.Mesh(new T.SphereGeometry(0.11, 14, 14), skin(COL.moonDark));
-    footL.scale.set(1.35, 0.55, 1.55);
-    footL.position.set(0.02, -0.02, 0.05);
-    legL.add(footL);
-    bodyGroup.add(legL);
-
-    legR = new T.Group();
-    legR.position.set(0.06, 0.14, -0.14);
-    legR.add(thighL.clone());
-    legR.add(footL.clone());
-    bodyGroup.add(legR);
+    for (let i = 0; i < 18; i += 1) {
+      sculpt(
+        bodyGroup,
+        new T.SphereGeometry(0.008 + Math.random() * 0.006, 6, 6),
+        i % 2 ? softMat : bodyMat,
+        [0.02 + Math.random() * 0.22, 0.22 + Math.random() * 0.34, -0.16 + Math.random() * 0.32],
+        null,
+        null
+      );
+    }
 
     bodyGroup.add(headGroup);
     trexRoot.add(bodyGroup);
     trexRoot.scale.setScalar(baseScale);
-    trexRoot.position.y = 0.04;
+    trexRoot.position.y = 0.02;
     scene.add(trexRoot);
   }
 
@@ -230,26 +435,29 @@ window.TrexCompanion = (() => {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.outputEncoding = T.sRGBEncoding;
     renderer.toneMapping = T.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.08;
+    renderer.toneMappingExposure = 1.14;
     renderer.physicallyCorrectLights = true;
 
     scene = new T.Scene();
-    camera = new T.PerspectiveCamera(24, 1, 0.1, 30);
-    camera.position.set(0.05, 0.72, 3.35);
-    camera.lookAt(0.1, 0.42, 0);
+    camera = new T.PerspectiveCamera(22, 1, 0.1, 30);
+    camera.position.set(0.02, 0.58, 2.65);
+    camera.lookAt(0.15, 0.48, 0);
 
-    scene.add(new T.AmbientLight(0x8899aa, 0.32));
-    scene.add(new T.HemisphereLight(0xd9d6cf, 0x080810, 0.45));
+    scene.add(new T.AmbientLight(0x9aa8b8, 0.28));
+    scene.add(new T.HemisphereLight(0xf2eee8, 0x060608, 0.52));
 
-    const key = new T.DirectionalLight(0xfff5eb, 1.05);
-    key.position.set(2.5, 4.5, 3);
+    const key = new T.DirectionalLight(0xfff8f0, 1.18);
+    key.position.set(1.8, 3.8, 2.4);
     scene.add(key);
-    const rim = new T.DirectionalLight(0x8ecfd4, 0.28);
-    rim.position.set(-2.5, 2, -2);
-    scene.add(rim);
-    const fill = new T.PointLight(0xf2eee8, 0.22, 6);
-    fill.position.set(-0.5, 1.1, 1.8);
+    const fill = new T.DirectionalLight(0xd9d6cf, 0.42);
+    fill.position.set(-2.2, 1.6, 2.5);
     scene.add(fill);
+    const rim = new T.DirectionalLight(0x7ec8d8, 0.35);
+    rim.position.set(-1.5, 2.2, -2.8);
+    scene.add(rim);
+    const warm = new T.PointLight(0xffe8d0, 0.28, 5);
+    warm.position.set(0.6, 0.85, 1.6);
+    scene.add(warm);
 
     buildEnvironment();
     buildBabyTrex();
@@ -303,7 +511,7 @@ window.TrexCompanion = (() => {
         clearcoat: 0.8,
       })
     );
-    b.position.set(0.28, 0.02, 0.12);
+    b.position.set(0.42, -0.08, 0.08);
     headGroup.add(b);
     bubbles.push({ mesh: b, life: 0, vy: 0.22 + Math.random() * 0.1 });
   }
@@ -417,21 +625,21 @@ window.TrexCompanion = (() => {
     let tz = lookTarget.z;
 
     if (mouse.inStage) {
-      tx = mouse.x - pos.x + 0.35;
-      ty = 0.72;
-      tz = mouse.z - pos.z + 0.15;
+      tx = mouse.x - pos.x + 0.42;
+      ty = 0.82;
+      tz = mouse.z - pos.z + 0.12;
     }
 
     const cur = headGroup.rotation;
-    const targetYaw = Math.max(-0.45, Math.min(0.45, tx * 0.35));
-    const targetPitch = Math.max(-0.25, Math.min(0.3, (ty - 0.65) * 0.4));
-    cur.y += (targetYaw - cur.y) * dt * 4;
-    cur.x += (targetPitch - cur.x) * dt * 4;
+    const targetYaw = Math.max(-0.52, Math.min(0.52, tx * 0.42));
+    const targetPitch = Math.max(-0.32, Math.min(0.35, (ty - 0.72) * 0.45));
+    cur.y += (targetYaw - cur.y) * dt * 5;
+    cur.x += (targetPitch - cur.x) * dt * 5;
 
-    const pOffX = Math.max(-0.025, Math.min(0.025, tx * 0.04));
-    const pOffY = Math.max(-0.015, Math.min(0.015, (ty - 0.7) * 0.08));
-    pupilL.position.x = 0.12 + pOffX;
-    pupilL.position.y = 0.07 + pOffY;
+    const pOffX = Math.max(-0.022, Math.min(0.022, tx * 0.035));
+    const pOffY = Math.max(-0.018, Math.min(0.018, (ty - 0.78) * 0.06));
+    pupilL.position.x = 0.13 + pOffX;
+    pupilL.position.y = 0.04 + pOffY;
     pupilR.position.x = pupilL.position.x;
     pupilR.position.y = pupilL.position.y;
 
@@ -455,52 +663,73 @@ window.TrexCompanion = (() => {
 
     trexRoot.position.x = pos.x;
     trexRoot.position.z = pos.z;
-    bodyGroup.rotation.y = facing > 0 ? -0.12 : 0.12;
+    bodyGroup.rotation.y = facing > 0 ? -0.1 : 0.1;
+
+    const breath = 1 + Math.sin(animT * 1.7) * 0.014;
+    bodyGroup.scale.set(1, breath, 1);
 
     const walk = [STATE.WANDER, STATE.FOLLOW, STATE.CURIOUS, STATE.SPRINT].includes(state);
     const phase = animT * (state === STATE.SPRINT ? 14 : walk ? 5.5 : 1.2);
 
-    let bodyY = 0.04;
-    let tailSway = Math.sin(animT * 1.4) * 0.08;
+    let bodyY = 0.02;
+    let tailSway = Math.sin(animT * 1.4) * 0.06;
 
     if (walk) {
-      legL.rotation.x = Math.sin(phase) * 0.42;
-      legR.rotation.x = Math.sin(phase + Math.PI) * 0.42;
-      bodyY += Math.abs(Math.sin(phase)) * 0.028;
-      tailSway = Math.sin(phase * 0.55) * 0.14;
+      legL.rotation.x = Math.sin(phase) * 0.48;
+      legR.rotation.x = Math.sin(phase + Math.PI) * 0.48;
+      bodyY += Math.abs(Math.sin(phase)) * 0.032;
+      tailSway = Math.sin(phase * 0.55) * 0.12;
+      if (armL) armL.rotation.z = Math.sin(phase * 1.2) * 0.18 - 0.35;
+      if (armR) armR.rotation.z = Math.sin(phase * 1.2 + Math.PI) * 0.18 + 0.35;
       eyelidL.visible = false;
       eyelidR.visible = false;
     } else if (state === STATE.SIT || state === STATE.YAWN) {
-      legL.rotation.x = 0.55;
-      legR.rotation.x = 0.55;
-      bodyY = 0.02 + Math.sin(animT * 1.1) * 0.008;
-      if (state === STATE.YAWN) jawGroup.rotation.x = 0.25 + Math.sin(animT * 2) * 0.08;
+      legL.rotation.x = 0.62;
+      legR.rotation.x = 0.62;
+      bodyY = 0.01 + Math.sin(animT * 1.1) * 0.01;
+      if (armL) armL.rotation.z = -0.15;
+      if (armR) armR.rotation.z = 0.15;
+      if (state === STATE.YAWN) jawGroup.rotation.x = 0.32 + Math.sin(animT * 2) * 0.1;
     } else if (state === STATE.SLEEP) {
-      legL.rotation.x = 0.72;
-      legR.rotation.x = 0.72;
-      bodyY = 0.015;
-      bodyGroup.rotation.z = 0.06;
+      legL.rotation.x = 0.78;
+      legR.rotation.x = 0.78;
+      bodyY = 0.008;
+      bodyGroup.rotation.z = 0.08;
+      headGroup.rotation.x = 0.12;
+      if (armL) armL.rotation.z = -0.08;
+      if (armR) armR.rotation.z = 0.08;
       eyelidL.visible = true;
       eyelidR.visible = true;
     } else if (state === STATE.SNIFF) {
-      headGroup.rotation.x = 0.35;
-      jawGroup.rotation.x = 0.08;
-      bodyY = 0.035;
+      headGroup.rotation.x = 0.42;
+      jawGroup.rotation.x = 0.1;
+      bodyY = 0.028;
+      if (armL) armL.rotation.z = -0.45;
     } else if (state === STATE.ROAR) {
-      jawGroup.rotation.x = 0.42 + Math.sin(animT * 16) * 0.1;
-      bodyGroup.rotation.z = Math.sin(animT * 18) * 0.035;
-      tailSway = Math.sin(animT * 14) * 0.22;
-      bodyY = 0.05 + Math.sin(animT * 12) * 0.015;
+      jawGroup.rotation.x = 0.48 + Math.sin(animT * 16) * 0.12;
+      bodyGroup.rotation.z = Math.sin(animT * 18) * 0.04;
+      tailSway = Math.sin(animT * 14) * 0.18;
+      bodyY = 0.04 + Math.sin(animT * 12) * 0.018;
     } else if (state === STATE.JUMP) {
-      bodyY = 0.04 + Math.sin(Math.min(1, stateTime / 0.28) * Math.PI) * 0.12;
+      bodyY = 0.02 + Math.sin(Math.min(1, stateTime / 0.28) * Math.PI) * 0.14;
     } else if (state === STATE.BOUNCE) {
-      bodyY = 0.04 + Math.abs(Math.sin(animT * 10)) * 0.045;
+      bodyY = 0.02 + Math.abs(Math.sin(animT * 10)) * 0.05;
     } else if (state === STATE.PAUSE) {
-      tailSway = Math.sin(animT * 0.8) * 0.05;
+      tailSway = Math.sin(animT * 0.8) * 0.04;
+      if (armL) armL.rotation.z = -0.28 + Math.sin(animT * 0.9) * 0.06;
+      headGroup.rotation.x *= 0.92;
+    } else {
+      if (armL) armL.rotation.z = -0.32 + Math.sin(animT * 1.6) * 0.04;
+      if (armR) armR.rotation.z = 0.32 - Math.sin(animT * 1.6) * 0.04;
+      headGroup.rotation.x *= 0.9;
+      bodyGroup.rotation.z *= 0.92;
     }
 
     trexRoot.position.y = bodyY;
-    tailGroup.rotation.y = tailSway;
+    tailGroup.rotation.y = tailSway * 0.35;
+    tailSegs.forEach((seg, i) => {
+      seg.rotation.y = tailSway * (0.25 + i * 0.12);
+    });
 
     if (contactShadow) {
       contactShadow.position.x = pos.x;
